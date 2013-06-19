@@ -10,6 +10,8 @@ QT       -= gui
 
 TARGET = eDoc-CORE
 TEMPLATE = lib
+CONFIG += staticlib
+
 
 DEFINES += EDOCCORE_LIBRARY
 
@@ -37,7 +39,7 @@ unix:!symbian {
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/debug/ -l"libeDoc-API.a"
 else:unix: LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API

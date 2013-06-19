@@ -8,7 +8,7 @@ QT       -= gui
 
 TARGET = eDoc-API
 TEMPLATE = lib
-#CONFIG += staticlib
+CONFIG += staticlib
 #CONFIG +=dll
 
 DEFINES += EDOCAPI_LIBRARY

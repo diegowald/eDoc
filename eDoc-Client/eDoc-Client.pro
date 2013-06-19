@@ -20,14 +20,14 @@ HEADERS  += mainwindow.h
 FORMS    += mainwindow.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/debug/ -l"eDoc-API"
 else:unix: LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-CORE/ -leDoc-CORE
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-CORE/ -leDoc-CORE
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-CORE/debug/ -l"eDoc-CORE"
 else:unix: LIBS += -L$$OUT_PWD/../eDoc-CORE/ -leDoc-CORE
 
 INCLUDEPATH += $$PWD/../eDoc-CORE
