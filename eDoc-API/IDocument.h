@@ -3,11 +3,14 @@
 
 #include "eDoc-API_global.h"
 #include "IDocID.h"
+#include <QByteArray>
 
-struct EDOCAPISHARED_EXPORT IDocument
+class EDOCAPISHARED_EXPORT IDocument
 {
-    virtual IDocID& id() = 0;
+public:
+    virtual IDocID* id() = 0;
     virtual QByteArray blob() = 0;
+    //IDocument();
 };
 
 #endif // IDOCUMENT_H

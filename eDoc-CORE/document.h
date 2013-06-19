@@ -11,7 +11,7 @@ class Document : public QObject, public IDocument
 public:
     explicit Document(DocID* id, QObject *parent = 0);
 
-    virtual IDocID& id();
+    virtual IDocID* id();
     virtual QByteArray blob();
 
 signals:

@@ -6,9 +6,9 @@ Document::Document(DocID* id, QObject *parent) :
     iid = id;
 }
 
-IDocID &Document::id()
+IDocID *Document::id()
 {
-    return *iid;
+    return iid;
 }
 
 QByteArray Document::blob()

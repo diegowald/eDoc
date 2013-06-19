@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += sql
+QT       += sql core
 
 QT       -= gui
 
@@ -33,9 +33,12 @@ unix:!symbian {
     INSTALLS += target
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../eDoc-API-build-Desktop_Qt_5_0_1_GCC_64bit-Debug/release/ -leDoc-API
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../eDoc-API-build-Desktop_Qt_5_0_1_GCC_64bit-Debug/debug/ -leDoc-API
-else:unix: LIBS += -L$$PWD/../eDoc-API-build-Desktop_Qt_5_0_1_GCC_64bit-Debug/ -leDoc-API
+
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
+else:unix: LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API

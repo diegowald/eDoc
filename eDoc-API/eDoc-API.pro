@@ -8,10 +8,15 @@ QT       -= gui
 
 TARGET = eDoc-API
 TEMPLATE = lib
+#CONFIG += staticlib
+#CONFIG +=dll
 
 DEFINES += EDOCAPI_LIBRARY
 
-SOURCES += edocapi.cpp
+SOURCES += edocapi.cpp \
+    IDocEngine.cpp \
+    IDocID.cpp \
+    IDocument.cpp
 
 HEADERS += edocapi.h\
         eDoc-API_global.h \

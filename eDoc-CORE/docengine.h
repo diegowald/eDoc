@@ -8,7 +8,7 @@
 
 #include <QMap>
 
-class DocEngine : public QObject, public IDocEngine
+class DocEngine : public QObject, virtual public IDocEngine
 {
     Q_OBJECT
 public:
