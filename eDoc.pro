@@ -4,3 +4,4 @@ SUBDIRS += \
     eDoc-API \
     eDoc-CORE \
     eDoc-Client \
+    testCORE

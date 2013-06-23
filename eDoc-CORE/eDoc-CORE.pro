@@ -10,7 +10,7 @@ QT       -= gui
 
 TARGET = eDoc-CORE
 TEMPLATE = lib
-CONFIG += staticlib
+#CONFIG += staticlib
 
 
 DEFINES += EDOCCORE_LIBRARY
