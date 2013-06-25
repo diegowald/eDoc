@@ -1,7 +1,12 @@
 #include "docengine.h"
+#include <QtCore/qplugin.h>
 
 DocEngine::DocEngine(QObject *parent) :
     QObject(parent)
+{
+}
+
+DocEngine::~DocEngine()
 {
 }
 
@@ -24,3 +29,5 @@ bool DocEngine::deleteDocument(IDocID *id)
     collection.remove(*(DocID*)id);
     return true;
 }
+
+//Q_EXPORT_PLUGIN2(edoccore, DocEngine)

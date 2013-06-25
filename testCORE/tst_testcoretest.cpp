@@ -1,7 +1,7 @@
 #include <QString>
 #include <QtTest>
 
-#include <eDoc-CORE/docengine.h>
+//#include <eDoc-CORE/docengine.h>
 
 class TestCORETest : public QObject
 {

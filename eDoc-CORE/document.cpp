@@ -15,3 +15,5 @@ QByteArray Document::blob()
 {
     return QByteArray();
 }
+
+//Q_EXPORT_PLUGIN2(edoccore, Document)

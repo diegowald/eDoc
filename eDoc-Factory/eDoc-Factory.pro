@@ -1,34 +1,25 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2013-06-18T18:32:52
+# Project created by QtCreator 2013-06-25T10:58:48
 #
 #-------------------------------------------------
 
-QT       += sql core
+QT       += xml
 
 QT       -= gui
 
-TARGET = edoccore
+TARGET = eDoc-Factory
 TEMPLATE = lib
-CONFIG += plugin
-#CONFIG += staticlib
-DESTDIR = ../plugins
+
+DEFINES += EDOCFACTORY_LIBRARY
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
-DEFINES += EDOCCORE_LIBRARY
+SOURCES += edocfactory.cpp
 
-SOURCES += edoccore.cpp \
-    docengine.cpp \
-    document.cpp \
-    docid.cpp
-
-HEADERS += edoccore.h\
-    eDoc-CORE_global.h \
-    docengine.h \
-    document.h \
-    docid.h \
+HEADERS += edocfactory.h\
+        edoc-factory_global.h \
     ../eDoc-API/iDocEngine.h \
     ../eDoc-API/iDocument.h \
     ../eDoc-API/iDocID.h
