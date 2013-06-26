@@ -16,11 +16,15 @@ SOURCES += main.cpp\
         mainwindow.cpp
 
 HEADERS  += mainwindow.h
-    ../eDoc-API/iDocEngine.h \
-    ../eDoc-API/iDocument.h \
-    ../eDoc-API/iDocID.h
 
 FORMS    += mainwindow.ui
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Factory/release/ -leDoc-Factory
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Factory/debug/ -leDoc-Factory
+else:unix: LIBS += -L$$OUT_PWD/../eDoc-Factory/ -leDoc-Factory
+
+INCLUDEPATH += $$PWD/../eDoc-Factory
+DEPENDPATH += $$PWD/../eDoc-Factory
