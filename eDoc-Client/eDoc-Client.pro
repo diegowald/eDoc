@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = eDocClient
 TEMPLATE = app
-
+DESTDIR = ../
 
 SOURCES += main.cpp\
         mainwindow.cpp
@@ -28,3 +28,5 @@ else:unix: LIBS += -L$$OUT_PWD/../eDoc-Factory/ -leDoc-Factory
 
 INCLUDEPATH += $$PWD/../eDoc-Factory
 DEPENDPATH += $$PWD/../eDoc-Factory
+
+include(../Logging/QsLog.pri)

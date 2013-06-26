@@ -6,18 +6,15 @@
 
 QT       -= gui
 
-TARGET = eDoc-API
+TARGET = eDocAPI
 TEMPLATE = lib
-DESTDIR = ../
 
 DEFINES += EDOCAPI_LIBRARY
 
 SOURCES += edocapi.cpp
 
-HEADERS += edocapi_global.h \
-        IDocID.h \
-        IDocument.h \
-        IDocEngine.h
+HEADERS += edocapi.h\
+        edocapi_global.h
 
 unix:!symbian {
     maemo5 {

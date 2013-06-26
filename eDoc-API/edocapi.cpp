@@ -1,6 +1,1 @@
-#include "edocapi.h"
-
-
-EDocAPI::EDocAPI()
-{
-}
+#include "edocapi_global.h"

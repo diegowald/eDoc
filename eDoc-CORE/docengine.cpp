@@ -10,6 +10,11 @@ DocEngine::~DocEngine()
 {
 }
 
+QString DocEngine::name()
+{
+    return "DocEngine";
+}
+
 IDocID* DocEngine::addDocument()
 {
     DocID *id = DocID::createNew();
@@ -30,4 +35,4 @@ bool DocEngine::deleteDocument(IDocID *id)
     return true;
 }
 
-//Q_EXPORT_PLUGIN2(edoccore, DocEngine)
+Q_EXPORT_PLUGIN2(edoccore, DocEngine);

@@ -10,6 +10,7 @@ QT       -= gui
 
 TARGET = eDoc-Factory
 TEMPLATE = lib
+DESTDIR = ../
 
 DEFINES += EDOCFACTORY_LIBRARY
 
@@ -33,3 +34,5 @@ else:unix: LIBS += -L$$OUT_PWD/../eDoc-API/ -l"eDoc-API"
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
+
+include(../Logging/QsLog.pri)

@@ -11,6 +11,7 @@ public:
     virtual IDocID* addDocument() = 0;
     virtual IDocument* getDocument(IDocID &id) const = 0;
     virtual bool deleteDocument(IDocID &id) = 0;
+    virtual QString name() = 0;
     virtual ~IDocEngine() {}
 };
 

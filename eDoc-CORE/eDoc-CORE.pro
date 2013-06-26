@@ -8,22 +8,23 @@ QT       += sql core
 
 QT       -= gui
 
-TARGET = edoccore
+#TARGET = edoccore
+TARGET  = $$qtLibraryTarget(edoccore)
 TEMPLATE = lib
 CONFIG += plugin
 #CONFIG += staticlib
-#DESTDIR = ../plugins
+DESTDIR = ../plugins
 
 DEFINES += EDOCCORE_LIBRARY
 
-SOURCES += edoccore.cpp \
-    docengine.cpp \
+SOURCES += docengine.cpp \
+    #edoccore.cpp \
     document.cpp \
     docid.cpp
 
-HEADERS += edoccore.h\
+HEADERS += docengine.h \
     eDoc-CORE_global.h \
-    docengine.h \
+    #edoccore.h\
     document.h \
     docid.h
 
@@ -42,3 +43,5 @@ else:unix: LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
+
+include(../Logging/QsLog.pri)

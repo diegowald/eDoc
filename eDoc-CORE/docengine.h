@@ -22,6 +22,7 @@ public:
     virtual IDocID* addDocument();
     virtual IDocument* getDocument(IDocID *id) const;
     virtual bool deleteDocument(IDocID *id);
+    virtual QString name();
     
 signals:
     
