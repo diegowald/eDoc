@@ -19,9 +19,15 @@ int main(int argc, char *argv[])
     QsLogging::DestinationPtr debugDestination(
        QsLogging::DestinationFactory::MakeDebugOutputDestination() );
 
+    // set log destinations on the logger
+    logger.addDestination(debugDestination);
+    logger.addDestination(fileDestination);
+    QLOG_TRACE() << "Starting application";
 
     MainWindow w;
     w.show();
     
-    return a.exec();
+    int result = a.exec();
+    QLOG_TRACE() << "Aplication ended. Result code: " << result;
+    return result;
 }

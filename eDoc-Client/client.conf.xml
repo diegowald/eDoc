@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<engine name="engine1" class="SimpleFileEngine">
+   <folder>files</folder>
+   <logfile>SimpleFileLogger.log</logfile>
+</engine>

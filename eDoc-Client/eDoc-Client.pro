@@ -32,4 +32,4 @@ DEPENDPATH += $$PWD/../eDoc-Factory
 include(../Logging/QsLog.pri)
 
 OTHER_FILES += \
-    client.conf
+    client.conf.xml

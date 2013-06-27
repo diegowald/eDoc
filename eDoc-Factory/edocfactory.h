@@ -5,7 +5,6 @@
 #include "../eDoc-API/IDocEngine.h"
 #include <QMap>
 
-
 class EDOCFACTORYSHARED_EXPORT EDocFactory
 {
 public:
