@@ -20,7 +20,7 @@ public:
     explicit DocEngine(QObject *parent = 0);
     virtual ~DocEngine();
 
-    virtual IDocID* addDocument();
+    virtual IDocID* addDocument(const QByteArray& blob);
     virtual IDocument* getDocument(IDocID *id) const;
     virtual bool deleteDocument(IDocID *id);
     virtual QString name();

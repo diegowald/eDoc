@@ -13,5 +13,4 @@ public:
     virtual ~IDocument() {}
 };
 
-Q_DECLARE_INTERFACE(IDocument, "com.mksingenieria.eDoc.IDocument/0.0")
 #endif // IDOCUMENT_H

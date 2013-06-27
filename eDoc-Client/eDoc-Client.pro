@@ -30,3 +30,6 @@ INCLUDEPATH += $$PWD/../eDoc-Factory
 DEPENDPATH += $$PWD/../eDoc-Factory
 
 include(../Logging/QsLog.pri)
+
+OTHER_FILES += \
+    client.conf

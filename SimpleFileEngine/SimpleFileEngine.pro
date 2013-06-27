@@ -1,32 +1,22 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2013-06-18T18:32:52
+# Project created by QtCreator 2013-06-27T09:41:01
 #
 #-------------------------------------------------
 
-QT       += sql core
+QT       += core sql
 QT       += widgets
 
-#TARGET = edoccore
-TARGET  = $$qtLibraryTarget(edoccore)
+TARGET = $$qtLibraryTarget(SimpleFileEngine)
 TEMPLATE = lib
 CONFIG += plugin
-#CONFIG += staticlib
+
 DESTDIR = ../plugins
 
-DEFINES += EDOCCORE_LIBRARY
+SOURCES += fileengine.cpp
 
-SOURCES += docengine.cpp \
-    #edoccore.cpp \
-    document.cpp \
-    docid.cpp \
-    main.cpp
-
-HEADERS += docengine.h \
-    eDoc-CORE_global.h \
-    #edoccore.h\
-    document.h \
-    docid.h
+HEADERS += fileengine.h
+OTHER_FILES += SimpleFileEngine.json
 
 unix:!symbian {
     maemo5 {
@@ -45,8 +35,3 @@ INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
 include(../Logging/QsLog.pri)
-
-
-EXAMPLE_FILES = echoplugin.json
-OTHER_FILES += \
-    DocEngine.json

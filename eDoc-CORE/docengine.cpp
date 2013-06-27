@@ -15,7 +15,7 @@ QString DocEngine::name()
     return "DocEngine";
 }
 
-IDocID* DocEngine::addDocument()
+IDocID* DocEngine::addDocument(const QByteArray& blob)
 {
     DocID *id = DocID::createNew();
     Document *doc = new Document(id);

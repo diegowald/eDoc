@@ -8,7 +8,6 @@
 class Document : public QObject, public IDocument
 {
     Q_OBJECT
-    Q_INTERFACES(IDocument)
 public:
     explicit Document(DocID* id, QObject *parent = 0);
 

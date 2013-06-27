@@ -12,11 +12,8 @@ EDocFactory::~EDocFactory()
 {
 }
 
-void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)
+void EDocFactory::readAvailablePlugins()
 {
-    this->xmlFile = xmlFile;
-    this->pluginPath = pluginPath;
-
     QDir pluginsDir(pluginPath);
     pluginsDir.cd("plugins");
 
@@ -27,9 +24,19 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)
         if (plugin) {
             IDocEngine* engine = qobject_cast<IDocEngine *>(plugin);
             if (engine)
-                plugins[engine->name()] = engine;
+                plugins[engine->name()] = f;
         }
+        delete plugin;
     }
+}
+
+void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)
+{
+    this->xmlFile = xmlFile;
+    this->pluginPath = pluginPath;
+    readAvailablePlugins();
+
+    // Ahora a leer e instanciar y configurar el plugin
 }
 
 IDocEngine* EDocFactory::docEngine()

@@ -5,5 +5,6 @@ SUBDIRS += \
     eDoc-Factory \
     eDoc-CORE \
     eDoc-Client \
-    testCORE
+    testCORE \
+    SimpleFileEngine
 
