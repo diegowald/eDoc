@@ -3,16 +3,17 @@
 
 
 #include <QObject>
-#include <QtCore/QtPlugin>
+#include <QtPlugin>
 #include <IDocEngine.h>
 #include "document.h"
 #include "docid.h"
 
 #include <QMap>
 
-class DocEngine : public QObject, virtual public IDocEngine
+class DocEngine : public QObject, IDocEngine
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IDocEngine/0.0" FILE "DocEngine.json")
     Q_INTERFACES(IDocEngine)
 
 public:
@@ -23,6 +24,7 @@ public:
     virtual IDocument* getDocument(IDocID *id) const;
     virtual bool deleteDocument(IDocID *id);
     virtual QString name();
+
     
 signals:
     

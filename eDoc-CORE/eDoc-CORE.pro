@@ -6,7 +6,7 @@
 
 QT       += sql core
 
-QT       -= gui
+QT       += widgets
 
 #TARGET = edoccore
 TARGET  = $$qtLibraryTarget(edoccore)
@@ -20,7 +20,8 @@ DEFINES += EDOCCORE_LIBRARY
 SOURCES += docengine.cpp \
     #edoccore.cpp \
     document.cpp \
-    docid.cpp
+    docid.cpp \
+    main.cpp
 
 HEADERS += docengine.h \
     eDoc-CORE_global.h \
@@ -39,9 +40,14 @@ unix:!symbian {
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/release/ -leDoc-API
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/debug/ -leDoc-API
-else:unix: LIBS += -L$$OUT_PWD/../eDoc-API/ -leDoc-API
+else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
 include(../Logging/QsLog.pri)
+
+
+EXAMPLE_FILES = echoplugin.json
+OTHER_FILES += \
+    DocEngine.json

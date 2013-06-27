@@ -1,5 +1,5 @@
 #include "docengine.h"
-#include <QtCore/qplugin.h>
+#include <QtWidgets>
 
 DocEngine::DocEngine(QObject *parent) :
     QObject(parent)
@@ -35,4 +35,4 @@ bool DocEngine::deleteDocument(IDocID *id)
     return true;
 }
 
-Q_EXPORT_PLUGIN2(edoccore, DocEngine);
+//Q_EXPORT_PLUGIN2(edoccore, DocEngine);

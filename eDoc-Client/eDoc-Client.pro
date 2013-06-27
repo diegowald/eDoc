@@ -24,7 +24,7 @@ DEPENDPATH += $$PWD/../eDoc-API
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Factory/release/ -leDoc-Factory
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Factory/debug/ -leDoc-Factory
-else:unix: LIBS += -L$$OUT_PWD/../eDoc-Factory/ -leDoc-Factory
+else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-Factory
 
 INCLUDEPATH += $$PWD/../eDoc-Factory
 DEPENDPATH += $$PWD/../eDoc-Factory
