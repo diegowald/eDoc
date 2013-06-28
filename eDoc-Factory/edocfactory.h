@@ -4,6 +4,8 @@
 #include "edoc-factory_global.h"
 #include "../eDoc-API/IDocEngine.h"
 #include <QMap>
+#include "../eDoc-Configuration/IXMLContent.h"
+
 
 class EDOCFACTORYSHARED_EXPORT EDocFactory
 {
@@ -19,6 +21,7 @@ private:
     QString pluginPath;
     QString xmlFile;
     QMap<QString, QString> plugins;
+    IXMLContent *configuration;
 };
 
 #endif // EDOCFACTORY_H

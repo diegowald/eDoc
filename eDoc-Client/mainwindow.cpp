@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     EDocFactory f;
-    f.initialize(QApplication::applicationDirPath(), "");
+    f.initialize(QApplication::applicationDirPath(), "./client.conf.xml");
     IDocEngine *e = f.docEngine();
 }
 

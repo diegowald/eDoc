@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QPluginLoader>
 #include <QsLog.h>
+#include "configreader.h"
 
 EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
@@ -60,7 +61,9 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)
     readAvailablePlugins();
 
     // Ahora a leer e instanciar y configurar el plugin
-
+    ConfigReader reader(this->xmlFile);
+    configuration = reader.getConfiguration();
+    QLOG_TRACE() << configuration->toDebugString();
 }
 
 IDocEngine* EDocFactory::docEngine()
