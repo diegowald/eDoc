@@ -13,9 +13,13 @@ CONFIG += plugin
 
 DESTDIR = ../plugins
 
-SOURCES += fileengine.cpp
+SOURCES += fileengine.cpp \
+    simplefileid.cpp \
+    simplefiledocument.cpp
 
-HEADERS += fileengine.h
+HEADERS += fileengine.h \
+    simplefileid.h \
+    simplefiledocument.h
 OTHER_FILES += SimpleFileEngine.json
 
 unix:!symbian {

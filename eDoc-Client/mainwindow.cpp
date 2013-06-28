@@ -29,5 +29,11 @@ void MainWindow::on_pushButton_pressed()
     IDocEngine *e = f.docEngine();
     QString text = ui->textEdit->toHtml();
     QByteArray x = text.toUtf8();
-    e->addDocument(x);
+    IDocID *id = e->addDocument(x);
+    IDocument *doc = e->getDocument(id);
+    QByteArray y = doc->blob();
+    QString textRetrieved(y);
+
+    QLOG_TRACE() << "Texto antes: " << text;
+    QLOG_TRACE() << "Texto despues: " << textRetrieved;
 }

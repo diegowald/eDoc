@@ -16,10 +16,14 @@ public:
     FileEngine(QObject *parent = 0);
     virtual ~FileEngine();
 
+    virtual void initialize(IXMLContent *configuration);
     virtual IDocID* addDocument(const QByteArray& blob);
     virtual IDocument* getDocument(IDocID *id) const;
     virtual bool deleteDocument(IDocID *id);
     virtual QString name();
+
+private:
+    QString folder;
 };
 
 #endif // FILEENGINE_H

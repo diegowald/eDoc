@@ -4,10 +4,11 @@
 #include <QtPlugin>
 #include "IDocID.h"
 #include "IDocument.h"
-
+#include "../eDoc-Configuration/IXMLContent.h"
 struct IDocEngine
 {
 public:
+    virtual void initialize(IXMLContent *configuration) = 0;
     virtual IDocID* addDocument(const QByteArray& blob) = 0;
     virtual IDocument* getDocument(IDocID *id) const = 0;
     virtual bool deleteDocument(IDocID *id) = 0;

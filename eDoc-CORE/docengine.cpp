@@ -10,6 +10,10 @@ DocEngine::~DocEngine()
 {
 }
 
+void DocEngine::initialize(IXMLContent *configuration)
+{
+}
+
 QString DocEngine::name()
 {
     return "DocEngine";
