@@ -17,11 +17,13 @@ public:
 
 protected:
     void readAvailablePlugins();
+    IDocEngine *createEngine();
 private:
     QString pluginPath;
     QString xmlFile;
     QMap<QString, QString> plugins;
     IXMLContent *configuration;
+    IDocEngine *engine;
 };
 
 #endif // EDOCFACTORY_H

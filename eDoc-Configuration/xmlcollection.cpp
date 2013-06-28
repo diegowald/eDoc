@@ -26,10 +26,10 @@ QString XMLCollection::toDebugString(int indentation)
 {
     QString s;
     QString ind(indentation, ' ');
-    s += ind + key() + "{\n";
+    s += ind + key() + " {\n";
     foreach (IXMLContent* content, m_Content.values()) {
         s += content->toDebugString(indentation + 2);
     }
-    s += ind + "}\n";
+    s += ind + "}";
     return s;
 }

@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "../eDoc-Factory/edocfactory.h"
+
 #include "../eDoc-API/IDocEngine.h"
 #include <QApplication>
 #include <QsLog.h>
@@ -14,13 +14,20 @@ MainWindow::MainWindow(QWidget *parent) :
     QLOG_TRACE() << "MainWindow::MainWindow(QWidget *parent)";
 
     ui->setupUi(this);
-    EDocFactory f;
     f.initialize(QApplication::applicationDirPath(), "./client.conf.xml");
-    IDocEngine *e = f.docEngine();
+
 }
 
 MainWindow::~MainWindow()
 {
     QLOG_TRACE() << "MainWindow::~MainWindow()";
     delete ui;
+}
+
+void MainWindow::on_pushButton_pressed()
+{
+    IDocEngine *e = f.docEngine();
+    QString text = ui->textEdit->toHtml();
+    QByteArray x = text.toUtf8();
+    e->addDocument(x);
 }

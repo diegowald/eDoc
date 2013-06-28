@@ -3,6 +3,8 @@
 #include <QPluginLoader>
 #include <QsLog.h>
 #include "configreader.h"
+#include "../eDoc-Configuration/xmlcollection.h"
+#include "../eDoc-Configuration/xmlelement.h"
 
 EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
@@ -64,10 +66,30 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)
     ConfigReader reader(this->xmlFile);
     configuration = reader.getConfiguration();
     QLOG_TRACE() << configuration->toDebugString();
+
+    engine = createEngine();
 }
 
 IDocEngine* EDocFactory::docEngine()
 {
     QLOG_TRACE() << "IDocEngine* EDocFactory::docEngine()";
+    return engine;
+}
+
+IDocEngine *EDocFactory::createEngine()
+{
+    QLOG_TRACE() << "IDocEngine *EDocFactory::createEngine()";
+
+    if (configuration->key() == "engine")
+    {
+        XMLCollection *conf = (XMLCollection*) configuration;
+        QString engineClass = ((XMLElement*)conf->get("class"))->value();
+
+        QPluginLoader pluginLoader(plugins[engineClass]);
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+            return qobject_cast<IDocEngine *>(plugin);
+        }
+    }
     return NULL;
 }
