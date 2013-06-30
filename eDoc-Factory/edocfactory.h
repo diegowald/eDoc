@@ -5,14 +5,14 @@
 #include "../eDoc-API/IDocEngine.h"
 #include <QMap>
 #include "../eDoc-Configuration/IXMLContent.h"
-
+#include "../eDoc-Configuration/qobjectlgging.h"
 
 class EDOCFACTORYSHARED_EXPORT EDocFactory
 {
 public:
     EDocFactory();
     virtual ~EDocFactory();
-    virtual void initialize(const QString &pluginPath, const QString &xmlFile);
+    virtual void initialize(const QString &pluginPath, const QString &xmlFile, QObjectLgging *logger);
     virtual IDocEngine* docEngine();
 
 protected:
@@ -24,6 +24,7 @@ private:
     QMap<QString, QString> plugins;
     IXMLContent *configuration;
     IDocEngine *engine;
+    QObjectLgging *m_Logger;
 };
 
 #endif // EDOCFACTORY_H

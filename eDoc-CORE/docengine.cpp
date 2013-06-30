@@ -10,7 +10,7 @@ DocEngine::~DocEngine()
 {
 }
 
-void DocEngine::initialize(IXMLContent *configuration)
+void DocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger)
 {
 }
 

@@ -1,20 +1,22 @@
-#ifndef FILEENGINE_H
-#define FILEENGINE_H
+#ifndef MEMORYDOCENGINE_H
+#define MEMORYDOCENGINE_H
+
 
 #include <IDocEngine.h>
 
-class FileEngine : public QObject, IDocEngine
+
+
+class MemoryDocEngine : public QObject, IDocEngine
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IDocEngine/0.0" FILE "SimpleFileEngine.json")
+    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IDocEngine/0.0" FILE "MemoryDocEngine.json")
 #endif // QT_VERSION >= 0x050000
     Q_INTERFACES(IDocEngine)
 
-    
 public:
-    FileEngine(QObject *parent = 0);
-    virtual ~FileEngine();
+    MemoryDocEngine(QObject *parent = 0);
+    virtual ~MemoryDocEngine();
 
     virtual void initialize(IXMLContent *configuration, QObjectLgging *logger);
     virtual IDocID* addDocument(const QByteArray& blob);
@@ -22,9 +24,6 @@ public:
     virtual bool deleteDocument(IDocID *id);
     virtual QString name();
 
-private:
-    QString folder;
-    QObjectLgging *m_Logger;
 };
 
-#endif // FILEENGINE_H
+#endif // MEMORYDOCENGINE_H

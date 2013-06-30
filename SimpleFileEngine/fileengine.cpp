@@ -13,13 +13,15 @@ FileEngine::~FileEngine()
 {
 }
 
-void FileEngine::initialize(IXMLContent *configuration)
+void FileEngine::initialize(IXMLContent *configuration, QObjectLgging *logger)
 {
     folder = ((XMLElement*)((XMLCollection*) configuration)->get("folder"))->value();
+    m_Logger = logger;
 }
 
 IDocID* FileEngine::addDocument(const QByteArray& blob)
 {
+    emit m_Logger->LogTrace("IDocID* FileEngine::addDocument(const QByteArray& blob)");
     SimpleFileID *id = new SimpleFileID();
     QString filename(folder + "/" + id->asString());
     QFile file(filename);
@@ -31,12 +33,14 @@ IDocID* FileEngine::addDocument(const QByteArray& blob)
 
 IDocument* FileEngine::getDocument(IDocID *id) const
 {
+    emit m_Logger->LogTrace("IDocument* FileEngine::getDocument(IDocID *id) const");
     SimpleFileDocument *doc = new SimpleFileDocument(id->asString());
     return doc;
 }
 
 bool FileEngine::deleteDocument(IDocID *id)
 {
+    emit m_Logger->LogTrace("bool FileEngine::deleteDocument(IDocID *id)");
     return false;
 }
 

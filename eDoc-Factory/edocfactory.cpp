@@ -1,7 +1,6 @@
 #include "edocfactory.h"
 #include <QDir>
 #include <QPluginLoader>
-#include <QsLog.h>
 #include "configreader.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
@@ -10,32 +9,15 @@ EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
     plugins()
 {
-    QsLogging::Logger & logger = QsLogging::Logger::instance();
-    logger.setLoggingLevel(QsLogging::TraceLevel);
-
-    const QString logPath("./eDoc-Factory.log");
-
-
-    // Create log destinations
-    QsLogging::DestinationPtr fileDestination(
-       QsLogging::DestinationFactory::MakeFileDestination(logPath) );
-    QsLogging::DestinationPtr debugDestination(
-       QsLogging::DestinationFactory::MakeDebugOutputDestination() );
-
-    // set log destinations on the logger
-    logger.addDestination(debugDestination);
-    logger.addDestination(fileDestination);
-    QLOG_TRACE() << "EDocFactory::EDocFactory()";
 }
 
 EDocFactory::~EDocFactory()
 {
-    QLOG_TRACE() << "EDocFactory::~EDocFactory()";
 }
 
 void EDocFactory::readAvailablePlugins()
 {
-    QLOG_TRACE() << "void EDocFactory::readAvailablePlugins()";
+    emit m_Logger->LogTrace("void EDocFactory::readAvailablePlugins()");
     QDir pluginsDir(pluginPath);
     pluginsDir.cd("plugins");
 
@@ -48,16 +30,17 @@ void EDocFactory::readAvailablePlugins()
             if (engine)
             {
                 plugins[engine->name()] = f;
-                QLOG_DEBUG() << "Engine Name: " << engine->name() << ", File: " << f;
+                emit m_Logger->LogDebug("Engine Name: " + engine->name() + ", File: " + f);
             }
         }
         delete plugin;
     }
 }
 
-void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)
+void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, QObjectLgging *logger)
 {
-    QLOG_TRACE() << "void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)";
+    m_Logger = logger;
+    emit m_Logger->LogTrace("void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)");
     this->xmlFile = xmlFile;
     this->pluginPath = pluginPath;
     readAvailablePlugins();
@@ -65,20 +48,20 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)
     // Ahora a leer e instanciar y configurar el plugin
     ConfigReader reader(this->xmlFile);
     configuration = reader.getConfiguration();
-    QLOG_TRACE() << configuration->toDebugString();
+    emit m_Logger->LogTrace(configuration->toDebugString());
 
     engine = createEngine();
 }
 
 IDocEngine* EDocFactory::docEngine()
 {
-    QLOG_TRACE() << "IDocEngine* EDocFactory::docEngine()";
+    emit m_Logger->LogTrace("IDocEngine* EDocFactory::docEngine()");
     return engine;
 }
 
 IDocEngine *EDocFactory::createEngine()
 {
-    QLOG_TRACE() << "IDocEngine *EDocFactory::createEngine()";
+    emit m_Logger->LogTrace("IDocEngine *EDocFactory::createEngine()");
 
     if (configuration->key() == "engine")
     {

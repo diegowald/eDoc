@@ -13,8 +13,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     QLOG_TRACE() << "MainWindow::MainWindow(QWidget *parent)";
 
+    connect(&logger, SIGNAL(LogDebug(QString)), this, SLOT(on_LogDebug(QString)));
+    connect(&logger, SIGNAL(LogError(QString)), this, SLOT(on_LogError(QString)));
+    connect(&logger, SIGNAL(LogFatal(QString)), this, SLOT(on_LogFatal(QString)));
+    connect(&logger, SIGNAL(LogInfo(QString)), this, SLOT(on_LogInfo(QString)));
+    connect(&logger, SIGNAL(LogTrace(QString)), this, SLOT(on_LogTrace(QString)));
+    connect(&logger, SIGNAL(LogWarning(QString)), this, SLOT(on_LogWarning(QString)));
+
     ui->setupUi(this);
-    f.initialize(QApplication::applicationDirPath(), "./client.conf.xml");
+    f.initialize(QApplication::applicationDirPath(), "./client.conf.xml", &logger);
 
 }
 
@@ -36,4 +43,34 @@ void MainWindow::on_pushButton_pressed()
 
     QLOG_TRACE() << "Texto antes: " << text;
     QLOG_TRACE() << "Texto despues: " << textRetrieved;
+}
+
+void MainWindow::on_LogTrace(const QString& text)
+{
+    QLOG_TRACE() << text;
+}
+
+void MainWindow::on_LogDebug(const QString& text)
+{
+    QLOG_DEBUG() << text;
+}
+
+void MainWindow::on_LogInfo(const QString& text)
+{
+    QLOG_INFO() << text;
+}
+
+void MainWindow::on_LogWarning(const QString& text)
+{
+    QLOG_WARN() << text;
+}
+
+void MainWindow::on_LogError(const QString& text)
+{
+    QLOG_ERROR() << text;
+}
+
+void MainWindow::on_LogFatal(const QString& text)
+{
+    QLOG_FATAL() << text;
 }

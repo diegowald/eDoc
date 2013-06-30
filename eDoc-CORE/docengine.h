@@ -20,7 +20,7 @@ public:
     explicit DocEngine(QObject *parent = 0);
     virtual ~DocEngine();
 
-    virtual void initialize(IXMLContent *configuration);
+    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger);
     virtual IDocID* addDocument(const QByteArray& blob);
     virtual IDocument* getDocument(IDocID *id) const;
     virtual bool deleteDocument(IDocID *id);

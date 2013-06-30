@@ -22,9 +22,9 @@ FORMS    += mainwindow.ui
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Factory/release/ -leDoc-Factory
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Factory/debug/ -leDoc-Factory
-else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-Factory
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Factory
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Factory
+else:unix: LIBS += -L$$OUT_PWD/.. -leDoc-Factory
 
 INCLUDEPATH += $$PWD/../eDoc-Factory
 DEPENDPATH += $$PWD/../eDoc-Factory
@@ -33,3 +33,10 @@ include(../Logging/QsLog.pri)
 
 OTHER_FILES += \
     client.conf.xml
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Configuration/release/ -leDoc-Configuration
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Configuration/debug/ -leDoc-Configuration
+else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+
+INCLUDEPATH += $$PWD/../eDoc-Configuration
+DEPENDPATH += $$PWD/../eDoc-Configuration

@@ -16,13 +16,15 @@ DEFINES += EDOCCONFIGURATION_LIBRARY
 
 SOURCES += edocconfiguration.cpp \
         xmlcollection.cpp \
-        xmlelement.cpp
+        xmlelement.cpp \
+    qobjectlgging.cpp
 
 HEADERS += edocconfiguration.h\
         edoc-configuration_global.h \
         IXMLContent.h \
         xmlcollection.h \
-        xmlelement.h
+        xmlelement.h \
+    qobjectlgging.h
 
 unix:!symbian {
     maemo5 {
