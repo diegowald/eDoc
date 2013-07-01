@@ -1,0 +1,16 @@
+#ifndef APIENUMS_H
+#define APIENUMS_H
+
+enum VALIDQUERY
+{
+    EQUALS_TO,
+    DISTINT_TO,
+    LESS_THAN,
+    LESS_THAN_OR_EQUALS_TO,
+    GREATER_THAN,
+    GREATER_THAN_OR_EQUALS_TO,
+    BEWTWEEN,
+    IN_VALUES
+};
+
+#endif // APIENUMS_H

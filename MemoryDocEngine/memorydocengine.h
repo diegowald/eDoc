@@ -3,8 +3,9 @@
 
 
 #include <IDocEngine.h>
-
-
+#include <QMap>
+#include <inmemorydocument.h>
+#include <../eDoc-Configuration/xmlcollection.h>
 
 class MemoryDocEngine : public QObject, IDocEngine
 {
@@ -18,11 +19,19 @@ public:
     MemoryDocEngine(QObject *parent = 0);
     virtual ~MemoryDocEngine();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger);
+    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock);
     virtual IDocID* addDocument(const QByteArray& blob);
-    virtual IDocument* getDocument(IDocID *id) const;
+    virtual IDocument* getDocument(IDocID *id);
     virtual bool deleteDocument(IDocID *id);
     virtual QString name();
+private:
+    IDocEngine *createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock);
+
+private:
+     IDocEngine *persistentEngine;
+     QMap<QString, InMemoryDocument*> m_Cache;
+     int maxCachedFiles;
+     QObjectLgging *m_Logger;
 
 };
 

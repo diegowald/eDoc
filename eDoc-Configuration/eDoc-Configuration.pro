@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += xml
+QT       += xml core
 
 QT       -= gui
 
@@ -17,14 +17,14 @@ DEFINES += EDOCCONFIGURATION_LIBRARY
 SOURCES += edocconfiguration.cpp \
         xmlcollection.cpp \
         xmlelement.cpp \
-    qobjectlgging.cpp
+        qobjectlgging.cpp
 
 HEADERS += edocconfiguration.h\
         edoc-configuration_global.h \
         IXMLContent.h \
         xmlcollection.h \
         xmlelement.h \
-    qobjectlgging.h
+        qobjectlgging.h
 
 unix:!symbian {
     maemo5 {

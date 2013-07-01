@@ -2,14 +2,14 @@
 #include <QFile>
 
 
-SimpleFileDocument::SimpleFileDocument(QObject *parent) :
-    QObject(parent)
+SimpleFileDocument::SimpleFileDocument(FileManagement *FileManager, QObject *parent) :
+    QObject(parent), fileManager(FileManager)
 {
     idDocument = new SimpleFileID(this);
 }
 
-SimpleFileDocument::SimpleFileDocument(QString stringID, QObject *parent) :
-    QObject(parent)
+SimpleFileDocument::SimpleFileDocument(FileManagement *FileManager, QString stringID, QObject *parent) :
+    QObject(parent), fileManager(FileManager)
 {
     idDocument = new SimpleFileID(stringID,this);
 }
@@ -25,7 +25,5 @@ IDocID* SimpleFileDocument::id()
 
 QByteArray SimpleFileDocument::blob()
 {
-    QFile file(idDocument->asString());
-    file.open(QIODevice::ReadOnly);
-    return file.readAll();
+    return fileManager->readFile(idDocument->asString());
 }

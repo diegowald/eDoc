@@ -17,7 +17,12 @@ SOURCES += edocapi.cpp
 HEADERS += edocapi_global.h \
         IDocID.h \
         IDocument.h \
-        IDocEngine.h
+        IDocEngine.h \
+    IDatabase.h \
+    IFieldDefinition.h \
+    IRecord.h \
+    IParameter.h \
+    APIEnums.h
 
 unix:!symbian {
     maemo5 {

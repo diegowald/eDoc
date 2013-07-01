@@ -43,6 +43,8 @@ void MainWindow::on_pushButton_pressed()
 
     QLOG_TRACE() << "Texto antes: " << text;
     QLOG_TRACE() << "Texto despues: " << textRetrieved;
+
+    Q_ASSERT(text == textRetrieved);
 }
 
 void MainWindow::on_LogTrace(const QString& text)

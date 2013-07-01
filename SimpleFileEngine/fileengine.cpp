@@ -13,34 +13,33 @@ FileEngine::~FileEngine()
 {
 }
 
-void FileEngine::initialize(IXMLContent *configuration, QObjectLgging *logger)
+void FileEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)
 {
     folder = ((XMLElement*)((XMLCollection*) configuration)->get("folder"))->value();
     m_Logger = logger;
+    fileManager = new FileManagement(folder, this);
 }
 
 IDocID* FileEngine::addDocument(const QByteArray& blob)
 {
-    emit m_Logger->LogTrace("IDocID* FileEngine::addDocument(const QByteArray& blob)");
+    m_Logger->logTrace("IDocID* FileEngine::addDocument(const QByteArray& blob)");
     SimpleFileID *id = new SimpleFileID();
-    QString filename(folder + "/" + id->asString());
-    QFile file(filename);
-    file.open(QIODevice::WriteOnly);
-    file.write(blob);
-    file.close();
+
+    fileManager->createFile(id->asString(), blob);
+
     return id;
 }
 
-IDocument* FileEngine::getDocument(IDocID *id) const
+IDocument* FileEngine::getDocument(IDocID *id)
 {
-    emit m_Logger->LogTrace("IDocument* FileEngine::getDocument(IDocID *id) const");
-    SimpleFileDocument *doc = new SimpleFileDocument(id->asString());
+    m_Logger->logTrace("IDocument* FileEngine::getDocument(IDocID *id) const");
+    SimpleFileDocument *doc = new SimpleFileDocument(fileManager, id->asString(), this);
     return doc;
 }
 
 bool FileEngine::deleteDocument(IDocID *id)
 {
-    emit m_Logger->LogTrace("bool FileEngine::deleteDocument(IDocID *id)");
+    m_Logger->logTrace("bool FileEngine::deleteDocument(IDocID *id)");
     return false;
 }
 

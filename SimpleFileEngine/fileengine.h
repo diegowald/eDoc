@@ -2,6 +2,7 @@
 #define FILEENGINE_H
 
 #include <IDocEngine.h>
+#include "filemanagement.h"
 
 class FileEngine : public QObject, IDocEngine
 {
@@ -16,15 +17,16 @@ public:
     FileEngine(QObject *parent = 0);
     virtual ~FileEngine();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger);
+    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock);
     virtual IDocID* addDocument(const QByteArray& blob);
-    virtual IDocument* getDocument(IDocID *id) const;
+    virtual IDocument* getDocument(IDocID *id);
     virtual bool deleteDocument(IDocID *id);
     virtual QString name();
 
 private:
     QString folder;
     QObjectLgging *m_Logger;
+    FileManagement *fileManager;
 };
 
 #endif // FILEENGINE_H

@@ -1,0 +1,10 @@
+#ifndef IFIELDDEFINITION_H
+#define IFIELDDEFINITION_H
+
+struct IFieldDefinition {
+public:
+
+    virtual ~IFieldDefinition() {}
+};
+
+#endif // IFIELDDEFINITION_H

@@ -30,14 +30,14 @@ unix:!symbian {
     INSTALLS += target
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/release/ -leDoc-API
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/debug/ -leDoc-API
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-API
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-API
 else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -l"eDoc-Configuration"
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
 else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
 

@@ -6,12 +6,15 @@
 #include "IDocument.h"
 #include "../eDoc-Configuration/IXMLContent.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
+#include <QMap>
+
+
 struct IDocEngine
 {
 public:
-    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger) = 0;
+    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock) = 0;
     virtual IDocID* addDocument(const QByteArray& blob) = 0;
-    virtual IDocument* getDocument(IDocID *id) const = 0;
+    virtual IDocument* getDocument(IDocID *id) = 0;
     virtual bool deleteDocument(IDocID *id) = 0;
     virtual QString name() = 0;
     virtual ~IDocEngine() {}

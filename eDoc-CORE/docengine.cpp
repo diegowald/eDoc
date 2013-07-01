@@ -10,7 +10,7 @@ DocEngine::~DocEngine()
 {
 }
 
-void DocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger)
+void DocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)
 {
 }
 
@@ -27,7 +27,7 @@ IDocID* DocEngine::addDocument(const QByteArray& blob)
     return id;
 }
 
-IDocument* DocEngine::getDocument(IDocID *id) const
+IDocument* DocEngine::getDocument(IDocID *id)
 {
     DocID *iid = (DocID*)(id);
     return collection[*iid];

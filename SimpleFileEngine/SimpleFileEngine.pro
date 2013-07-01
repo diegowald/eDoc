@@ -15,11 +15,13 @@ DESTDIR = ../plugins
 
 SOURCES += fileengine.cpp \
     simplefileid.cpp \
-    simplefiledocument.cpp
+    simplefiledocument.cpp \
+    filemanagement.cpp
 
 HEADERS += fileengine.h \
     simplefileid.h \
-    simplefiledocument.h
+    simplefiledocument.h \
+    filemanagement.h
 OTHER_FILES += SimpleFileEngine.json
 
 unix:!symbian {
@@ -31,8 +33,8 @@ unix:!symbian {
     INSTALLS += target
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/release/ -leDoc-API
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-API/debug/ -leDoc-API
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-API
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-API
 else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API

@@ -34,8 +34,8 @@ include(../Logging/QsLog.pri)
 OTHER_FILES += \
     client.conf.xml
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Configuration/release/ -leDoc-Configuration
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../eDoc-Configuration/debug/ -leDoc-Configuration
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
 else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
 
 INCLUDEPATH += $$PWD/../eDoc-Configuration
