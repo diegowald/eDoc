@@ -8,6 +8,8 @@ SUBDIRS += \
     eDoc-Client \
     testCORE \
     SimpleFileEngine \
-    MemoryDocEngine
+    MemoryDocEngine \
+    eDoc-MetadataFramework \
+    InMemoryDatabasePlugin
 
 

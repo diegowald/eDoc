@@ -22,7 +22,8 @@ HEADERS += edocapi_global.h \
     IFieldDefinition.h \
     IRecord.h \
     IParameter.h \
-    APIEnums.h
+    APIEnums.h \
+    IValue.h
 
 unix:!symbian {
     maemo5 {

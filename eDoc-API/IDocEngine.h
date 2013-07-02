@@ -12,7 +12,7 @@
 struct IDocEngine
 {
 public:
-    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock) = 0;
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
     virtual IDocID* addDocument(const QByteArray& blob) = 0;
     virtual IDocument* getDocument(IDocID *id) = 0;
     virtual bool deleteDocument(IDocID *id) = 0;

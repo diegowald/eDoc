@@ -12,7 +12,7 @@ MemoryDocEngine::~MemoryDocEngine()
 {
 }
 
-void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)
+void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
 {
     maxCachedFiles = ((XMLElement*)((XMLCollection*) configuration)->get("maxCachedFiles"))->value().toInt();
     m_Logger = logger;

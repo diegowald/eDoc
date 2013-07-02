@@ -28,7 +28,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     EDocFactory f;
-    QObjectLgging logger;
+    QObjectLogging logger;
 };
 
 #endif // MAINWINDOW_H

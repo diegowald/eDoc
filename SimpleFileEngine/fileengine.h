@@ -17,7 +17,7 @@ public:
     FileEngine(QObject *parent = 0);
     virtual ~FileEngine();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock);
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
     virtual IDocID* addDocument(const QByteArray& blob);
     virtual IDocument* getDocument(IDocID *id);
     virtual bool deleteDocument(IDocID *id);
@@ -25,7 +25,7 @@ public:
 
 private:
     QString folder;
-    QObjectLgging *m_Logger;
+    QObjectLogging *m_Logger;
     FileManagement *fileManager;
 };
 

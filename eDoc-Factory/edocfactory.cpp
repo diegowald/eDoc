@@ -7,7 +7,7 @@
 
 EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
-    plugins()
+    plugins(), DBplugins()
 {
 }
 
@@ -30,14 +30,20 @@ void EDocFactory::readAvailablePlugins()
             if (engine)
             {
                 plugins[engine->name()] = f;
-                //emit m_Logger->LogDebug("Engine Name: " + engine->name() + ", File: " + f);
+                m_Logger->logDebug("Engine Name: " + engine->name() + ", File: " + f);
+            }
+            IDatabase *db = qobject_cast<IDatabase *>(plugin);
+            if (db)
+            {
+                DBplugins[db->name()] = f;
+                m_Logger->logDebug("DBEngine Name: " + db->name() + ", File: " + f);
             }
         }
         delete plugin;
     }
 }
 
-void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, QObjectLgging *logger)
+void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, QObjectLogging *logger)
 {
     m_Logger = logger;
     m_Logger->logTrace("void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)");
@@ -51,6 +57,8 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     //emit m_Logger->LogTrace(configuration->toDebugString());
 
     engine = createEngine();
+    database = createDatabase();
+
 }
 
 IDocEngine* EDocFactory::docEngine()
@@ -76,5 +84,27 @@ IDocEngine *EDocFactory::createEngine()
             return qobject_cast<IDocEngine *>(plugin);
         }
     }
+    m_Logger->logError("Cannot create Engine");
+    return NULL;
+}
+
+IDatabase *EDocFactory::createDatabase()
+{
+    m_Logger->logTrace("IDatabase *EDocFactory::createDatabase()");
+
+    if (configuration->key() == "database")
+    {
+        XMLCollection *conf = (XMLCollection*) configuration;
+        QString engineClass = ((XMLElement*)conf->get("class"))->value();
+
+        QPluginLoader pluginLoader(DBplugins[engineClass]);
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+            IDatabase *engine = qobject_cast<IDatabase*>(plugin);
+            engine->initialize(configuration, m_Logger, plugins);
+            return qobject_cast<IDatabase *>(plugin);
+        }
+    }
+    m_Logger->logError("Cannot create database engine");
     return NULL;
 }

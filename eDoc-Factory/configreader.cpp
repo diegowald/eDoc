@@ -28,7 +28,6 @@ void ConfigReader::parseXML()
     }
     /* QXmlStreamReader takes any QIODevice. */
     QXmlStreamReader xml(file);
-    QList< QMap<QString,QString> > persons;
     /* We'll parse the XML until we reach end of it.*/
     while(!xml.atEnd() &&
           !xml.hasError()) {

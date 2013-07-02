@@ -3,12 +3,12 @@
 #include "edoc-configuration_global.h"
 #include <QObject>
 
-class EDOCCONFIGURATIONSHARED_EXPORT QObjectLgging : public QObject
+class EDOCCONFIGURATIONSHARED_EXPORT QObjectLogging : public QObject
 {
     Q_OBJECT
 public:
-    explicit QObjectLgging(QObject *parent = 0);
-    virtual ~QObjectLgging();
+    explicit QObjectLogging(QObject *parent = 0);
+    virtual ~QObjectLogging();
 
     virtual void logTrace(const QString& text);
     virtual void logDebug(const QString& text);

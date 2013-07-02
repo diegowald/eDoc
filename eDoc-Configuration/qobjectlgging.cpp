@@ -1,40 +1,40 @@
 #include "qobjectlgging.h"
 
-QObjectLgging::QObjectLgging(QObject *parent) :
+QObjectLogging::QObjectLogging(QObject *parent) :
     QObject(parent)
 {
 }
 
-QObjectLgging::~QObjectLgging()
+QObjectLogging::~QObjectLogging()
 {
 }
 
-void QObjectLgging::logTrace(const QString& text)
+void QObjectLogging::logTrace(const QString& text)
 {
     emit LogTrace(text);
 }
 
-void QObjectLgging::logDebug(const QString& text)
+void QObjectLogging::logDebug(const QString& text)
 {
     emit LogDebug(text);
 }
 
-void QObjectLgging::logInfo(const QString& text)
+void QObjectLogging::logInfo(const QString& text)
 {
     emit LogInfo(text);
 }
 
-void QObjectLgging::logWarning(const QString& text)
+void QObjectLogging::logWarning(const QString& text)
 {
     emit LogWarning(text);
 }
 
-void QObjectLgging::logError(const QString& text)
+void QObjectLogging::logError(const QString& text)
 {
     emit LogError(text);
 }
 
-void QObjectLgging::logFatal(const QString& text)
+void QObjectLogging::logFatal(const QString& text)
 {
     emit LogFatal(text);
 }

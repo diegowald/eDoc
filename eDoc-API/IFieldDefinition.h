@@ -3,15 +3,19 @@
 
 #include <QString>
 #include "APIEnums.h"
+#include "../eDoc-Configuration/IXMLContent.h"
+#include "../eDoc-Configuration/qobjectlgging.h"
+#include <QMap>
 
 
 struct IFieldDefinition {
 public:
-    QString name() = 0;
-    QString type() = 0;
-    bool isReadOnly() = 0;
-    bool isVisible() = 0;
-    QList<VALIDQUERY> validQueries();
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
+    virtual QString name() = 0;
+    virtual QString type() = 0;
+    virtual bool isReadOnly() = 0;
+    virtual bool isVisible() = 0;
+    virtual QList<VALIDQUERY> validQueries() = 0;
     virtual ~IFieldDefinition() {}
 };
 

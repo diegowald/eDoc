@@ -6,3 +6,9 @@
 		<logfile>SimpleFileLogger.log</logfile>
 	</engine>
 </engine>
+<database name="DB1" class="MemoryDatabase">
+	<fields>
+		<field name="campo1" type="string" readonly="0" visible="0" validqueries="=,!=,<,>,<=,>=,CONTAINS" />
+		<field name="campo2" type="string" readonly="0" visible="0" validqueries="=,!=,<,>,<=,>=,CONTAINS" />
+	</fields>
+</database>
