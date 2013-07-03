@@ -23,7 +23,9 @@ HEADERS += edocapi_global.h \
     IRecord.h \
     IParameter.h \
     APIEnums.h \
-    IValue.h
+    IValue.h \
+    IMultiDocument.h \
+    IDocBase.h
 
 unix:!symbian {
     maemo5 {

@@ -2,8 +2,9 @@
 #define VALUE_H
 
 #include "../eDoc-API/IValue.h"
+#include "edoc-metadataframework_global.h"
 
-template<class TYPE> class Value : public IValue
+template<class TYPE> class EDOCMETADATAFRAMEWORKSHARED_EXPORT Value : public IValue
 {
 public:
     Value(TYPE newValue)

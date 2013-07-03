@@ -27,13 +27,17 @@ IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)
     return persistentEngine->addDocument(blob);
 }
 
-IDocument *MemoryDocEngine::getDocument(IDocID *id)
+IDocBase *MemoryDocEngine::getDocument(IDocID *id)
 {
     m_Logger->logTrace("IDocument *MemoryDocEngine::getDocument(IDocID *id)");
     if (!m_Cache.contains(id->asString()))
     {
-        IDocument *persistentDoc = persistentEngine->getDocument(id);
-        InMemoryDocument *doc = new InMemoryDocument(persistentDoc, NULL);
+        IDocBase *persistentDoc = persistentEngine->getDocument(id);
+        IDocBase *doc = NULL;
+        if (persistentDoc->isComplex())
+            doc = new InMemoryMultiDocument((IMultiDocument*) persistentDoc, this);
+        else
+            doc = new InMemoryDocument((IDocument*)persistentDoc, this);
         QString idString = id->asString();
         m_Cache.insert(idString, doc);
         //m_Cache[idString] = doc;

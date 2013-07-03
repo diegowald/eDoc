@@ -30,6 +30,6 @@ QString XMLCollection::toDebugString(int indentation)
     foreach (IXMLContent* content, m_Content.values()) {
         s += content->toDebugString(indentation + 2);
     }
-    s += ind + "}";
+    s += ind + "}\n";
     return s;
 }

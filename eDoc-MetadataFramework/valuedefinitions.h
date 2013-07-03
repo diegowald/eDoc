@@ -6,8 +6,9 @@
 #include <QDateTime>
 #include <QDate>
 #include <QTime>
+#include "edoc-metadataframework_global.h"
 
-class IntegerValue : public QObject, public Value<int>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IntegerValue : public QObject, public Value<int>
 {
     Q_OBJECT
 public:
@@ -15,7 +16,7 @@ public:
     virtual ~IntegerValue();
 };
 
-class doubleValue : public QObject, public Value<double>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT doubleValue : public QObject, public Value<double>
 {
     Q_OBJECT
 public:
@@ -23,7 +24,7 @@ public:
     virtual ~doubleValue();
 };
 
-class boolValue : public QObject, public Value<bool>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT boolValue : public QObject, public Value<bool>
 {
     Q_OBJECT
 public:
@@ -31,7 +32,7 @@ public:
     virtual ~boolValue();
 };
 
-class QStringValue : public QObject, public Value<QString>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT QStringValue : public QObject, public Value<QString>
 {
     Q_OBJECT
 public:
@@ -39,7 +40,7 @@ public:
     virtual ~QStringValue();
 };
 
-class QDateTimeValue : public QObject, public Value<QDateTime>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT QDateTimeValue : public QObject, public Value<QDateTime>
 {
     Q_OBJECT
 public:
@@ -47,7 +48,7 @@ public:
     virtual ~QDateTimeValue();
 };
 
-class QDateValue : public QObject, public Value<QDate>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT QDateValue : public QObject, public Value<QDate>
 {
     Q_OBJECT
 public:
@@ -55,7 +56,7 @@ public:
     virtual ~QDateValue();
 };
 
-class QTimeValue : public QObject, public Value<QDateTime>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT QTimeValue : public QObject, public Value<QDateTime>
 {
     Q_OBJECT
 public:

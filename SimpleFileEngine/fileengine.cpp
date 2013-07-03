@@ -30,9 +30,9 @@ IDocID* FileEngine::addDocument(const QByteArray& blob)
     return id;
 }
 
-IDocument* FileEngine::getDocument(IDocID *id)
+IDocBase *FileEngine::getDocument(IDocID *id)
 {
-    m_Logger->logTrace("IDocument* FileEngine::getDocument(IDocID *id) const");
+    m_Logger->logTrace("IDocBase* FileEngine::getDocument(IDocID *id) const");
     SimpleFileDocument *doc = new SimpleFileDocument(fileManager, id->asString(), this);
     return doc;
 }

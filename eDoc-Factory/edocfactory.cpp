@@ -54,7 +54,7 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     // Ahora a leer e instanciar y configurar el plugin
     ConfigReader reader(this->xmlFile);
     configuration = reader.getConfiguration();
-    //emit m_Logger->LogTrace(configuration->toDebugString());
+    m_Logger->logTrace(configuration->toDebugString());
 
     engine = createEngine();
     database = createDatabase();
@@ -70,17 +70,17 @@ IDocEngine* EDocFactory::docEngine()
 IDocEngine *EDocFactory::createEngine()
 {
     m_Logger->logTrace("IDocEngine *EDocFactory::createEngine()");
-
-    if (configuration->key() == "engine")
+    if ("edoc" == configuration->key())
     {
-        XMLCollection *conf = (XMLCollection*) configuration;
+        XMLCollection *c = (XMLCollection*) configuration;
+        XMLCollection *conf = (XMLCollection*)c->get("engine");
         QString engineClass = ((XMLElement*)conf->get("class"))->value();
 
         QPluginLoader pluginLoader(plugins[engineClass]);
         QObject *plugin = pluginLoader.instance();
         if (plugin) {
             IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
-            engine->initialize(configuration, m_Logger, plugins);
+            engine->initialize(conf, m_Logger, plugins);
             return qobject_cast<IDocEngine *>(plugin);
         }
     }
@@ -91,17 +91,17 @@ IDocEngine *EDocFactory::createEngine()
 IDatabase *EDocFactory::createDatabase()
 {
     m_Logger->logTrace("IDatabase *EDocFactory::createDatabase()");
-
-    if (configuration->key() == "database")
+    if ("edoc" == configuration->key())
     {
-        XMLCollection *conf = (XMLCollection*) configuration;
+        XMLCollection *c = (XMLCollection*) configuration;
+        XMLCollection *conf = (XMLCollection*)c->get("database");
         QString engineClass = ((XMLElement*)conf->get("class"))->value();
 
         QPluginLoader pluginLoader(DBplugins[engineClass]);
         QObject *plugin = pluginLoader.instance();
         if (plugin) {
             IDatabase *engine = qobject_cast<IDatabase*>(plugin);
-            engine->initialize(configuration, m_Logger, plugins);
+            engine->initialize(conf, m_Logger, plugins);
             return qobject_cast<IDatabase *>(plugin);
         }
     }

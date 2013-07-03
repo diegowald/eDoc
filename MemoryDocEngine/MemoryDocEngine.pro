@@ -14,10 +14,12 @@ CONFIG += plugin
 DESTDIR = ../plugins
 
 SOURCES += memorydocengine.cpp \
-    inmemorydocument.cpp
+    inmemorydocument.cpp \
+    inmemorymultidocument.cpp
 
 HEADERS += memorydocengine.h \
-    inmemorydocument.h
+    inmemorydocument.h \
+    inmemorymultidocument.h
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib

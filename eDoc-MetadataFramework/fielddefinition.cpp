@@ -5,13 +5,17 @@
 FieldDefinition::FieldDefinition(QObject *parent) :
     QObject(parent)
 {
+    m_Name = "";
+    m_Type = "";
+    m_ReadOnly = "";
+    m_Visible = "";
 }
 
 FieldDefinition::~FieldDefinition()
 {
 }
 
-void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
+void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *logger)
 {
 
     m_Logger = logger;

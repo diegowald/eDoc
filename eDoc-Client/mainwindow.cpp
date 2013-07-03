@@ -3,6 +3,7 @@
 
 
 #include "../eDoc-API/IDocEngine.h"
+#include "../eDoc-API/IDocument.h"
 #include <QApplication>
 #include <QsLog.h>
 
@@ -37,8 +38,13 @@ void MainWindow::on_pushButton_pressed()
     QString text = ui->textEdit->toHtml();
     QByteArray x = text.toUtf8();
     IDocID *id = e->addDocument(x);
-    IDocument *doc = e->getDocument(id);
-    QByteArray y = doc->blob();
+    IDocBase *doc = e->getDocument(id);
+    QByteArray y;
+    if (!doc->isComplex())
+    {
+        IDocument *d = (IDocument*)(doc);
+        y = d->blob();
+    }
     QString textRetrieved(y);
 
     QLOG_TRACE() << "Texto antes: " << text;

@@ -19,7 +19,7 @@ public:
 
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
     virtual IDocID* addDocument(const QByteArray& blob);
-    virtual IDocument* getDocument(IDocID *id);
+    virtual IDocBase* getDocument(IDocID *id);
     virtual bool deleteDocument(IDocID *id);
     virtual QString name();
 

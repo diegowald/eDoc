@@ -4,14 +4,15 @@
 #include <QObject>
 #include "../eDoc-API/IFieldDefinition.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
+#include "edoc-metadataframework_global.h"
 
-class FieldDefinition : public QObject, public IFieldDefinition
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT FieldDefinition : public QObject, public IFieldDefinition
 {
     Q_OBJECT
 public:
     explicit FieldDefinition(QObject *parent = 0);
     virtual ~FieldDefinition();
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger);
     virtual QString name();
     virtual QString type();
     virtual bool isReadOnly();

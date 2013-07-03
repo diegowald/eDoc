@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "../eDoc-API/IDatabase.h"
+#include <QMap>
 
 class InMemoryDatabase : public QObject, public IDatabase
 {
@@ -21,6 +22,9 @@ public:
     virtual QList<IRecord*> search(const QList<IParameter*> &parameters) const;
     virtual QString name();
 
+private:
+    void createFields(IXMLContent* configuration);
+    IFieldDefinition* createField(IXMLContent* configuration);
 signals:
     
 public slots:

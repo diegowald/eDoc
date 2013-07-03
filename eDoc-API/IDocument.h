@@ -4,12 +4,13 @@
 #include "IDocID.h"
 #include <QByteArray>
 #include <QtPlugin>
+#include <IDocBase.h>
 
-struct IDocument
+struct IDocument : public IDocBase
 {
 public:
-    virtual IDocID* id() = 0;
     virtual QByteArray blob() = 0;
+    virtual bool isComplex() const { return false; }
     virtual ~IDocument() {}
 };
 
