@@ -6,6 +6,12 @@ InMemoryMultiDocument::InMemoryMultiDocument(IMultiDocument* persistentDoc, QObj
     QObject(parent)
 {
     m_PersistentDocument = persistentDoc;
+    foreach (IDocBase* docB, persistentDoc->getDocuments()) {
+        if (docB->isComplex())
+            m_Collection[docB->id()->asString()] = new InMemoryMultiDocument((IMultiDocument*)docB, this);
+        else
+            m_Collection[docB->id()->asString()] = new InMemoryDocument((IDocument*)docB, this);
+    }
 }
 
 InMemoryMultiDocument::~InMemoryMultiDocument()
@@ -43,12 +49,19 @@ IDocBase* InMemoryMultiDocument::getDocument(IDocID *id)
 
 QList<IDocBase*> InMemoryMultiDocument::getDocuments()
 {
+    return m_Collection.values();
 }
 
 void InMemoryMultiDocument::removeDocument(IDocID *id)
 {
+    if (m_Collection.contains(id->asString()))
+    {
+        m_Collection.remove(id->asString());
+        m_PersistentDocument->removeDocument(id);
+    }
 }
 
 bool InMemoryMultiDocument::containsDocument(IDocID *id)
 {
+    return m_Collection.contains(id->asString());
 }

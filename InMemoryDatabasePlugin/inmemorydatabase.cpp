@@ -2,6 +2,7 @@
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-MetadataFramework/fielddefinition.h"
+#include "recordid.h"
 
 InMemoryDatabase::InMemoryDatabase(QObject *parent) :
     QObject(parent)
@@ -19,8 +20,6 @@ void InMemoryDatabase::initialize(IXMLContent *configuration, QObjectLogging *lo
     m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
     createFields(confFields);
-    /*XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
-    persistentEngine = createPersistentEngine(confEngine, pluginStock);*/
 }
 
 void InMemoryDatabase::createFields(IXMLContent* configuration)
@@ -48,8 +47,31 @@ QList<IFieldDefinition*> InMemoryDatabase::fields()
     return m_Fields.values();
 }
 
-QList<IRecord*> InMemoryDatabase::search(const QList<IParameter*> &parameters) const
+QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters) const
 {
+}
+
+IRecordID* InMemoryDatabase::addRecord(IRecord *record)
+{
+    RecordID *ID = new RecordID(this);
+    record->setID(ID);
+    m_Records[ID->asString()] = record;
+    return ID;
+}
+
+IRecord* InMemoryDatabase::getRecord(IRecordID *id)
+{
+    return m_Records[id->asString()];
+}
+
+void InMemoryDatabase::updateRecord(IRecord* record)
+{
+    m_Records[record->ID()->asString()] = record;
+}
+
+void InMemoryDatabase::deleteRecord(IRecordID *id)
+{
+    m_Records.remove(id->asString());
 }
 
 QString InMemoryDatabase::name()
@@ -60,3 +82,4 @@ QString InMemoryDatabase::name()
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(InMemoryDatabasePlugin, InMemoryDatabase)
 #endif // QT_VERSION < 0x050000
+

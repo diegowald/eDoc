@@ -5,6 +5,7 @@
 #include "../eDoc-API/IDatabase.h"
 #include <QMap>
 
+
 class InMemoryDatabase : public QObject, public IDatabase
 {
     Q_OBJECT
@@ -19,7 +20,11 @@ public:
     
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
     virtual QList<IFieldDefinition*> fields();
-    virtual QList<IRecord*> search(const QList<IParameter*> &parameters) const;
+    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) const;
+    virtual IRecordID *addRecord(IRecord *record);
+    virtual IRecord* getRecord(IRecordID *id);
+    virtual void updateRecord(IRecord* record);
+    virtual void deleteRecord(IRecordID *id);
     virtual QString name();
 
 private:
@@ -33,7 +38,7 @@ private:
     QObjectLogging *m_Logger;
     QString m_Name;
     QMap<QString, IFieldDefinition*> m_Fields;
-    QMap<int, QMap<QString, IValue*> > m_Records;
+    QMap<QString, IRecord*> m_Records;
 };
 
 #endif // INMEMORYDATABASE_H

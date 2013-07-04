@@ -8,6 +8,10 @@
 #include <QTime>
 #include "edoc-metadataframework_global.h"
 
+#include "../eDoc-API/IDocBase.h"
+#include "../eDoc-API/IDocument.h"
+#include "../eDoc-API/IMultiDocument.h"
+
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT IntegerValue : public QObject, public Value<int>
 {
     Q_OBJECT
@@ -64,5 +68,28 @@ public:
     virtual ~QTimeValue();
 };
 
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocBaseValue : public QObject, public Value<IDocBase*>
+{
+    Q_OBJECT
+public:
+    IDocBaseValue(IDocBase * value, QObject *parent = 0);
+    virtual ~IDocBaseValue();
+};
+
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocumentValue : public QObject, public Value<IDocument*>
+{
+    Q_OBJECT
+public:
+    IDocumentValue(IDocument *value, QObject *parent = 0);
+    virtual ~IDocumentValue();
+};
+
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiDocumentValue : public QObject, public Value<IMultiDocument*>
+{
+    Q_OBJECT
+public:
+    IMultiDocumentValue(IMultiDocument *value, QObject *parent = 0);
+    virtual ~IMultiDocumentValue();
+};
 
 #endif // VALUEDEFINITIONS_H

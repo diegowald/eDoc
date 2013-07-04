@@ -13,10 +13,14 @@ DESTDIR = ../plugins
 
 
 SOURCES += \
-    inmemorydatabase.cpp
+    inmemorydatabase.cpp \
+    recordid.cpp \
+    record.cpp
 
 HEADERS += \
-    inmemorydatabase.h
+    inmemorydatabase.h \
+    recordid.h \
+    record.h
 OTHER_FILES += InMemoryDatabasePlugin.json
 
 unix:!symbian {

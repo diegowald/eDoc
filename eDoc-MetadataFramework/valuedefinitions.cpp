@@ -62,3 +62,30 @@ QTimeValue::QTimeValue(const QTimeValue &value, QObject *parent) :
 QTimeValue::~QTimeValue()
 {
 }
+
+IDocBaseValue::IDocBaseValue(IDocBase *value, QObject *parent) :
+    QObject(parent), Value(value)
+{
+}
+
+IDocBaseValue::~IDocBaseValue()
+{
+}
+
+IDocumentValue::IDocumentValue(IDocument *value, QObject *parent) :
+    QObject(parent), Value(value)
+{
+}
+
+IDocumentValue::~IDocumentValue()
+{
+}
+
+IMultiDocumentValue::IMultiDocumentValue(IMultiDocument *value, QObject *parent) :
+    QObject(parent), Value(value)
+{
+}
+
+IMultiDocumentValue::~IMultiDocumentValue()
+{
+}
