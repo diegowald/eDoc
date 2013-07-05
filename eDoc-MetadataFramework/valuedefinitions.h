@@ -17,23 +17,33 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IntegerValue : public QObject, public V
     Q_OBJECT
 public:
     explicit IntegerValue(int value, QObject *parent = 0);
+    IntegerValue(QObject *parent = 0);
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
+
     virtual ~IntegerValue();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT doubleValue : public QObject, public Value<double>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT DoubleValue : public QObject, public Value<double>
 {
     Q_OBJECT
 public:
-    doubleValue(double value, QObject *parent = 0);
-    virtual ~doubleValue();
+    DoubleValue(double value, QObject *parent = 0);
+    DoubleValue(QObject *parent = 0);
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
+    virtual ~DoubleValue();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT boolValue : public QObject, public Value<bool>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT BoolValue : public QObject, public Value<bool>
 {
     Q_OBJECT
 public:
-    boolValue(bool value, QObject *parent = 0);
-    virtual ~boolValue();
+    BoolValue(bool value, QObject *parent = 0);
+    BoolValue(QObject *parent = 0);
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
+    virtual ~BoolValue();
 };
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT QStringValue : public QObject, public Value<QString>
@@ -41,6 +51,9 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT QStringValue : public QObject, public V
     Q_OBJECT
 public:
     explicit QStringValue(const QString &value, QObject *parent = 0);
+    QStringValue(QObject *parent = 0);
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
     virtual ~QStringValue();
 };
 
@@ -49,6 +62,9 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT QDateTimeValue : public QObject, public
     Q_OBJECT
 public:
     explicit QDateTimeValue(const QDateTimeValue &value, QObject *parent = 0);
+    QDateTimeValue(QObject *parent = 0);
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
     virtual ~QDateTimeValue();
 };
 
@@ -57,14 +73,20 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT QDateValue : public QObject, public Val
     Q_OBJECT
 public:
     explicit QDateValue(const QDateValue &value, QObject *parent = 0);
+    QDateValue(QObject *parent = 0);
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
     virtual ~QDateValue();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT QTimeValue : public QObject, public Value<QDateTime>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT QTimeValue : public QObject, public Value<QTime>
 {
     Q_OBJECT
 public:
     explicit QTimeValue(const QTimeValue &value, QObject *parent = 0);
+    QTimeValue(QObject *parent = 0);
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
     virtual ~QTimeValue();
 };
 
@@ -73,6 +95,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocBaseValue : public QObject, public 
     Q_OBJECT
 public:
     IDocBaseValue(IDocBase * value, QObject *parent = 0);
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
     virtual ~IDocBaseValue();
 };
 
@@ -82,6 +106,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocumentValue : public QObject, public
 public:
     IDocumentValue(IDocument *value, QObject *parent = 0);
     virtual ~IDocumentValue();
+    virtual void setValue(const QString &newValue);
+    virtual QString asString();
 };
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiDocumentValue : public QObject, public Value<IMultiDocument*>
@@ -90,6 +116,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiDocumentValue : public QObject, p
 public:
     IMultiDocumentValue(IMultiDocument *value, QObject *parent = 0);
     virtual ~IMultiDocumentValue();
+    void setValue(const QString &newValue);
+    QString asString();
 };
 
 #endif // VALUEDEFINITIONS_H

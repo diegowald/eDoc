@@ -51,22 +51,27 @@ QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters)
 {
 }
 
+IRecord* InMemoryDatabase::createEmptyRecord()
+{
+    return new Record(m_Fields.values(), this);
+}
+
 IRecordID* InMemoryDatabase::addRecord(IRecord *record)
 {
     RecordID *ID = new RecordID(this);
     record->setID(ID);
-    m_Records[ID->asString()] = record;
+    m_Records[ID->asString()] = (Record*)record;
     return ID;
 }
 
 IRecord* InMemoryDatabase::getRecord(IRecordID *id)
 {
-    return m_Records[id->asString()];
+    return (IRecord*) m_Records[id->asString()];
 }
 
 void InMemoryDatabase::updateRecord(IRecord* record)
 {
-    m_Records[record->ID()->asString()] = record;
+    m_Records[record->ID()->asString()] = (Record*)record;
 }
 
 void InMemoryDatabase::deleteRecord(IRecordID *id)

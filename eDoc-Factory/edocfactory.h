@@ -15,6 +15,7 @@ public:
     virtual ~EDocFactory();
     virtual void initialize(const QString &pluginPath, const QString &xmlFile, QObjectLogging *logger);
     virtual IDocEngine* docEngine();
+    virtual IDatabase* databaseEngine();
 
 protected:
     void readAvailablePlugins();

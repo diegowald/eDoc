@@ -15,6 +15,7 @@ public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
     virtual QList<IFieldDefinition*> fields() = 0;
     virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) const = 0;
+    virtual IRecord* createEmptyRecord() = 0;
     virtual IRecordID *addRecord(IRecord *record) = 0;
     virtual IRecord* getRecord(IRecordID *id) = 0;
     virtual void updateRecord(IRecord* record) = 0;

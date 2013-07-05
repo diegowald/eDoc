@@ -1,6 +1,8 @@
 #include "fielddefinition.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
+#include "valuedefinitions.h"
+
 
 FieldDefinition::FieldDefinition(QObject *parent) :
     QObject(parent)
@@ -25,13 +27,40 @@ void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *log
     m_Type = ((XMLElement*)((XMLCollection*) configuration)->get("type"))->value();
     m_ReadOnly = ((XMLElement*)((XMLCollection*) configuration)->get("readonly"))->value() == "1" ? true : false;
     m_Visible = ((XMLElement*)((XMLCollection*) configuration)->get("visible"))->value() == "1" ? true : false;
-
+    m_DataType = analyzeType();
 /*
 
     XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
     persistentEngine = createPersistentEngine(confEngine, pluginStock);
 
     QList<VALIDQUERY> m_ValidQeries;*/
+}
+
+DATATYPE FieldDefinition::analyzeType()
+{
+    QString tp = m_Type.toLower();
+    if ("integer" == tp)
+        return INTEGER_TYPE;
+    else if ("double" == tp)
+        return DOUBLE_TYPE;
+    else if ("boolean" == tp)
+        return BOOL_TYPE;
+    else if ("string" == tp)
+        return QSTRING_TYPE;
+    else if ("datetime" == tp)
+        return QDATETIME_TYPE;
+    else if ("date" == tp)
+        return QDATE_TYPE;
+    else if ("time" == tp)
+        return QTIME_TYPE;
+    else if ("docbase" == tp)
+        IDOCBASE_TYPE;
+    else if ("document" == tp)
+        return IDOCUMENT_TYPE;
+    else if ("multidocument" == tp)
+        return IMULTIDOCUMENT_TYPE;
+    else
+        return INVALID_TYPE;
 }
 
 QString FieldDefinition::name()
@@ -56,4 +85,49 @@ bool FieldDefinition::isVisible()
 
 QList<VALIDQUERY> FieldDefinition::validQueries()
 {
+}
+
+IValue* FieldDefinition::createEmptyValue()
+{
+    IValue *value = NULL;
+    switch (m_DataType)
+    {
+    case INTEGER_TYPE:
+        value = new IntegerValue(this);
+        break;
+    case DOUBLE_TYPE:
+        value = new DoubleValue(this);
+        break;
+    case BOOL_TYPE:
+        value = new BoolValue(this);
+        break;
+    case QSTRING_TYPE:
+        value = new QStringValue(this);
+        break;
+    case QDATETIME_TYPE:
+        value = new QDateTimeValue(this);
+        break;
+    case QDATE_TYPE:
+        value = new QDateValue(this);
+        break;
+    case QTIME_TYPE:
+        value = new QTimeValue(this);
+        break;
+    case IDOCBASE_TYPE:
+        value = new IDocBaseValue(NULL, this);
+        value->setNull();
+        break;
+    case IDOCUMENT_TYPE:
+        value = new IDocumentValue(NULL, this);
+        value->setNull();
+        break;
+    case IMULTIDOCUMENT_TYPE:
+        value = new IMultiDocumentValue(NULL, this);
+        value->setNull();
+        break;
+    case INVALID_TYPE:
+        value = NULL;
+        break; // ACA HABRIA QUE LANZAR EXCEPTIONS
+    }
+    return value;
 }

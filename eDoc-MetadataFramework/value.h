@@ -10,9 +10,33 @@ public:
     Value(TYPE newValue)
     {
         m_Value = newValue;
+        m_Null = false;
+    }
+
+    Value()
+    {
+        m_Null = true;
     }
 
     virtual ~Value() {}
+
+
+    virtual void setValue(const QString &newValue) = 0;
+
+    virtual QString asString() = 0;
+
+    virtual void setNull()
+    {
+        m_Null = true;
+    }
+
+    virtual bool isNull() { return m_Null; }
+
+    virtual void setValue2(TYPE newValue)
+    {
+        m_Value = newValue;
+        m_Null = false;
+    }
 
     /*Value( const Value& other )
     {
@@ -37,6 +61,7 @@ public:
 
 private:
     TYPE m_Value;
+    bool m_Null;
 };
 
 #endif // VALUE_H

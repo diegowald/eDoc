@@ -6,6 +6,8 @@
 #include "../eDoc-Configuration/IXMLContent.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include <QList>
+#include "IValue.h"
+
 
 struct IFieldDefinition {
 public:
@@ -15,6 +17,7 @@ public:
     virtual bool isReadOnly() = 0;
     virtual bool isVisible() = 0;
     virtual QList<VALIDQUERY> validQueries() = 0;
+    virtual IValue* createEmptyValue() = 0;
     virtual ~IFieldDefinition() {}
 };
 

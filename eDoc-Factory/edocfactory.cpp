@@ -67,6 +67,12 @@ IDocEngine* EDocFactory::docEngine()
     return engine;
 }
 
+IDatabase* EDocFactory::databaseEngine()
+{
+    m_Logger->logTrace("IDatabase* EDocFactory::databaseEngine()");
+    return database;
+}
+
 IDocEngine *EDocFactory::createEngine()
 {
     m_Logger->logTrace("IDocEngine *EDocFactory::createEngine()");

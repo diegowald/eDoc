@@ -25,6 +25,8 @@ private slots:
     void on_LogWarning(const QString& text);
     void on_LogError(const QString& text);
     void on_LogFatal(const QString& text);
+    void on_pushButton_2_pressed();
+
 private:
     Ui::MainWindow *ui;
     EDocFactory f;

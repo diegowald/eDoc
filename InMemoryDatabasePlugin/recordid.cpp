@@ -1,7 +1,7 @@
 #include "recordid.h"
 
 RecordID::RecordID(QObject *parent) :
-    QObject(parent)
+    QObject(parent), m_ID(QUuid::createUuid())
 {
 }
 

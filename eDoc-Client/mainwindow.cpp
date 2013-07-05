@@ -53,6 +53,24 @@ void MainWindow::on_pushButton_pressed()
     Q_ASSERT(text == textRetrieved);
 }
 
+void MainWindow::on_pushButton_2_pressed()
+{
+    IDatabase* db = f.databaseEngine();
+    IRecord *rec = db->createEmptyRecord();
+    rec->value("campo1")->setValue("Hola Mundo");
+    rec->value("campo2")->setValue("Valor del campo2");
+
+    QLOG_TRACE() << rec->value("campo1")->asString();
+    QLOG_TRACE() << rec->value("campo2")->asString();
+
+    rec->value("campo1")->setNull();
+    QLOG_TRACE() << rec->value("campo1")->asString();
+
+    IRecordID *id = db->addRecord(rec);
+    QLOG_TRACE() << id->asString();
+}
+
+
 void MainWindow::on_LogTrace(const QString& text)
 {
     QLOG_TRACE() << text;
@@ -82,3 +100,5 @@ void MainWindow::on_LogFatal(const QString& text)
 {
     QLOG_FATAL() << text;
 }
+
+

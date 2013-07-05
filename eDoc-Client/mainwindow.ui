@@ -34,7 +34,20 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Create Document</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>220</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add metadata</string>
     </property>
    </widget>
   </widget>

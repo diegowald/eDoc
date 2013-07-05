@@ -6,6 +6,20 @@
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include "edoc-metadataframework_global.h"
 
+enum DATATYPE {
+    INVALID_TYPE, // any value not described below
+    INTEGER_TYPE, // integer
+    DOUBLE_TYPE,  // double
+    BOOL_TYPE,    // boolean
+    QSTRING_TYPE, // string
+    QDATETIME_TYPE, // datetime
+    QDATE_TYPE,     // date
+    QTIME_TYPE,     // time
+    IDOCBASE_TYPE,  // docbase
+    IDOCUMENT_TYPE, // document
+    IMULTIDOCUMENT_TYPE // multidocument
+};
+
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT FieldDefinition : public QObject, public IFieldDefinition
 {
     Q_OBJECT
@@ -17,7 +31,10 @@ public:
     virtual QString type();
     virtual bool isReadOnly();
     virtual bool isVisible();
-    virtual QList<VALIDQUERY> validQueries();
+    virtual QList<VALIDQUERY> validQueries();    
+    virtual IValue* createEmptyValue();
+private:
+    DATATYPE analyzeType();
 signals:
     
 public slots:
@@ -28,6 +45,7 @@ private:
     bool m_Visible;
     QList<VALIDQUERY> m_ValidQeries;
     QObjectLogging *m_Logger;
+    DATATYPE m_DataType;
 };
 
 #endif // FIELDDEFINITION_H
