@@ -4,8 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += sql core
-QT       += widgets
+QT       += sql core widgets
 
 #TARGET = edoccore
 TARGET  = $$qtLibraryTarget(edoccore)

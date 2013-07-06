@@ -9,7 +9,6 @@
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include <QMap>
 
-
 struct IDocEngine
 {
 public:
