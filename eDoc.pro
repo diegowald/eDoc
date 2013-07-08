@@ -10,6 +10,7 @@ SUBDIRS += \
     SimpleFileEngine \
     MemoryDocEngine \
     eDoc-MetadataFramework \
-    InMemoryDatabasePlugin
+    InMemoryDatabasePlugin \
+    GenericDatabasePlugin
 
 
