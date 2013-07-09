@@ -28,6 +28,7 @@ void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *log
     m_ReadOnly = ((XMLElement*)((XMLCollection*) configuration)->get("readonly"))->value() == "1" ? true : false;
     m_Visible = ((XMLElement*)((XMLCollection*) configuration)->get("visible"))->value() == "1" ? true : false;
     m_DataType = analyzeType();
+    m_FieldNameInDatabase = ((XMLElement*)((XMLCollection*)configuration)->get("fieldname"))->value();
 /*
 
     XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");

@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include "../eDoc-API/IRecord.h"
-#include "recordid.h"
 #include <QMap>
 #include "../eDoc-API/IFieldDefinition.h"
 
@@ -23,7 +22,7 @@ signals:
 public slots:
 
 private:
-    RecordID *m_ID;
+    IRecordID *m_ID;
     QMap<QString, IValue*> m_Values;
 };
 

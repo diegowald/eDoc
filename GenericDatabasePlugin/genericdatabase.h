@@ -28,10 +28,20 @@ public:
     virtual void deleteRecord(IRecordID *id);
     virtual QString name();
 
-    
+private:
+    void createFields(IXMLContent* configuration);
+    IFieldDefinition *createField(IXMLContent *configuration);
+    QString getFieldsString();
+    QString getParametersString();
 signals:
     
 public slots:
+
+private:
+    QObjectLogging *m_Logger;
+    QString m_Name;
+    QMap<QString, IFieldDefinition*> m_Fields;
+    QString m_TableName;
     
 };
 

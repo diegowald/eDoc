@@ -14,13 +14,15 @@ DEFINES += EDOCMETADATAFRAMEWORK_LIBRARY
 
 SOURCES += edocmetadataframework.cpp \
     valuedefinitions.cpp \
-    fielddefinition.cpp
+    fielddefinition.cpp \
+    record.cpp
 
 HEADERS += edocmetadataframework.h\
         edoc-metadataframework_global.h \
     value.h \
     valuedefinitions.h \
-    fielddefinition.h
+    fielddefinition.h \
+    record.h
 
 unix:!symbian {
     maemo5 {

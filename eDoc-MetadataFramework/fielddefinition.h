@@ -46,6 +46,7 @@ private:
     QList<VALIDQUERY> m_ValidQeries;
     QObjectLogging *m_Logger;
     DATATYPE m_DataType;
+    QString m_FieldNameInDatabase;
 };
 
 #endif // FIELDDEFINITION_H

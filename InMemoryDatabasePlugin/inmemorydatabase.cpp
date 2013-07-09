@@ -53,7 +53,9 @@ QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters)
 
 IRecord* InMemoryDatabase::createEmptyRecord()
 {
-    return new Record(m_Fields.values(), this);
+    Record *rec = new Record(m_Fields.values(), this);
+    rec->setID(new RecordID(this));
+    return rec;
 }
 
 IRecordID* InMemoryDatabase::addRecord(IRecord *record)

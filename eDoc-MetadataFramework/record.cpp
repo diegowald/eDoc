@@ -1,13 +1,10 @@
 #include "record.h"
-#include "fielddefinition.h"
 
 Record::Record(const QList<IFieldDefinition*> &fieldDefs, QObject *parent) :
     QObject(parent)
 {
-    m_ID = new RecordID(this);
     foreach (IFieldDefinition* fDef, fieldDefs) {
-        FieldDefinition *fd = (FieldDefinition*) fDef;
-        m_Values[fd->name()] = fd->createEmptyValue();
+        m_Values[fDef->name()] = fDef->createEmptyValue();
     }
 }
 
@@ -17,7 +14,7 @@ Record::~Record()
 
 void Record::setID(IRecordID *ID)
 {
-    m_ID = (RecordID*) ID;
+    m_ID = ID;
 }
 
 IRecordID *Record::ID()
