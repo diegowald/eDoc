@@ -18,7 +18,7 @@ SOURCES += edocmetadataframework.cpp \
     record.cpp
 
 HEADERS += edocmetadataframework.h\
-        edoc-metadataframework_global.h \
+    edoc-metadataframework_global.h \
     value.h \
     valuedefinitions.h \
     fielddefinition.h \

@@ -16,11 +16,13 @@ DESTDIR = $$[QT_INSTALL_PLUGINS]/sqldrivers
 
 SOURCES += \
     genericdatabase.cpp \
-    recordid.cpp
+    recordid.cpp \
+    sqlmanager.cpp
 
 HEADERS += \
     genericdatabase.h \
-    recordid.h
+    recordid.h \
+    sqlmanager.h
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib

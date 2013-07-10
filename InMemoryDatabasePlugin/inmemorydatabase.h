@@ -4,7 +4,7 @@
 #include <QObject>
 #include "../eDoc-API/IDatabase.h"
 #include <QMap>
-#include "record.h"
+#include <../eDoc-MetadataFramework/record.h>
 
 class InMemoryDatabase : public QObject, public IDatabase
 {

@@ -1,6 +1,6 @@
 #include "record.h"
 
-Record::Record(const QList<IFieldDefinition*> &fieldDefs, QObject *parent) :
+Record::Record(const QList<IFieldDefinition *> &fieldDefs, QObject *parent) :
     QObject(parent)
 {
     foreach (IFieldDefinition* fDef, fieldDefs) {

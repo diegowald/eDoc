@@ -2,11 +2,12 @@
 #define RECORD_H
 
 #include <QObject>
+#include "edoc-metadataframework_global.h"
 #include "../eDoc-API/IRecord.h"
 #include <QMap>
 #include "../eDoc-API/IFieldDefinition.h"
 
-class Record : public QObject, public IRecord
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT Record : public QObject, public IRecord
 {
     Q_OBJECT
 public:
