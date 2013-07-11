@@ -11,6 +11,10 @@ TEMPLATE = lib
 CONFIG += plugin
 DESTDIR = ../plugins
 
+win32 {
+INCLUDEPATH += c:/boost/boost_1_54_0
+RC_FILE = b6p.rc
+}
 
 DESTDIR = $$[QT_INSTALL_PLUGINS]/sqldrivers
 

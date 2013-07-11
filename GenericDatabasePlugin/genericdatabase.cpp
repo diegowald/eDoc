@@ -67,7 +67,7 @@ IRecordID *GenericDatabase::addRecord(IRecord *record)
     QString SQLInsert = "INSERT INTO %1 (%2) VALUES (%3);";
     QString sql = SQLInsert.arg(m_TableName)
             .arg(getFieldsString()).arg(getParametersString());
-    terminar aca
+
 }
 
 IRecord* GenericDatabase::getRecord(IRecordID *id)
