@@ -7,10 +7,25 @@
 #include <boost/shared_ptr.hpp>
 #include <../eDoc-Configuration/IXMLContent.h>
 #include <../eDoc-Configuration/qobjectlgging.h>
+#include <QVariant>
 
 typedef QMap<QString, QVariant> DBRecord;
 typedef boost::shared_ptr<DBRecord> DBRecordPtr;
 typedef boost::shared_ptr<QList<DBRecordPtr> > DBRecordSet;
+
+enum DBType
+{
+    INVALID_DB_TYPE,
+    DB2,
+    IBASE,
+    MYSQL,
+    OCI,
+    ODBC,
+    PSQL,
+    SQLITE,
+    SQLITE2,
+    TDS
+};
 
 class SQLManager : public QObject
 {
@@ -25,6 +40,7 @@ public:
     
 private:
     bool tryReconnect();
+    DBType String2DBType();
 signals:
     
 public slots:
@@ -36,6 +52,7 @@ private:
     QString m_User;
     QString m_Password;
     QObjectLogging *m_Logger;
+    DBType m_DBType;
 };
 
 #endif // SQLMANAGER_H

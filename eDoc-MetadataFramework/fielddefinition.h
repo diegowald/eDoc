@@ -33,6 +33,9 @@ public:
     virtual bool isVisible();
     virtual QList<VALIDQUERY> validQueries();    
     virtual IValue* createEmptyValue();
+
+    QString fieldNameInDatabase();
+    DATATYPE dataType();
 private:
     DATATYPE analyzeType();
 signals:

@@ -132,3 +132,13 @@ IValue* FieldDefinition::createEmptyValue()
     }
     return value;
 }
+
+QString FieldDefinition::fieldNameInDatabase()
+{
+    return m_FieldNameInDatabase;
+}
+
+DATATYPE FieldDefinition::dataType()
+{
+    return m_DataType;
+}

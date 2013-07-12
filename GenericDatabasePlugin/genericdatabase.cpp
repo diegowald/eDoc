@@ -5,6 +5,7 @@
 #include "../eDoc-MetadataFramework/record.h"
 #include "recordid.h"
 #include <QStringList>
+#include <boost/make_shared.hpp>
 
 GenericDatabase::GenericDatabase(QObject *parent) :
     QObject(parent)
@@ -24,6 +25,7 @@ void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *log
     createFields(confFields);
 
     m_TableName = ((XMLElement*)((XMLCollection*)configuration)->get("tablename"))->value();
+    m_SQLManager.initialize(configuration, logger, pluginStock);
 }
 
 void GenericDatabase::createFields(IXMLContent* configuration)
@@ -36,6 +38,7 @@ void GenericDatabase::createFields(IXMLContent* configuration)
         XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
         IFieldDefinition *fDef = createField(field);
         m_Fields[fDef->name()] = fDef;
+        m_FieldsBasedOnDatabase[((FieldDefinition*)fDef)->fieldNameInDatabase()] = fDef;
     }
 }
 
@@ -74,7 +77,18 @@ IRecord* GenericDatabase::getRecord(IRecordID *id)
 {
     QString SQLSelect = "SELECT %1 FROM %2 WHERE %3 = %4";
     QString sql = SQLSelect.arg(getFieldsString())
-            .arg(m_TableName).arg("record_id").arg("@record_id");
+            .arg(m_TableName).arg("record_id").arg(":record_id");
+
+    DBRecordPtr r = boost::make_shared<DBRecord>();
+    (*r)["record_id"] = id->asString();
+    DBRecordSet res = m_SQLManager.getRecords(sql, r);
+    if (0 == res->count())
+        return NULL;
+
+    IRecord *record = new Record(m_Fields.values(), this);
+    record->value(
+
+                    m_FieldsBasedOnDatabase[((FieldDefinition*)fDef)->fieldNameInDatabase()] = fDef;
 }
 
 void GenericDatabase::updateRecord(IRecord* record)

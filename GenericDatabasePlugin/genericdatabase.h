@@ -4,7 +4,7 @@
 #include <QObject>
 #include "../eDoc-API/IDatabase.h"
 #include <QMap>
-//#include "record.h"
+#include "sqlmanager.h"
 
 class GenericDatabase : public QObject, public IDatabase
 {
@@ -41,8 +41,9 @@ private:
     QObjectLogging *m_Logger;
     QString m_Name;
     QMap<QString, IFieldDefinition*> m_Fields;
+    QMap<QString, IFieldDefinition*> m_FieldsBasedOnDatabase;
     QString m_TableName;
-    
+    SQLManager m_SQLManager;
 };
 
 #endif // GENERICDATABASE_H
