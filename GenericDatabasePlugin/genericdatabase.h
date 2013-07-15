@@ -32,6 +32,7 @@ private:
     void createFields(IXMLContent* configuration);
     IFieldDefinition *createField(IXMLContent *configuration);
     QString getFieldsString();
+    QString getUpdateFieldsString();
     QString getParametersString();
 signals:
     

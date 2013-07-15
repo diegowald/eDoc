@@ -36,7 +36,7 @@ public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
 
     virtual DBRecordSet getRecords(const QString &sql, DBRecordPtr record);
-    virtual void executeCommand(const QString &sql, DBRecord record);
+    virtual void executeCommand(const QString &sql, DBRecordPtr record);
     
 private:
     bool tryReconnect();

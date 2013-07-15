@@ -20,7 +20,6 @@ public:
 
     virtual ~Value() {}
 
-
     virtual void setValue(const QString &newValue) = 0;
 
     virtual QString asString() = 0;

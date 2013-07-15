@@ -85,18 +85,44 @@ IRecord* GenericDatabase::getRecord(IRecordID *id)
     if (0 == res->count())
         return NULL;
 
-    IRecord *record = new Record(m_Fields.values(), this);
-    record->value(
+    DBRecordPtr recPtr = res->at(0);
 
-                    m_FieldsBasedOnDatabase[((FieldDefinition*)fDef)->fieldNameInDatabase()] = fDef;
+    IRecord *record = new Record(m_Fields.values(), this);
+
+    foreach (QString key, recPtr->keys())
+    {
+        record->value(key)->setValue(((*recPtr)[key]).toString());
+    }
+    return record;
 }
 
 void GenericDatabase::updateRecord(IRecord* record)
 {
+    QString SQLUpdate = "UPDATE %1 SET %2 WHERE %3 = %4;";
+    QString sql = SQLUpdate.arg(m_TableName).arg(getUpdateFieldsString()).arg("record_id").arg(":record_id");
+
+    DBRecordPtr r = boost::make_shared<DBRecord>();
+//    (*r)["record_id"] = id->asString();
+    foreach (QString key, m_Fields.keys())
+    {
+        if (record->value(key)->isNull())
+            (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = QVariant();
+        else
+            (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = record->value(key)->asString();
+    }
+
+    m_SQLManager.executeCommand(sql, r);
 }
 
 void GenericDatabase::deleteRecord(IRecordID *id)
 {
+    QString SQLDelete = "DELETE %1 WHERE %2 = %3";
+
+    QString sql = SQLDelete.arg(m_TableName).arg("record_id").arg(":record_id");
+
+    DBRecordPtr r = boost::make_shared<DBRecord>();
+    (*r)["record_id"] = id->asString();
+    m_SQLManager.executeCommand(sql, r);
 }
 
 QString GenericDatabase::name()
@@ -107,8 +133,18 @@ QString GenericDatabase::name()
 
 QString GenericDatabase::getFieldsString()
 {
-    QStringList fields = m_Fields.keys();
+    QStringList fields = m_FieldsBasedOnDatabase.keys();//  m_Fields.keys();
     return fields.join(", ");
+}
+
+QString GenericDatabase::getUpdateFieldsString()
+{
+    QStringList fields = m_FieldsBasedOnDatabase.keys();
+    QStringList res;
+    foreach (QString field, fields) {
+        res.push_back(QString("%1 = :%2").arg(field).arg(field));
+    }
+    return res.join(", ");
 }
 
 QString GenericDatabase::getParametersString()

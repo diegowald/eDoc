@@ -1,5 +1,6 @@
 #ifndef IVALUE_H
 #define IVALUE_H
+#include <QVariant>
 
 struct IValue
 {

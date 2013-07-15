@@ -95,7 +95,7 @@ DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)
     return response;
 }
 
-void SQLManager::executeCommand(const QString &sql, DBRecord record)
+void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)
 {
 
 }
