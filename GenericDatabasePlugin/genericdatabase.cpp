@@ -69,8 +69,8 @@ IRecordID *GenericDatabase::addRecord(IRecord *record)
 {
     QString SQLInsert = "INSERT INTO %1 (%2) VALUES (%3);";
     QString sql = SQLInsert.arg(m_TableName)
-            .arg(getFieldsString()).arg(getParametersString());
-
+            .arg(getFieldsString()).arg(getParametersString());\
+    executeSQLCommand(sql, record);
 }
 
 IRecord* GenericDatabase::getRecord(IRecordID *id)
@@ -100,7 +100,11 @@ void GenericDatabase::updateRecord(IRecord* record)
 {
     QString SQLUpdate = "UPDATE %1 SET %2 WHERE %3 = %4;";
     QString sql = SQLUpdate.arg(m_TableName).arg(getUpdateFieldsString()).arg("record_id").arg(":record_id");
+    executeSQLCommand(sql, record);
+}
 
+void GenericDatabase::executeSQLCommand(const QString &sql, IRecord* record)
+{
     DBRecordPtr r = boost::make_shared<DBRecord>();
 //    (*r)["record_id"] = id->asString();
     foreach (QString key, m_Fields.keys())

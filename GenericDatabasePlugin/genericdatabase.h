@@ -34,6 +34,7 @@ private:
     QString getFieldsString();
     QString getUpdateFieldsString();
     QString getParametersString();
+    void executeSQLCommand(const QString &sql, IRecord* record);
 signals:
     
 public slots:

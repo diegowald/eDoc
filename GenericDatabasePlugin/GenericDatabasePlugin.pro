@@ -15,8 +15,6 @@ win32 {
 INCLUDEPATH += c:/boost/boost_1_54_0
 }
 
-DESTDIR = $$[QT_INSTALL_PLUGINS]/sqldrivers
-
 SOURCES += \
     genericdatabase.cpp \
     recordid.cpp \

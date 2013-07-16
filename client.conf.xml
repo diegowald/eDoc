@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<edoc name="edoc">
+	<engine name="Cache" class="MemoryDocEngine">
+		<maxCachedFiles>100</maxCachedFiles>
+		<engine name="engine1" class="SimpleFileEngine">
+			<folder>./files</folder>
+			<logfile>SimpleFileLogger.log</logfile>
+		</engine>
+	</engine>
+	<database name="DB1" class="GenericDatabase">
+		<database_type>sqlite3</database_type>
+		<server>./dbTest.db</server>
+		<user></user>
+		<password></password>
+		<tablename>tabla1</tablename>
+		<fields count="2">
+			<field1 name="campo1">
+				<type>string</type>
+				<readonly>0</readonly>
+				<visible>0</visible>
+				<fieldname>campo1</fieldname>
+			</field1>
+			<field2 name="campo2">
+				<type>string</type>
+				<readonly>0</readonly>
+				<visible>0</visible>
+				<fieldname>campo2</fieldname>
+			</field2>
+		</fields>
+	</database>
+</edoc>

@@ -22,7 +22,7 @@ void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, 
     m_Logger = logger;
     m_Logger->logTrace("void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
-    m_database = ((XMLElement*)((XMLCollection*) configuration)->get("database"))->value();
+    m_database = ((XMLElement*)((XMLCollection*) configuration)->get("database_type"))->value();
     m_Server = ((XMLElement*)((XMLCollection*) configuration)->get("server"))->value();
     m_User = ((XMLElement*)((XMLCollection*) configuration)->get("user"))->value();
     m_Password = ((XMLElement*)((XMLCollection*) configuration)->get("password"))->value();
