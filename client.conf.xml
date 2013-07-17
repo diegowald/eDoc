@@ -8,7 +8,7 @@
 		</engine>
 	</engine>
 	<database name="DB1" class="GenericDatabase">
-		<database_type>sqlite3</database_type>
+		<database_type>sqlite</database_type>
 		<server>./dbTest.db</server>
 		<user></user>
 		<password></password>

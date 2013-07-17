@@ -63,7 +63,7 @@ void MainWindow::on_pushButton_2_pressed()
     QLOG_TRACE() << rec->value("campo1")->asString();
     QLOG_TRACE() << rec->value("campo2")->asString();
 
-    rec->value("campo1")->setNull();
+    //rec->value("campo1")->setNull();
     QLOG_TRACE() << rec->value("campo1")->asString();
 
     IRecordID *id = db->addRecord(rec);

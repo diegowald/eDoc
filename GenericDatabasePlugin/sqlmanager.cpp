@@ -6,7 +6,7 @@
 #include <QSqlField>
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
-
+#include <QDateTime>
 
 SQLManager::SQLManager(QObject *parent) :
     QObject(parent)
@@ -95,9 +95,62 @@ DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)
     return response;
 }
 
+void SQLManager::addParameters(QSqlQuery &query, const QString &SQL, DBRecordPtr record)
+{
+    m_Logger->logTrace("void SQLManager::addParameters(QSqlQuery &query, QString &SQL, DBRecordPtr record)");
+    foreach(QString key, record->keys())
+    {
+        QString param(":" + key);
+        if (SQL.contains(param))
+        {
+            QVariant value = (*record)[key];
+            switch (value.type())
+            {
+            case QVariant::DateTime:
+            case QVariant::Date:
+            case QVariant::Time:
+            {
+                QDateTime dt = value.toDateTime();
+                if (value.type() == QVariant::Time)
+                {
+                    dt.setDate(QDateTime::currentDateTime().date());
+                    dt.setTime(value.toTime());
+                }
+                value = dt.toMSecsSinceEpoch();
+                break;
+            }
+            default:
+                break;
+            }
+            m_Logger->logDebug("param: " + param);
+            m_Logger->logDebug("value: " + value.toString());
+            query.bindValue(param, value);
+        }
+    }
+}
+
 void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)
 {
+    m_Logger->logTrace("void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)");
+    if (!tryReconnect())
+    {
+        m_Logger->logError(QString("Can't open Database."
+                           " Reason: ") +
+                           db.lastError().text());
+        // Error
+        return;
+    }
 
+    QSqlQuery q;
+    q.prepare(sql);
+    addParameters(q, sql, record);
+    q.exec();
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+        m_Logger->logError("SQL Error:" + q.lastError().text());
+    }
+
+    db.close();
 }
 
 bool SQLManager::tryReconnect()
@@ -134,7 +187,7 @@ bool SQLManager::tryReconnect()
             m_Logger->logTrace("Database trying to reconnect: SQLite Database");
             db = QSqlDatabase::addDatabase("QSQLITE");
             db.setHostName("localhost");
-            db.setDatabaseName(m_database);
+            db.setDatabaseName(m_Server);
             break;
         case SQLITE2:
             m_Logger->logTrace("DATABASE TYPE NOT IMPLEMENTED YET");

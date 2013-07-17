@@ -41,6 +41,7 @@ public:
 private:
     bool tryReconnect();
     DBType String2DBType();
+    void addParameters(QSqlQuery &query, const QString &SQL, DBRecordPtr record);
 signals:
     
 public slots:

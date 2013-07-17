@@ -71,6 +71,7 @@ IRecordID *GenericDatabase::addRecord(IRecord *record)
     QString sql = SQLInsert.arg(m_TableName)
             .arg(getFieldsString()).arg(getParametersString());\
     executeSQLCommand(sql, record);
+    return record->ID();
 }
 
 IRecord* GenericDatabase::getRecord(IRecordID *id)
@@ -107,10 +108,11 @@ void GenericDatabase::executeSQLCommand(const QString &sql, IRecord* record)
 {
     DBRecordPtr r = boost::make_shared<DBRecord>();
 //    (*r)["record_id"] = id->asString();
+    (*r)["record_id"] = record->ID()->asString();
     foreach (QString key, m_Fields.keys())
     {
         if (record->value(key)->isNull())
-            (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = QVariant();
+            (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = QVariant(QVariant::String);
         else
             (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = record->value(key)->asString();
     }
@@ -137,13 +139,18 @@ QString GenericDatabase::name()
 
 QString GenericDatabase::getFieldsString()
 {
-    QStringList fields = m_FieldsBasedOnDatabase.keys();//  m_Fields.keys();
+    QStringList fields;
+    fields.append("record_id");
+    fields.append(m_FieldsBasedOnDatabase.keys());//  m_Fields.keys();
+
     return fields.join(", ");
 }
 
 QString GenericDatabase::getUpdateFieldsString()
 {
-    QStringList fields = m_FieldsBasedOnDatabase.keys();
+    QStringList fields;
+    fields.append("record_id");
+    fields.append(m_FieldsBasedOnDatabase.keys());
     QStringList res;
     foreach (QString field, fields) {
         res.push_back(QString("%1 = :%2").arg(field).arg(field));
@@ -153,10 +160,12 @@ QString GenericDatabase::getUpdateFieldsString()
 
 QString GenericDatabase::getParametersString()
 {
-    QStringList fields = m_Fields.keys();
+    QStringList fields;
+    fields.append("record_id");
+    fields.append(m_Fields.keys());
     QStringList parameters;
     foreach(QString field, fields)
-        parameters.append("@" + field);
+        parameters.append(":" + field);
     return parameters.join(", ");
 }
 
