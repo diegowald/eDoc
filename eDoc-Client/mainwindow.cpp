@@ -32,12 +32,18 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+IDocID *MainWindow::addDocument(const QByteArray &blob)
+{
+    IDocEngine *e = f.docEngine();
+    return  e->addDocument(blob);
+}
+
 void MainWindow::on_pushButton_pressed()
 {
     IDocEngine *e = f.docEngine();
     QString text = ui->textEdit->toHtml();
     QByteArray x = text.toUtf8();
-    IDocID *id = e->addDocument(x);
+    IDocID *id = addDocument(x);
     IDocBase *doc = e->getDocument(id);
     QByteArray y;
     if (!doc->isComplex())
@@ -56,15 +62,29 @@ void MainWindow::on_pushButton_pressed()
 void MainWindow::on_pushButton_2_pressed()
 {
     IDatabase* db = f.databaseEngine();
+    IDocEngine *e = f.docEngine();
     IRecord *rec = db->createEmptyRecord();
     rec->value("campo1")->setValue("Hola Mundo");
     rec->value("campo2")->setValue("Valor del campo2");
 
-    QLOG_TRACE() << rec->value("campo1")->asString();
-    QLOG_TRACE() << rec->value("campo2")->asString();
+    QString text = ui->textEdit->toHtml();
+    QByteArray x = text.toUtf8();
+
+    IDocID *docId = addDocument(x);
+    QVariant doc;
+    IDocument * iDoc = (IDocument*)e->getDocument(docId);
+    doc.setValue(iDoc);
+    rec->value("archivo")->setValue(doc);
+
+    QLOG_TRACE() << rec->value("campo1")->asVariant();
+    QLOG_TRACE() << rec->value("campo2")->asVariant();
+
+    QLOG_TRACE() << rec->value("campo1")->content();
+    QLOG_TRACE() << rec->value("campo1")->content();
+    QLOG_TRACE() << rec->value("archivo")->content();
 
     //rec->value("campo1")->setNull();
-    QLOG_TRACE() << rec->value("campo1")->asString();
+    QLOG_TRACE() << rec->value("campo1")->asVariant();
 
     IRecordID *id = db->addRecord(rec);
     QLOG_TRACE() << id->asString();

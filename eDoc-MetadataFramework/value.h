@@ -20,9 +20,17 @@ public:
 
     virtual ~Value() {}
 
-    virtual void setValue(const QString &newValue) = 0;
+    virtual void setValue(const QVariant &newValue) = 0;
 
-    virtual QString asString() = 0;
+    virtual QVariant asVariant() = 0;
+
+    virtual QVariant content()
+    {
+        if (isNull())
+            return QVariant(QVariant::String);
+        else
+            return asVariant();
+    }
 
     virtual void setNull()
     {

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "../eDoc-Factory/edocfactory.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
+#include "../eDoc-API/IDocID.h"
 
 namespace Ui {
 class MainWindow;
@@ -16,7 +17,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    
+
+protected:
+    IDocID *addDocument(const QByteArray &blob);
 private slots:
     void on_pushButton_pressed();
     void on_LogTrace(const QString& text);

@@ -18,8 +18,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IntegerValue : public QObject, public V
 public:
     explicit IntegerValue(int value, QObject *parent = 0);
     IntegerValue(QObject *parent = 0);
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
 
     virtual ~IntegerValue();
 };
@@ -30,8 +30,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT DoubleValue : public QObject, public Va
 public:
     DoubleValue(double value, QObject *parent = 0);
     DoubleValue(QObject *parent = 0);
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
     virtual ~DoubleValue();
 };
 
@@ -41,8 +41,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT BoolValue : public QObject, public Valu
 public:
     BoolValue(bool value, QObject *parent = 0);
     BoolValue(QObject *parent = 0);
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
     virtual ~BoolValue();
 };
 
@@ -52,8 +52,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT QStringValue : public QObject, public V
 public:
     explicit QStringValue(const QString &value, QObject *parent = 0);
     QStringValue(QObject *parent = 0);
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
     virtual ~QStringValue();
 };
 
@@ -63,8 +63,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT QDateTimeValue : public QObject, public
 public:
     explicit QDateTimeValue(const QDateTimeValue &value, QObject *parent = 0);
     QDateTimeValue(QObject *parent = 0);
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
     virtual ~QDateTimeValue();
 };
 
@@ -74,8 +74,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT QDateValue : public QObject, public Val
 public:
     explicit QDateValue(const QDateValue &value, QObject *parent = 0);
     QDateValue(QObject *parent = 0);
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
     virtual ~QDateValue();
 };
 
@@ -85,8 +85,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT QTimeValue : public QObject, public Val
 public:
     explicit QTimeValue(const QTimeValue &value, QObject *parent = 0);
     QTimeValue(QObject *parent = 0);
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
     virtual ~QTimeValue();
 };
 
@@ -95,8 +95,9 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocBaseValue : public QObject, public 
     Q_OBJECT
 public:
     IDocBaseValue(IDocBase * value, QObject *parent = 0);
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
+    virtual QVariant content();
     virtual ~IDocBaseValue();
 };
 
@@ -106,8 +107,9 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocumentValue : public QObject, public
 public:
     IDocumentValue(IDocument *value, QObject *parent = 0);
     virtual ~IDocumentValue();
-    virtual void setValue(const QString &newValue);
-    virtual QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant content();
+    virtual QVariant asVariant();
 };
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiDocumentValue : public QObject, public Value<IMultiDocument*>
@@ -116,8 +118,9 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiDocumentValue : public QObject, p
 public:
     IMultiDocumentValue(IMultiDocument *value, QObject *parent = 0);
     virtual ~IMultiDocumentValue();
-    void setValue(const QString &newValue);
-    QString asString();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant content();
+    virtual QVariant asVariant();
 };
 
 #endif // VALUEDEFINITIONS_H

@@ -18,4 +18,6 @@ public:
     virtual ~IMultiDocument() {}
 };
 
+Q_DECLARE_METATYPE(IMultiDocument*)
+
 #endif // IMULTIDOCUMENT_H

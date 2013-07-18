@@ -111,10 +111,7 @@ void GenericDatabase::executeSQLCommand(const QString &sql, IRecord* record)
     (*r)["record_id"] = record->ID()->asString();
     foreach (QString key, m_Fields.keys())
     {
-        if (record->value(key)->isNull())
-            (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = QVariant(QVariant::String);
-        else
-            (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = record->value(key)->asString();
+        (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = record->value(key)->content();
     }
 
     m_SQLManager.executeCommand(sql, r);
@@ -162,7 +159,7 @@ QString GenericDatabase::getParametersString()
 {
     QStringList fields;
     fields.append("record_id");
-    fields.append(m_Fields.keys());
+    fields.append(m_FieldsBasedOnDatabase.keys());
     QStringList parameters;
     foreach(QString field, fields)
         parameters.append(":" + field);

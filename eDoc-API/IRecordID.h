@@ -1,6 +1,8 @@
 #ifndef IRECORDID_H
 #define IRECORDID_H
 
+#include <QMetaType>
+
 struct IRecordID
 {
 public:
@@ -8,5 +10,6 @@ public:
     virtual ~IRecordID() {}
 };
 
+Q_DECLARE_METATYPE(IRecordID*)
 
 #endif // IRECORDID_H

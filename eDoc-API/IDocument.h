@@ -14,4 +14,6 @@ public:
     virtual ~IDocument() {}
 };
 
+Q_DECLARE_METATYPE(IDocument*)
+
 #endif // IDOCUMENT_H

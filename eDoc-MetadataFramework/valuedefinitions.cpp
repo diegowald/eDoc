@@ -10,14 +10,14 @@ IntegerValue::IntegerValue(QObject *parent) :
 {
 }
 
-void IntegerValue::setValue(const QString &newValue)
+void IntegerValue::setValue(const QVariant &newValue)
 {
     setValue2(newValue.toInt());
 }
 
-QString IntegerValue::asString()
+QVariant IntegerValue::asVariant()
 {
-    return isNull() ? "" : QString::number(get());
+    return isNull() ? QVariant(QVariant::Int) : get();
 }
 
 IntegerValue::~IntegerValue()
@@ -38,14 +38,14 @@ DoubleValue::~DoubleValue()
 {
 }
 
-void DoubleValue::setValue(const QString &newValue)
+void DoubleValue::setValue(const QVariant &newValue)
 {
     setValue2(newValue.toDouble());
 }
 
-QString DoubleValue::asString()
+QVariant DoubleValue::asVariant()
 {
-    return isNull() ? "" : QString::number(get());
+    return isNull() ? QVariant(QVariant::Double) : get();
 }
 
 
@@ -63,14 +63,14 @@ BoolValue::~BoolValue()
 {
 }
 
-void BoolValue::setValue(const QString &newValue)
+void BoolValue::setValue(const QVariant &newValue)
 {
     setValue2("1" == newValue);
 }
 
-QString BoolValue::asString()
+QVariant BoolValue::asVariant()
 {
-    return isNull() ? "" : (get() ? "1" : "0");
+    return isNull() ? QVariant(QVariant::Bool) : (get() ? true : false);
 }
 
 
@@ -84,14 +84,14 @@ QStringValue::QStringValue(QObject *parent) :
 {
 }
 
-void QStringValue::setValue(const QString &newValue)
+void QStringValue::setValue(const QVariant &newValue)
 {
-    setValue2(newValue);
+    setValue2(newValue.toString());
 }
 
-QString QStringValue::asString()
+QVariant QStringValue::asVariant()
 {
-    return isNull() ? "" : get();
+    return isNull() ? QVariant(QVariant::String) : get();
 }
 
 
@@ -109,14 +109,15 @@ QDateTimeValue::QDateTimeValue(QObject *parent) :
 {
 }
 
-void QDateTimeValue::setValue(const QString &newValue)
+void QDateTimeValue::setValue(const QVariant &newValue)
 {
-    setValue2(QDateTime::fromString(newValue, "yyyyMMdd hh:mm:ss"));
+    //setValue2(QDateTime::fromString(newValue, "yyyyMMdd hh:mm:ss"));
+    setValue2(newValue.toDateTime());
 }
 
-QString QDateTimeValue::asString()
+QVariant QDateTimeValue::asVariant()
 {
-    return isNull() ? "" : get().toString("yyyyMMdd hh:mm:ss");
+    return isNull() ? QVariant(QVariant::DateTime) : get();//.toString("yyyyMMdd hh:mm:ss");
 }
 
 QDateTimeValue::~QDateTimeValue()
@@ -137,14 +138,15 @@ QDateValue::~QDateValue()
 {
 }
 
-void QDateValue::setValue(const QString &newValue)
+void QDateValue::setValue(const QVariant &newValue)
 {
-    setValue2(QDate::fromString(newValue, "yyyyMMdd"));
+    //setValue2(QDate::fromString(newValue, "yyyyMMdd"));
+    setValue2(newValue.toDate());
 }
 
-QString QDateValue::asString()
+QVariant QDateValue::asVariant()
 {
-    return isNull() ? "" : get().toString("yyyyMMdd");
+    return isNull() ? QVariant(QVariant::Date) : get();//.toString("yyyyMMdd");
 }
 
 
@@ -162,14 +164,15 @@ QTimeValue::~QTimeValue()
 {
 }
 
-void QTimeValue::setValue(const QString &newValue)
+void QTimeValue::setValue(const QVariant &newValue)
 {
-    setValue2(QTime::fromString(newValue, "hh:mm:ss"));
+    //setValue2(QTime::fromString(newValue, "hh:mm:ss"));
+    setValue2(newValue.toTime());
 }
 
-QString QTimeValue::asString()
+QVariant QTimeValue::asVariant()
 {
-    return isNull() ? "" : get().toString("hh:mm:ss");
+    return isNull() ? QVariant(QVariant::Time) : get();//.toString("hh:mm:ss");
 }
 
 IDocBaseValue::IDocBaseValue(IDocBase *value, QObject *parent) :
@@ -181,14 +184,22 @@ IDocBaseValue::~IDocBaseValue()
 {
 }
 
-void IDocBaseValue::setValue(const QString &newValue)
+void IDocBaseValue::setValue(const QVariant &newValue)
 {
     // Esto es una exception
 }
 
-QString IDocBaseValue::asString()
+QVariant IDocBaseValue::asVariant()
 {
     // esto es una exception
+}
+
+QVariant IDocBaseValue::content()
+{
+    if (isNull())
+        return QVariant(QVariant::String);
+    else
+        return get()->id()->asString();
 }
 
 IDocumentValue::IDocumentValue(IDocument *value, QObject *parent) :
@@ -200,14 +211,24 @@ IDocumentValue::~IDocumentValue()
 {
 }
 
-void IDocumentValue::setValue(const QString &newValue)
+void IDocumentValue::setValue(const QVariant &newValue)
 {
     // Esto es una exception
+    IDocument* v = newValue.value<IDocument*>();
+    setValue2(v);
 }
 
-QString IDocumentValue::asString()
+QVariant IDocumentValue::asVariant()
 {
-    // esto es una exception
+    return qVariantFromValue(get());
+}
+
+QVariant IDocumentValue::content()
+{
+    if (isNull())
+        return QVariant(QVariant::String);
+    else
+        return get()->id()->asString();
 }
 
 IMultiDocumentValue::IMultiDocumentValue(IMultiDocument *value, QObject *parent) :
@@ -219,12 +240,22 @@ IMultiDocumentValue::~IMultiDocumentValue()
 {
 }
 
-void IMultiDocumentValue::setValue(const QString &newValue)
+void IMultiDocumentValue::setValue(const QVariant &newValue)
 {
-    // Esto es una exception
+    setValue2(qvariant_cast<IMultiDocument*>(newValue));
 }
 
-QString IMultiDocumentValue::asString()
+QVariant IMultiDocumentValue::asVariant()
 {
-    // esto es una exception
+    QVariant v;
+    v.setValue(get());
+    return v;
+}
+
+QVariant IMultiDocumentValue::content()
+{
+    if (isNull())
+        return QVariant(QVariant::String);
+    else
+        return get()->id()->asString();
 }
