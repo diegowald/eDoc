@@ -19,7 +19,7 @@ GenericDatabase::~GenericDatabase()
 void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
 {
     m_Logger = logger;
-    m_Logger->logTrace("void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
+    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
     m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
     createFields(confFields);
@@ -30,6 +30,7 @@ void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *log
 
 void GenericDatabase::createFields(IXMLContent* configuration)
 {
+    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::createFields(IXMLContent* configuration)");
     XMLCollection *confFields = (XMLCollection*)configuration;
     int count = ((XMLElement*)confFields->get("count"))->value().toInt();
     for (int i = 1; i <= count; ++i)

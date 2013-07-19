@@ -17,7 +17,7 @@ EDocFactory::~EDocFactory()
 
 void EDocFactory::readAvailablePlugins()
 {
-    m_Logger->logTrace("void EDocFactory::readAvailablePlugins()");
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "void EDocFactory::readAvailablePlugins()");
     QDir pluginsDir(pluginPath);
     pluginsDir.cd("plugins");
 
@@ -46,7 +46,7 @@ void EDocFactory::readAvailablePlugins()
 void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, QObjectLogging *logger)
 {
     m_Logger = logger;
-    m_Logger->logTrace("void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)");
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile)");
     this->xmlFile = xmlFile;
     this->pluginPath = pluginPath;
     readAvailablePlugins();
@@ -54,7 +54,7 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     // Ahora a leer e instanciar y configurar el plugin
     ConfigReader reader(this->xmlFile);
     configuration = reader.getConfiguration();
-    m_Logger->logTrace(configuration->toDebugString());
+    m_Logger->logDebug(configuration->toDebugString());
 
     engine = createEngine();
     database = createDatabase();
@@ -63,19 +63,19 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
 
 IDocEngine* EDocFactory::docEngine()
 {
-    m_Logger->logTrace("IDocEngine* EDocFactory::docEngine()");
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDocEngine* EDocFactory::docEngine()");
     return engine;
 }
 
 IDatabase* EDocFactory::databaseEngine()
 {
-    m_Logger->logTrace("IDatabase* EDocFactory::databaseEngine()");
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase* EDocFactory::databaseEngine()");
     return database;
 }
 
 IDocEngine *EDocFactory::createEngine()
 {
-    m_Logger->logTrace("IDocEngine *EDocFactory::createEngine()");
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDocEngine *EDocFactory::createEngine()");
     if ("edoc" == configuration->key())
     {
         XMLCollection *c = (XMLCollection*) configuration;
@@ -96,7 +96,7 @@ IDocEngine *EDocFactory::createEngine()
 
 IDatabase *EDocFactory::createDatabase()
 {
-    m_Logger->logTrace("IDatabase *EDocFactory::createDatabase()");
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase *EDocFactory::createDatabase()");
     if ("edoc" == configuration->key())
     {
         XMLCollection *c = (XMLCollection*) configuration;

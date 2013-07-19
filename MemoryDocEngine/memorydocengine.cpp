@@ -16,20 +16,20 @@ void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLogging *log
 {
     maxCachedFiles = ((XMLElement*)((XMLCollection*) configuration)->get("maxCachedFiles"))->value().toInt();
     m_Logger = logger;
-    m_Logger->logTrace("void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
+    m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
     XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
     persistentEngine = createPersistentEngine(confEngine, pluginStock);
 }
 
 IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)
 {
-    m_Logger->logTrace("IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)");
+    m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)");
     return persistentEngine->addDocument(blob);
 }
 
 IDocBase *MemoryDocEngine::getDocument(IDocID *id)
 {
-    m_Logger->logTrace("IDocument *MemoryDocEngine::getDocument(IDocID *id)");
+    m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocument *MemoryDocEngine::getDocument(IDocID *id)");
     if (!m_Cache.contains(id->asString()))
     {
         IDocBase *persistentDoc = persistentEngine->getDocument(id);
@@ -47,7 +47,7 @@ IDocBase *MemoryDocEngine::getDocument(IDocID *id)
 
 bool MemoryDocEngine::deleteDocument(IDocID *id)
 {
-    m_Logger->logTrace("bool MemoryDocEngine::deleteDocument(IDocID *id)");
+    m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "bool MemoryDocEngine::deleteDocument(IDocID *id)");
 }
 
 
@@ -59,7 +59,7 @@ QString MemoryDocEngine::name()
 
 IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)
 {
-    m_Logger->logTrace("IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)");
+    m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)");
 
     if (confEngine->key() == "engine")
     {

@@ -9,9 +9,10 @@ QObjectLogging::~QObjectLogging()
 {
 }
 
-void QObjectLogging::logTrace(const QString& text)
+void QObjectLogging::logTrace(const QString &filename, const int LineNumber, const QString &ModuleName, const QString& text)
 {
-    emit LogTrace(text);
+    QString s("File: %1. Line: %2. Module: %3. %4");
+    emit LogTrace(s.arg(filename).arg(LineNumber).arg(ModuleName).arg(text));
 }
 
 void QObjectLogging::logDebug(const QString& text)

@@ -22,7 +22,7 @@ void FileEngine::initialize(IXMLContent *configuration, QObjectLogging *logger, 
 
 IDocID* FileEngine::addDocument(const QByteArray& blob)
 {
-    m_Logger->logTrace("IDocID* FileEngine::addDocument(const QByteArray& blob)");
+    m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "IDocID* FileEngine::addDocument(const QByteArray& blob)");
     SimpleFileID *id = new SimpleFileID();
 
     fileManager->createFile(id->asString(), blob);
@@ -32,14 +32,14 @@ IDocID* FileEngine::addDocument(const QByteArray& blob)
 
 IDocBase *FileEngine::getDocument(IDocID *id)
 {
-    m_Logger->logTrace("IDocBase* FileEngine::getDocument(IDocID *id) const");
+    m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "IDocBase* FileEngine::getDocument(IDocID *id) const");
     SimpleFileDocument *doc = new SimpleFileDocument(fileManager, id->asString(), this);
     return doc;
 }
 
 bool FileEngine::deleteDocument(IDocID *id)
 {
-    m_Logger->logTrace("bool FileEngine::deleteDocument(IDocID *id)");
+    m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "bool FileEngine::deleteDocument(IDocID *id)");
     return false;
 }
 

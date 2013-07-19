@@ -21,7 +21,7 @@ void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *log
 {
 
     m_Logger = logger;
-    m_Logger->logTrace("void FieldDefinition::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
+    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-MetadataFramework", "void FieldDefinition::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
 
     m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     m_Type = ((XMLElement*)((XMLCollection*) configuration)->get("type"))->value();

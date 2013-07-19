@@ -16,7 +16,7 @@ InMemoryDatabase::~InMemoryDatabase()
 void InMemoryDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
 {
     m_Logger = logger;
-    m_Logger->logTrace("void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
+    m_Logger->logTrace(__FILE__, __LINE__, "InMemoryDatabasePlugin", "void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
     m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
     createFields(confFields);

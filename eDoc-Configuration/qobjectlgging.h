@@ -10,7 +10,10 @@ public:
     explicit QObjectLogging(QObject *parent = 0);
     virtual ~QObjectLogging();
 
-    virtual void logTrace(const QString& text);
+    virtual void logTrace(const QString &filename,
+                          const int LineNumber,
+                          const QString &ModuleName,
+                          const QString& text);
     virtual void logDebug(const QString& text);
     virtual void logInfo(const QString& text);
     virtual void logWarning(const QString& text);
