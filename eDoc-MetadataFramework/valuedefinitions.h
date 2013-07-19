@@ -11,6 +11,8 @@
 #include "../eDoc-API/IDocBase.h"
 #include "../eDoc-API/IDocument.h"
 #include "../eDoc-API/IMultiDocument.h"
+#include "../eDoc-API/IRecord.h"
+#include "../eDoc-API/IMultiRecord.h"
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT IntegerValue : public QObject, public Value<int>
 {
@@ -123,4 +125,25 @@ public:
     virtual QVariant asVariant();
 };
 
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IRecordValue : public QObject, public Value<IRecord*>
+{
+    Q_OBJECT
+public:
+    IRecordValue(IRecord *value, QObject *parent = 0);
+    virtual ~IRecordValue();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant content();
+    virtual QVariant asVariant();
+};
+
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiRecordValue : public QObject, public Value<IMultiRecord*>
+{
+    Q_OBJECT
+public:
+    IMultiRecordValue(IMultiRecord *value, QObject *parent = 0);
+    virtual ~IMultiRecordValue();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant content();
+    virtual QVariant asVariant();
+};
 #endif // VALUEDEFINITIONS_H

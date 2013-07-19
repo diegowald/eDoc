@@ -1,6 +1,8 @@
 #ifndef IRECORD_H
 #define IRECORD_H
 
+
+#include <QMetaType>
 #include "IRecordID.h"
 #include "IFieldDefinition.h"
 #include "IValue.h"
@@ -14,5 +16,7 @@ public:
     virtual IValue* value(const QString &fieldName) = 0;
     virtual ~IRecord() {}
 };
+
+Q_DECLARE_METATYPE(IRecord*)
 
 #endif // IRECORD_H

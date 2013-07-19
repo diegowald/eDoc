@@ -259,3 +259,61 @@ QVariant IMultiDocumentValue::content()
     else
         return get()->id()->asString();
 }
+
+IRecordValue::IRecordValue(IRecord *value, QObject *parent) :
+    QObject(parent), Value(value)
+{
+}
+
+IRecordValue::~IRecordValue()
+{
+}
+
+void IRecordValue::setValue(const QVariant &newValue)
+{
+    setValue2(qvariant_cast<IRecord*>(newValue));
+}
+
+QVariant IRecordValue::asVariant()
+{
+    QVariant v;
+    v.setValue(get());
+    return v;
+}
+
+QVariant IRecordValue::content()
+{
+    if (isNull())
+        return QVariant(QVariant::String);
+    else
+        return get()->ID()->asString();
+}
+
+IMultiRecordValue::IMultiRecordValue(IMultiRecord *value, QObject *parent) :
+    QObject(parent), Value(value)
+{
+}
+
+IMultiRecordValue::~IMultiRecordValue()
+{
+}
+
+void IMultiRecordValue::setValue(const QVariant &newValue)
+{
+    setValue2(qvariant_cast<IMultiRecord*>(newValue));
+}
+
+QVariant IMultiRecordValue::asVariant()
+{
+    QVariant v;
+    v.setValue(get());
+    return v;
+}
+
+QVariant IMultiRecordValue::content()
+{
+    if (isNull())
+        return QVariant(QVariant::String);
+    else
+        return get()->ID()->asString();
+}

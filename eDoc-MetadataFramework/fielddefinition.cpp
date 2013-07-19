@@ -60,6 +60,10 @@ DATATYPE FieldDefinition::analyzeType()
         return IDOCUMENT_TYPE;
     else if ("multidocument" == tp)
         return IMULTIDOCUMENT_TYPE;
+    else if ("record" == tp)
+        return IRECORD_REFERENCE_TYPE;
+    else if ("record" == tp)
+        return IMULTIRECORD_REFERENCE_TYPE;
     else
         return INVALID_TYPE;
 }
@@ -124,6 +128,14 @@ IValue* FieldDefinition::createEmptyValue()
         break;
     case IMULTIDOCUMENT_TYPE:
         value = new IMultiDocumentValue(NULL, this);
+        value->setNull();
+        break;
+    case IRECORD_REFERENCE_TYPE:
+        value = new IRecordValue(NULL, this);
+        value->setNull();
+        break;
+    case IMULTIRECORD_REFERENCE_TYPE:
+        value = new IMultiRecordValue(NULL, this);
         value->setNull();
         break;
     case INVALID_TYPE:

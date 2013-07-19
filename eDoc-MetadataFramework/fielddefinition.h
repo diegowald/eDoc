@@ -17,7 +17,9 @@ enum DATATYPE {
     QTIME_TYPE,     // time
     IDOCBASE_TYPE,  // docbase
     IDOCUMENT_TYPE, // document
-    IMULTIDOCUMENT_TYPE // multidocument
+    IMULTIDOCUMENT_TYPE, // multidocument
+    IRECORD_REFERENCE_TYPE, // references to other record in other database
+    IMULTIRECORD_REFERENCE_TYPE // references to an ordered set of records in other database
 };
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT FieldDefinition : public QObject, public IFieldDefinition
