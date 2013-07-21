@@ -11,6 +11,7 @@ SUBDIRS += \
     MemoryDocEngine \
     eDoc-MetadataFramework \
     InMemoryDatabasePlugin \
-    GenericDatabasePlugin
+    GenericDatabasePlugin \
+    eDoc-ClientComponents
 
 

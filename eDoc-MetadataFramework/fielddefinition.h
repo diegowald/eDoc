@@ -19,7 +19,8 @@ enum DATATYPE {
     IDOCUMENT_TYPE, // document
     IMULTIDOCUMENT_TYPE, // multidocument
     IRECORD_REFERENCE_TYPE, // references to other record in other database
-    IMULTIRECORD_REFERENCE_TYPE // references to an ordered set of records in other database
+    IMULTIRECORD_REFERENCE_TYPE, // references to an ordered set of records in other database
+    TAG_TYPE // references to a list of keywords.
 };
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT FieldDefinition : public QObject, public IFieldDefinition
