@@ -317,3 +317,32 @@ QVariant IMultiRecordValue::content()
     else
         return get()->ID()->asString();
 }
+
+ITagRecordValue::ITagRecordValue(ITag *value, QObject *parent) :
+    QObject(parent), Value(value)
+{
+}
+
+ITagRecordValue::~ITagRecordValue()
+{
+}
+
+void ITagRecordValue::setValue(const QVariant &newValue)
+{
+    setValue2(qvariant_cast<ITag*>(newValue));
+}
+
+QVariant ITagRecordValue::asVariant()
+{
+    QVariant v;
+    v.setValue(get());
+    return v;
+}
+
+QVariant ITagRecordValue::content()
+{
+    if (isNull())
+        return QVariant(QVariant::String);
+    else
+        return get()->asString();
+}

@@ -13,6 +13,8 @@
 #include "../eDoc-API/IMultiDocument.h"
 #include "../eDoc-API/IRecord.h"
 #include "../eDoc-API/IMultiRecord.h"
+#include "../eDoc-API/ITag.h"
+
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT IntegerValue : public QObject, public Value<int>
 {
@@ -142,6 +144,17 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiRecordValue : public QObject, pub
 public:
     IMultiRecordValue(IMultiRecord *value, QObject *parent = 0);
     virtual ~IMultiRecordValue();
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant content();
+    virtual QVariant asVariant();
+};
+
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT ITagRecordValue : public QObject, public Value<ITag*>
+{
+    Q_OBJECT
+public:
+    ITagRecordValue(ITag *value, QObject *parent = 0);
+    virtual ~ITagRecordValue();
     virtual void setValue(const QVariant &newValue);
     virtual QVariant content();
     virtual QVariant asVariant();

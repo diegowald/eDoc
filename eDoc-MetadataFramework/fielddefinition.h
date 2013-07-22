@@ -53,6 +53,9 @@ private:
     QObjectLogging *m_Logger;
     DATATYPE m_DataType;
     QString m_FieldNameInDatabase;
+    QString m_OtherDatabaseName;
+    QString m_FieldToShow;
+
 };
 
 #endif // FIELDDEFINITION_H

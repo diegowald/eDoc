@@ -29,6 +29,15 @@ void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *log
     m_Visible = ((XMLElement*)((XMLCollection*) configuration)->get("visible"))->value() == "1" ? true : false;
     m_DataType = analyzeType();
     m_FieldNameInDatabase = ((XMLElement*)((XMLCollection*)configuration)->get("fieldname"))->value();
+    switch (m_DataType) {
+    case IRECORD_REFERENCE_TYPE:
+    case IMULTIRECORD_REFERENCE_TYPE:
+        m_OtherDatabaseName = ((XMLElement*)((XMLCollection*)configuration)->get("datanase"))->value();
+        m_FieldToShow = ((XMLElement*)((XMLCollection*)configuration)->get("display_field"))->value();
+        break;
+    default:
+        break;
+    }
 /*
 
     XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
@@ -62,8 +71,10 @@ DATATYPE FieldDefinition::analyzeType()
         return IMULTIDOCUMENT_TYPE;
     else if ("record" == tp)
         return IRECORD_REFERENCE_TYPE;
-    else if ("record" == tp)
+    else if ("multi_record" == tp)
         return IMULTIRECORD_REFERENCE_TYPE;
+    else if ("tag" == tp)
+        return TAG_TYPE;
     else
         return INVALID_TYPE;
 }
@@ -136,6 +147,10 @@ IValue* FieldDefinition::createEmptyValue()
         break;
     case IMULTIRECORD_REFERENCE_TYPE:
         value = new IMultiRecordValue(NULL, this);
+        value->setNull();
+        break;
+    case TAG_TYPE:
+        value = new ITagRecordValue(NULL, this);
         value->setNull();
         break;
     case INVALID_TYPE:

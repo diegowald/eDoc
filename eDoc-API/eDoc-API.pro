@@ -27,7 +27,8 @@ HEADERS += edocapi_global.h \
     IMultiDocument.h \
     IDocBase.h \
     IRecordID.h \
-    IMultiRecord.h
+    IMultiRecord.h \
+    ITag.h
 
 unix:!symbian {
     maemo5 {
