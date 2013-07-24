@@ -17,19 +17,19 @@
 			<field1 name="campo1">
 				<type>string</type>
 				<readonly>0</readonly>
-				<visible>0</visible>
+				<visible>1</visible>
 				<fieldname>campo1</fieldname>
 			</field1>
 			<field2 name="campo2">
 				<type>string</type>
-				<readonly>0</readonly>
-				<visible>0</visible>
+				<readonly>1</readonly>
+				<visible>1</visible>
 				<fieldname>campo2</fieldname>
 			</field2>
 			<field3 name="archivo">
 				<type>document</type>
 				<readonly>0</readonly>
-				<visible>0</visible>
+				<visible>1</visible>
 				<fieldname>id_file</fieldname>
 			</field3>
 		</fields>
