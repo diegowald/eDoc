@@ -14,6 +14,8 @@ public:
     virtual IRecordID *ID() = 0;
     virtual IValue* value(IFieldDefinition* field) = 0;
     virtual IValue* value(const QString &fieldName) = 0;
+    virtual IFieldDefinition* fieldDefinition(const QString &fieldName) = 0;
+    virtual QList<QString> fieldNames() = 0;
     virtual ~IRecord() {}
 };
 

@@ -43,3 +43,8 @@ unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-MetadataFramework
 
 INCLUDEPATH += $$PWD/../eDoc-MetadataFramework
 DEPENDPATH += $$PWD/../eDoc-MetadataFramework
+
+unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-ClientComponents
+
+INCLUDEPATH += $$PWD/../eDoc-ClientComponents
+DEPENDPATH += $$PWD/../eDoc-ClientComponents

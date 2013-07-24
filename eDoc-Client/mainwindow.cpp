@@ -6,7 +6,9 @@
 #include "../eDoc-API/IDocument.h"
 #include <QApplication>
 #include <QsLog.h>
+#include "../eDoc-ClientComponents/recordeditor.h"
 
+#include <QListWidgetItem>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -64,8 +66,17 @@ void MainWindow::on_pushButton_2_pressed()
     IDatabase* db = f.databaseEngine();
     IDocEngine *e = f.docEngine();
     IRecord *rec = db->createEmptyRecord();
+
     rec->value("campo1")->setValue("Hola Mundo");
     rec->value("campo2")->setValue("Valor del campo2");
+
+
+    RecordEditor *r = new RecordEditor(this);
+    r->setRecord(rec);
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(r);
+    ui->frame->setLayout(layout);
+
 
     QString text = ui->textEdit->toHtml();
     QByteArray x = text.toUtf8();

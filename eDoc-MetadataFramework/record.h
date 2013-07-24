@@ -18,6 +18,8 @@ public:
     virtual IRecordID *ID();
     virtual IValue* value(IFieldDefinition* field);
     virtual IValue* value(const QString &fieldName);
+    virtual IFieldDefinition* fieldDefinition(const QString &fieldName);
+    virtual QList<QString> fieldNames();
 signals:
     
 public slots:
@@ -25,6 +27,7 @@ public slots:
 private:
     IRecordID *m_ID;
     QMap<QString, IValue*> m_Values;
+    QMap<QString, IFieldDefinition*> m_Fields;
 };
 
 #endif // RECORD_H
