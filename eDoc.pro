@@ -12,6 +12,7 @@ SUBDIRS += \
     eDoc-MetadataFramework \
     InMemoryDatabasePlugin \
     GenericDatabasePlugin \
-    eDoc-ClientComponents
+    eDoc-ClientComponents \
+    eDoc-InMemoryTagging
 
 
