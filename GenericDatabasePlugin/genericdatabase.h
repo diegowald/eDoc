@@ -5,6 +5,8 @@
 #include "../eDoc-API/IDatabase.h"
 #include <QMap>
 #include "sqlmanager.h"
+#include "../eDoc-API/ITagProcessor.h"
+
 
 class GenericDatabase : public QObject, public IDatabase
 {
@@ -46,6 +48,7 @@ private:
     QMap<QString, IFieldDefinition*> m_FieldsBasedOnDatabase;
     QString m_TableName;
     SQLManager m_SQLManager;
+    ITagProcessor *m_TagProcessor;
 };
 
 #endif // GENERICDATABASE_H

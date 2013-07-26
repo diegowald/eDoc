@@ -48,3 +48,8 @@ DEPENDPATH += $$PWD/../eDoc-MetadataFramework
 
 OTHER_FILES += \
     GenericDatabasePlugin.json
+
+unix|win32: LIBS += -L$$OUT_PWD/.. -leDoc-InMemoryTagging
+
+INCLUDEPATH += $$PWD/../eDoc-InMemoryTagging
+DEPENDPATH += $$PWD/../eDoc-InMemoryTagging

@@ -6,6 +6,8 @@
 #include "recordid.h"
 #include <QStringList>
 #include <boost/make_shared.hpp>
+#include "../eDoc-InMemoryTagging/inmemorytagprocessor.h"
+#include <QSet>
 
 GenericDatabase::GenericDatabase(QObject *parent) :
     QObject(parent)
@@ -26,6 +28,7 @@ void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *log
 
     m_TableName = ((XMLElement*)((XMLCollection*)configuration)->get("tablename"))->value();
     m_SQLManager.initialize(configuration, logger, pluginStock);
+    m_TagProcessor = new InMemoryTagProcessor(this);
 }
 
 void GenericDatabase::createFields(IXMLContent* configuration)
@@ -57,6 +60,26 @@ QList<IFieldDefinition*> GenericDatabase::fields()
 
 QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters) const
 {
+    QList<IRecordID*> resultList;
+    QSet<IRecordID*> result;
+    bool firstParameterProcessed = false;
+    // La idea es ir obteniendo sets para cada parametro y luego realizar la interseccion entre todos.
+    foreach (IParameter* p, parameters)
+    {
+        QSet<IRecordID*> partialResult = search(p);
+
+        if (partialResult.size() == 0)
+            return resultList;
+
+        if (firstParameterProcessed)
+            result = result.intersect(partialResult);
+        else
+        {
+            result = partialResult;
+            firstParameterProcessed = true;
+        }
+    }
+    return result.toList();
 }
 
 IRecord* GenericDatabase::createEmptyRecord()

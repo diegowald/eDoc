@@ -2,7 +2,7 @@
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "valuedefinitions.h"
-
+#include "tag.h"
 
 FieldDefinition::FieldDefinition(QObject *parent) :
     QObject(parent)
@@ -64,7 +64,7 @@ DATATYPE FieldDefinition::analyzeType()
     else if ("time" == tp)
         return QTIME_TYPE;
     else if ("docbase" == tp)
-        IDOCBASE_TYPE;
+        return IDOCBASE_TYPE;
     else if ("document" == tp)
         return IDOCUMENT_TYPE;
     else if ("multidocument" == tp)
@@ -150,7 +150,11 @@ IValue* FieldDefinition::createEmptyValue()
         value->setNull();
         break;
     case TAG_TYPE:
-        value = new ITagRecordValue(NULL, this);
+        /*value = new ITagRecordValue(NULL, this);
+        QVariant v;
+        v.setValue(new Tag());
+        value->setValue(v);*/
+        value = new Tag(this);
         value->setNull();
         break;
     case INVALID_TYPE:

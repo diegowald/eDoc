@@ -13,7 +13,7 @@
 		<user></user>
 		<password></password>
 		<tablename>tabla1</tablename>
-		<fields count="3">
+		<fields count="4">
 			<field1 name="campo1">
 				<type>string</type>
 				<readonly>0</readonly>
@@ -26,12 +26,18 @@
 				<visible>1</visible>
 				<fieldname>campo2</fieldname>
 			</field2>
-			<field3 name="archivo">
+			<field3 name="keywords">
+				<type>tag</type>
+				<readonly>0</readonly>
+				<visible>1</visible>
+				<fieldname>keywords</fieldname>
+			</field3>
+			<field4 name="archivo">
 				<type>document</type>
 				<readonly>0</readonly>
 				<visible>1</visible>
 				<fieldname>id_file</fieldname>
-			</field3>
+			</field4>
 		</fields>
 	</database>
 </edoc>

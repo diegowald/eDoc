@@ -11,10 +11,10 @@ TEMPLATE = lib
 
 DEFINES += EDOCINMEMORYTAGGING_LIBRARY
 
-SOURCES += edocinmemorytagging.cpp \
+SOURCES += \
     inmemorytagprocessor.cpp
 
-HEADERS += edocinmemorytagging.h\
+HEADERS +=\
         edoc-inmemorytagging_global.h \
     inmemorytagprocessor.h
 

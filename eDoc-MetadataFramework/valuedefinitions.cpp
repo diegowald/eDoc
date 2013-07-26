@@ -318,6 +318,7 @@ QVariant IMultiRecordValue::content()
         return get()->ID()->asString();
 }
 
+/*
 ITagRecordValue::ITagRecordValue(ITag *value, QObject *parent) :
     QObject(parent), Value(value)
 {
@@ -346,3 +347,4 @@ QVariant ITagRecordValue::content()
     else
         return get()->asString();
 }
+*/

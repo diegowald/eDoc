@@ -149,7 +149,7 @@ public:
     virtual QVariant asVariant();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT ITagRecordValue : public QObject, public Value<ITag*>
+/*class EDOCMETADATAFRAMEWORKSHARED_EXPORT ITagRecordValue : public QObject, public Value<ITag*>
 {
     Q_OBJECT
 public:
@@ -158,5 +158,5 @@ public:
     virtual void setValue(const QVariant &newValue);
     virtual QVariant content();
     virtual QVariant asVariant();
-};
+};*/
 #endif // VALUEDEFINITIONS_H

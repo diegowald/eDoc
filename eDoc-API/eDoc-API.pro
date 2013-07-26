@@ -28,7 +28,8 @@ HEADERS += edocapi_global.h \
     IDocBase.h \
     IRecordID.h \
     IMultiRecord.h \
-    ITag.h
+    ITag.h \
+    ITagProcessor.h
 
 unix:!symbian {
     maemo5 {

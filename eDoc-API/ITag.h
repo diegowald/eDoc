@@ -2,6 +2,7 @@
 #define ITAG_H
 
 #include <QMetaType>
+#include <QStringList>
 #include "IValue.h"
 
 struct ITag : public IValue
