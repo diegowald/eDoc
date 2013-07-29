@@ -20,13 +20,16 @@ public:
     
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
     virtual QList<IFieldDefinition*> fields();
-    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) const;
+    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters);
     virtual IRecord* createEmptyRecord();
     virtual IRecordID *addRecord(IRecord *record);
     virtual IRecord* getRecord(IRecordID *id);
     virtual void updateRecord(IRecord* record);
     virtual void deleteRecord(IRecordID *id);
     virtual QString name();
+
+protected:
+    virtual QSet<IRecordID*> search(IParameter* parameter);
 
 private:
     void createFields(IXMLContent* configuration);

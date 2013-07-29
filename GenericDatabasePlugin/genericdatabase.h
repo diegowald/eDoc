@@ -6,7 +6,7 @@
 #include <QMap>
 #include "sqlmanager.h"
 #include "../eDoc-API/ITagProcessor.h"
-
+#include <utility>
 
 class GenericDatabase : public QObject, public IDatabase
 {
@@ -22,13 +22,16 @@ public:
 
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
     virtual QList<IFieldDefinition*> fields();
-    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) const;
+    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters);
     virtual IRecord* createEmptyRecord();
     virtual IRecordID *addRecord(IRecord *record);
     virtual IRecord* getRecord(IRecordID *id);
     virtual void updateRecord(IRecord* record);
     virtual void deleteRecord(IRecordID *id);
     virtual QString name();
+
+protected:
+    virtual QSet<IRecordID*> search(IParameter* parameter);
 
 private:
     void createFields(IXMLContent* configuration);
@@ -37,6 +40,8 @@ private:
     QString getUpdateFieldsString();
     QString getParametersString();
     void executeSQLCommand(const QString &sql, IRecord* record);
+    std::pair<QString, DBRecordPtr> getWhereClause(IParameter *parameter);
+
 signals:
     
 public slots:

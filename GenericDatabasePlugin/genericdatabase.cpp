@@ -58,7 +58,7 @@ QList<IFieldDefinition*> GenericDatabase::fields()
     return m_Fields.values();
 }
 
-QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters) const
+QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters)
 {
     QList<IRecordID*> resultList;
     QSet<IRecordID*> result;
@@ -80,6 +80,80 @@ QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters) 
         }
     }
     return result.toList();
+}
+
+std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *parameter)
+{
+    QString whereClause = "";
+    DBRecordPtr r;
+
+    switch (parameter->queryType())
+    {
+    case EQUALS_TO:
+        whereClause = QString("%1 = :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        break;
+    case DISTINT_TO:
+        whereClause = QString("%1 <> :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        break;
+    case LESS_THAN:
+        whereClause = QString("%1 < :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        break;
+    case LESS_THAN_OR_EQUALS_TO:
+        whereClause = QString("%1 <= :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        break;
+    case GREATER_THAN:
+        whereClause = QString("%1 > :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        break;
+    case GREATER_THAN_OR_EQUALS_TO:
+        whereClause = QString("%1 >= :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        break;
+    case BETWEEN:
+        whereClause = QString("%1 BETWEEN :%2 AND :%3TO").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        (*r)[QString(":%1TO").arg(parameter->field()->name())] = parameter->values().at(1)->asVariant();
+        break;
+    case CONTAINS:
+        whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString() + "%";
+        break;
+    case STARTS_WITH:
+        whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant().toString() + "%";
+        break;
+    case ENDS_WITH:
+        whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
+        (*r)[QString(":%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString();
+        break;
+    case IS_NULL:
+        whereClause = QString("%1 IS NULL").arg(parameter->field()->name());
+        break;
+    case IS_NOT_NULL:
+        whereClause = QString("%1 IS NOT NULL").arg(parameter->field()->name());
+        break;
+    }
+
+    return std::make_pair<QString, DBRecordPtr>(whereClause, r);
+}
+
+QSet<IRecordID*> GenericDatabase::search(IParameter* parameter)
+{
+    QString SQL = "SELECT record_id from %1 where %2";
+    std::pair<QString, DBRecordPtr> whereClause = getWhereClause(parameter);
+    QString sql = SQL.arg(m_TableName).arg(whereClause.first);
+    DBRecordSet rs = m_SQLManager.getRecords(sql, whereClause.second);
+
+    QSet<IRecordID*> result;
+    foreach (DBRecordPtr rec, *rs)
+    {
+        result.insert(new RecordID((*rec)["record_id"].toString(), this));
+    }
+    return result;
 }
 
 IRecord* GenericDatabase::createEmptyRecord()

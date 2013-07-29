@@ -9,12 +9,14 @@
 #include "IRecordID.h"
 #include "IRecord.h"
 #include "IParameter.h"
+#include <QSet>
+
 
 struct IDatabase {
 public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
     virtual QList<IFieldDefinition*> fields() = 0;
-    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) const = 0;
+    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) = 0;
     virtual IRecord* createEmptyRecord() = 0;
     virtual IRecordID *addRecord(IRecord *record) = 0;
     virtual IRecord* getRecord(IRecordID *id) = 0;
@@ -23,6 +25,9 @@ public:
     virtual QString name() = 0;
 
     virtual ~IDatabase() {}
+
+protected:
+    virtual QSet<IRecordID*> search(IParameter* parameter) = 0;
 };
 
 Q_DECLARE_INTERFACE(IDatabase, "com.mksingenieria.eDoc.IDatabase/0.0")

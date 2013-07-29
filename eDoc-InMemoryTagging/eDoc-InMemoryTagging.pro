@@ -8,6 +8,7 @@ QT       -= gui
 
 TARGET = eDoc-InMemoryTagging
 TEMPLATE = lib
+DESTDIR = ../
 
 DEFINES += EDOCINMEMORYTAGGING_LIBRARY
 

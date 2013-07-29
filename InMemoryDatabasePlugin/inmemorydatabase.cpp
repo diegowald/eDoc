@@ -47,7 +47,11 @@ QList<IFieldDefinition*> InMemoryDatabase::fields()
     return m_Fields.values();
 }
 
-QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters) const
+QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters)
+{
+}
+
+QSet<IRecordID*> InMemoryDatabase::search(IParameter* parameter)
 {
 }
 
