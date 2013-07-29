@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>604</width>
-    <height>430</height>
+    <width>669</width>
+    <height>533</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
     <property name="spacing">
      <number>2</number>
     </property>
@@ -35,7 +35,56 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTreeView" name="treeView"/>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QComboBox" name="cboField"/>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cboOperator"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="searchValue1"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblAnd">
+            <property name="text">
+             <string>and</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="searchValue2"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSearch">
+            <property name="text">
+             <string>Search</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QListWidget" name="searchResult"/>
+        </item>
+       </layout>
+      </widget>
       <widget class="QSplitter" name="splitter">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -143,7 +192,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>604</width>
+     <width>669</width>
      <height>21</height>
     </rect>
    </property>
@@ -155,8 +204,17 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionAdd_Document"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionAdd_Document">
+   <property name="text">
+    <string>Add Document</string>
+   </property>
+   <property name="toolTip">
+    <string>Adds a new document to storage</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -21,3 +21,8 @@ void StringWidget::setField(IFieldDefinition* fieldDefinition, IValue* value)
     ui->ReadOnlyValue->setText(value->content().toString());
     ui->EditValue->setText(value->content().toString());
 }
+
+QVariant StringWidget::value()
+{
+    return ui->EditValue->text();
+}

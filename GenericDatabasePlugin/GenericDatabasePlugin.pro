@@ -41,7 +41,7 @@ INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
 
-unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-MetadataFramework
+unix|win32: LIBS += -L$$OUT_PWD/.. -leDoc-MetadataFramework
 
 INCLUDEPATH += $$PWD/../eDoc-MetadataFramework
 DEPENDPATH += $$PWD/../eDoc-MetadataFramework

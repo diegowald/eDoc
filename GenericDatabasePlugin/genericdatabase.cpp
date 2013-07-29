@@ -8,6 +8,7 @@
 #include <boost/make_shared.hpp>
 #include "../eDoc-InMemoryTagging/inmemorytagprocessor.h"
 #include <QSet>
+#include "../eDoc-MetadataFramework/parameter.h"
 
 GenericDatabase::GenericDatabase(QObject *parent) :
     QObject(parent)
@@ -58,6 +59,11 @@ QList<IFieldDefinition*> GenericDatabase::fields()
     return m_Fields.values();
 }
 
+IFieldDefinition* GenericDatabase::field(const QString &fieldName)
+{
+    return m_Fields.contains(fieldName) ? m_Fields[fieldName] : NULL;
+}
+
 QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters)
 {
     QList<IRecordID*> resultList;
@@ -85,50 +91,50 @@ QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters)
 std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *parameter)
 {
     QString whereClause = "";
-    DBRecordPtr r;
+    DBRecordPtr r = boost::make_shared<DBRecord>();
 
     switch (parameter->queryType())
     {
     case EQUALS_TO:
         whereClause = QString("%1 = :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
         break;
     case DISTINT_TO:
         whereClause = QString("%1 <> :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
         break;
     case LESS_THAN:
         whereClause = QString("%1 < :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
         break;
     case LESS_THAN_OR_EQUALS_TO:
         whereClause = QString("%1 <= :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
         break;
     case GREATER_THAN:
         whereClause = QString("%1 > :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
         break;
     case GREATER_THAN_OR_EQUALS_TO:
         whereClause = QString("%1 >= :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
         break;
     case BETWEEN:
         whereClause = QString("%1 BETWEEN :%2 AND :%3TO").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
-        (*r)[QString(":%1TO").arg(parameter->field()->name())] = parameter->values().at(1)->asVariant();
+        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        (*r)[QString("%1TO").arg(parameter->field()->name())] = parameter->values().at(1)->asVariant();
         break;
     case CONTAINS:
         whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString() + "%";
+        (*r)[QString("%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString() + "%";
         break;
     case STARTS_WITH:
         whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant().toString() + "%";
+        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant().toString() + "%";
         break;
     case ENDS_WITH:
         whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString(":%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString();
+        (*r)[QString("%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString();
         break;
     case IS_NULL:
         whereClause = QString("%1 IS NULL").arg(parameter->field()->name());
@@ -154,6 +160,11 @@ QSet<IRecordID*> GenericDatabase::search(IParameter* parameter)
         result.insert(new RecordID((*rec)["record_id"].toString(), this));
     }
     return result;
+}
+
+IParameter* GenericDatabase::createEmptyParameter()
+{
+    return new Parameter(this);
 }
 
 IRecord* GenericDatabase::createEmptyRecord()
@@ -190,7 +201,21 @@ IRecord* GenericDatabase::getRecord(IRecordID *id)
 
     foreach (QString key, recPtr->keys())
     {
-        record->value(key)->setValue(((*recPtr)[key]).toString());
+        m_Logger->logDebug(key);
+
+        if ("record_id" == key)
+        {
+            record->setID(new RecordID(((*recPtr)[key]).toString(), this));
+        }
+        else
+        {
+            m_Logger->logDebug(m_FieldsBasedOnDatabase[key]->name());
+            m_Logger->logDebug(((*recPtr)[key]).toString());
+            if (!((*recPtr)[key]).isNull())
+                record->value(m_FieldsBasedOnDatabase[key]->name())->setValue(((*recPtr)[key]).toString());
+            else
+                record->value(m_FieldsBasedOnDatabase[key]->name())->setNull();
+        }
     }
     return record;
 }

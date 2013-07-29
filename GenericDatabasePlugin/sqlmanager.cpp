@@ -73,7 +73,9 @@ DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)
         return response;
     }
 
-    QSqlQuery q(sql);
+    QSqlQuery q;
+    q.prepare(sql);
+    addParameters(q, sql, record);
     q.exec();
 
     while (q.next())

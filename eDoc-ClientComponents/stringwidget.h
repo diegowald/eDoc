@@ -18,7 +18,7 @@ public:
     ~StringWidget();
 
     virtual void setField(IFieldDefinition* fieldDefinition, IValue* value);
-    
+    virtual QVariant value();
 private:
     Ui::StringWidget *ui;
 };

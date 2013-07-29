@@ -20,6 +20,8 @@ public:
 
 protected:
     IDocID *addDocument(const QByteArray &blob);
+    void fillFieldsCombo();
+    void fillOperatorsCombo();
 private slots:
     void on_pushButton_pressed();
     void on_LogTrace(const QString& text);
@@ -29,6 +31,12 @@ private slots:
     void on_LogError(const QString& text);
     void on_LogFatal(const QString& text);
     void on_pushButton_2_pressed();
+
+    void on_actionAdd_Document_triggered();
+
+    void on_cboOperator_currentIndexChanged(int index);
+
+    void on_btnSearch_released();
 
 private:
     Ui::MainWindow *ui;

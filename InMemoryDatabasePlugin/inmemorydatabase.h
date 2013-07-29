@@ -20,7 +20,9 @@ public:
     
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
     virtual QList<IFieldDefinition*> fields();
+    virtual IFieldDefinition* field(const QString &fieldName);
     virtual QList<IRecordID*> search(const QList<IParameter*> &parameters);
+    virtual IParameter* createEmptyParameter();
     virtual IRecord* createEmptyRecord();
     virtual IRecordID *addRecord(IRecord *record);
     virtual IRecord* getRecord(IRecordID *id);

@@ -4,7 +4,7 @@
 #include "edoc-clientcomponents_global.h"
 #include <QWidget>
 #include "../eDoc-API/IRecord.h"
-
+#include "stringwidget.h"
 
 namespace Ui {
 class RecordEditor;
@@ -19,9 +19,10 @@ public:
     virtual ~RecordEditor();
 
     virtual void setRecord(IRecord * record);
-    
+    virtual void applyValuesToRecord(IRecord *record);
 private:
     Ui::RecordEditor *ui;
+    QMap<QString, StringWidget*> collection;
 };
 
 #endif // RECORDEDITOR_H

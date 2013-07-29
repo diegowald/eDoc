@@ -16,7 +16,8 @@ SOURCES += edocmetadataframework.cpp \
     valuedefinitions.cpp \
     fielddefinition.cpp \
     record.cpp \
-    tag.cpp
+    tag.cpp \
+    parameter.cpp
 
 HEADERS += edocmetadataframework.h\
     edoc-metadataframework_global.h \
@@ -24,7 +25,8 @@ HEADERS += edocmetadataframework.h\
     valuedefinitions.h \
     fielddefinition.h \
     record.h \
-    tag.h
+    tag.h \
+    parameter.h
 
 unix:!symbian {
     maemo5 {

@@ -3,6 +3,7 @@
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-MetadataFramework/fielddefinition.h"
 #include "recordid.h"
+#include "../eDoc-MetadataFramework/parameter.h"
 
 InMemoryDatabase::InMemoryDatabase(QObject *parent) :
     QObject(parent)
@@ -47,12 +48,22 @@ QList<IFieldDefinition*> InMemoryDatabase::fields()
     return m_Fields.values();
 }
 
+IFieldDefinition* InMemoryDatabase::field(const QString &fieldName)
+{
+    return m_Fields.contains(fieldName) ? m_Fields[fieldName] : NULL; //EXCEPTION
+}
+
 QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters)
 {
 }
 
 QSet<IRecordID*> InMemoryDatabase::search(IParameter* parameter)
 {
+}
+
+IParameter* InMemoryDatabase::createEmptyParameter()
+{
+    return new Parameter();
 }
 
 IRecord* InMemoryDatabase::createEmptyRecord()

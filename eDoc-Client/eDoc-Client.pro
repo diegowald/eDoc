@@ -13,11 +13,14 @@ TEMPLATE = app
 DESTDIR = ../
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    dlgadddocument.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    dlgadddocument.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dlgadddocument.ui
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API

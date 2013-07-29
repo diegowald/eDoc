@@ -16,6 +16,8 @@ struct IDatabase {
 public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
     virtual QList<IFieldDefinition*> fields() = 0;
+    virtual IFieldDefinition* field(const QString &fieldName) = 0;
+    virtual IParameter* createEmptyParameter() = 0;
     virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) = 0;
     virtual IRecord* createEmptyRecord() = 0;
     virtual IRecordID *addRecord(IRecord *record) = 0;
