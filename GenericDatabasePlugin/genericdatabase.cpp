@@ -64,28 +64,43 @@ IFieldDefinition* GenericDatabase::field(const QString &fieldName)
     return m_Fields.contains(fieldName) ? m_Fields[fieldName] : NULL;
 }
 
+QMap<QString, IRecordID*> GenericDatabase::intersect(const QMap<QString, IRecordID*> &set1, const QMap<QString, IRecordID*> &set2)
+{
+    QMap<QString, IRecordID*> result;
+
+    if ((set1.count() == 0) || (set2.count() == 0))
+        return result;
+
+    QSet<QString> res = set1.keys().toSet().intersect(set2.keys().toSet());
+    foreach (QString key, res)
+    {
+        result[key] = set1[key];
+    }
+    return result;
+}
+
 QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters)
 {
     QList<IRecordID*> resultList;
-    QSet<IRecordID*> result;
+    QMap<QString, IRecordID*> result;
     bool firstParameterProcessed = false;
     // La idea es ir obteniendo sets para cada parametro y luego realizar la interseccion entre todos.
     foreach (IParameter* p, parameters)
     {
-        QSet<IRecordID*> partialResult = search(p);
+        QMap<QString, IRecordID*> partialResult = search(p);
 
         if (partialResult.size() == 0)
             return resultList;
 
         if (firstParameterProcessed)
-            result = result.intersect(partialResult);
+            result = intersect(result, partialResult);
         else
         {
             result = partialResult;
             firstParameterProcessed = true;
         }
     }
-    return result.toList();
+    return result.values();
 }
 
 std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *parameter)
@@ -147,17 +162,18 @@ std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *para
     return std::make_pair<QString, DBRecordPtr>(whereClause, r);
 }
 
-QSet<IRecordID*> GenericDatabase::search(IParameter* parameter)
+QMap<QString, IRecordID*> GenericDatabase::search(IParameter* parameter)
 {
     QString SQL = "SELECT record_id from %1 where %2";
     std::pair<QString, DBRecordPtr> whereClause = getWhereClause(parameter);
     QString sql = SQL.arg(m_TableName).arg(whereClause.first);
     DBRecordSet rs = m_SQLManager.getRecords(sql, whereClause.second);
 
-    QSet<IRecordID*> result;
+    QMap<QString, IRecordID*> result;
     foreach (DBRecordPtr rec, *rs)
     {
-        result.insert(new RecordID((*rec)["record_id"].toString(), this));
+        RecordID *rID = new RecordID((*rec)["record_id"].toString(), this);
+        result[rID->asString()] = rID;
     }
     return result;
 }

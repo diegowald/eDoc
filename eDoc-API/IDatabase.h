@@ -9,7 +9,7 @@
 #include "IRecordID.h"
 #include "IRecord.h"
 #include "IParameter.h"
-#include <QSet>
+#include <QMap>
 
 
 struct IDatabase {
@@ -29,7 +29,7 @@ public:
     virtual ~IDatabase() {}
 
 protected:
-    virtual QSet<IRecordID*> search(IParameter* parameter) = 0;
+    virtual QMap<QString, IRecordID*> search(IParameter* parameter) = 0;
 };
 
 Q_DECLARE_INTERFACE(IDatabase, "com.mksingenieria.eDoc.IDatabase/0.0")

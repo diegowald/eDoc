@@ -14,13 +14,16 @@ DESTDIR = ../
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    dlgadddocument.cpp
+    dlgadddocument.cpp \
+    explorerwindow.cpp
 
 HEADERS  += mainwindow.h \
-    dlgadddocument.h
+    dlgadddocument.h \
+    explorerwindow.h
 
 FORMS    += mainwindow.ui \
-    dlgadddocument.ui
+    dlgadddocument.ui \
+    explorerwindow.ui
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API

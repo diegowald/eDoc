@@ -31,7 +31,7 @@ public:
     virtual QString name();
 
 protected:
-    virtual QSet<IRecordID*> search(IParameter* parameter);
+    virtual QMap<QString, IRecordID*> search(IParameter* parameter);
 
 private:
     void createFields(IXMLContent* configuration);

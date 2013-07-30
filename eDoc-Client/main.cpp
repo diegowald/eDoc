@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QsLog.h>
 #include <QDir>
+#include "explorerwindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +25,9 @@ int main(int argc, char *argv[])
     logger.addDestination(fileDestination);
     QLOG_TRACE() << "Starting application";
 
-    MainWindow w;
+/*    MainWindow w;
+    w.show();*/
+    ExplorerWindow w;
     w.show();
     
     int result = a.exec();

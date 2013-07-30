@@ -57,7 +57,7 @@ QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters)
 {
 }
 
-QSet<IRecordID*> InMemoryDatabase::search(IParameter* parameter)
+QMap<QString, IRecordID *> InMemoryDatabase::search(IParameter* parameter)
 {
 }
 

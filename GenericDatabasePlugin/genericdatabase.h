@@ -33,8 +33,8 @@ public:
     virtual QString name();
 
 protected:
-    virtual QSet<IRecordID*> search(IParameter* parameter);
-
+    virtual QMap<QString, IRecordID*> search(IParameter* parameter);
+    virtual QMap<QString, IRecordID*> intersect(const QMap<QString, IRecordID*> &set1, const QMap<QString, IRecordID*> &set2);
 private:
     void createFields(IXMLContent* configuration);
     IFieldDefinition *createField(IXMLContent *configuration);
