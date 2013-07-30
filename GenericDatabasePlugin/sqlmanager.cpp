@@ -15,6 +15,8 @@ SQLManager::SQLManager(QObject *parent) :
 
 SQLManager::~SQLManager()
 {
+    if (db.isOpen())
+        db.close();
 }
 
 void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)

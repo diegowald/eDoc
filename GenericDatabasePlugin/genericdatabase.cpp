@@ -11,7 +11,7 @@
 #include "../eDoc-MetadataFramework/parameter.h"
 
 GenericDatabase::GenericDatabase(QObject *parent) :
-    QObject(parent)
+    QObject(parent), m_SQLManager(this)
 {
 }
 

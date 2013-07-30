@@ -13,6 +13,17 @@ EDocFactory::EDocFactory() :
 
 EDocFactory::~EDocFactory()
 {
+    if (configuration != NULL)
+        delete configuration;
+
+    if (engine != NULL)
+        delete engine;
+
+    if (database != NULL)
+        delete database;
+
+    /*if (m_Logger != NULL)
+        delete m_Logger;*/
 }
 
 void EDocFactory::readAvailablePlugins()
