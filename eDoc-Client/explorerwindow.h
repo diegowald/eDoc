@@ -40,6 +40,8 @@ private slots:
 
     void on_searchResult_itemSelectionChanged();
 
+    void on_actionAdd_Document_triggered();
+
 private:
     Ui::ExplorerWindow *ui;
     EDocFactory f;

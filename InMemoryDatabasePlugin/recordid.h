@@ -11,6 +11,7 @@ class RecordID : public QObject, public IRecordID
 public:
     explicit RecordID(QObject *parent = 0);
     RecordID(const QString &stringID, QObject *parent = 0);
+    virtual IMetadata* metadata();
     virtual ~RecordID();
     virtual QString asString() const;
 signals:

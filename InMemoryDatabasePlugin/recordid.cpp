@@ -18,3 +18,8 @@ QString RecordID::asString() const
 {
     return m_ID.toString();
 }
+
+IMetadata* RecordID::metadata()
+{
+    return NULL;
+}

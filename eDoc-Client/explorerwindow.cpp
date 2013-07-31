@@ -2,7 +2,9 @@
 #include "ui_explorerwindow.h"
 #include <QsLog.h>
 #include "../eDoc-ClientComponents/recordeditor.h"
-
+#include "../eDoc-API/IDocument.h"
+#include <QFileDialog>
+#include "dlgadddocument.h"
 
 ExplorerWindow::ExplorerWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -174,4 +176,39 @@ void ExplorerWindow::on_searchResult_itemSelectionChanged()
     QVBoxLayout* layout = new QVBoxLayout();
     layout->addWidget(r);
     ui->frameProperties->setLayout(layout);
+}
+
+void ExplorerWindow::on_actionAdd_Document_triggered()
+{
+    QStringList filenames = QFileDialog::getOpenFileNames(this,
+                                                          "Select file",
+                                                          ".");
+
+    if (filenames.count() > 0)
+    {
+        foreach (QString filename, filenames)
+        {
+            IDatabase* db = f.databaseEngine();
+            IDocEngine *e = f.docEngine();
+            IRecord *rec = db->createEmptyRecord();
+
+            DlgAddDocument dlg(this);
+            dlg.setData(filename, rec);
+            if (dlg.exec() == QDialog::Accepted)
+            {
+                dlg.applyData(rec);
+                QFile file(filename);
+                file.open(QIODevice::ReadOnly);
+                QByteArray blob = file.readAll();
+
+                IDocID *docId = f.docEngine()->addDocument(blob);
+                QVariant doc;
+                IDocument * iDoc = (IDocument*)e->getDocument(docId);
+                doc.setValue(iDoc);
+                rec->value("archivo")->setValue(doc);
+
+                db->addRecord(rec);
+            }
+        }
+    }
 }

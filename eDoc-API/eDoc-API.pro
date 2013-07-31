@@ -29,7 +29,12 @@ HEADERS += edocapi_global.h \
     IRecordID.h \
     IMultiRecord.h \
     ITag.h \
-    ITagProcessor.h
+    ITagProcessor.h \
+    IMetadata.h \
+    IUser.h \
+    IGroup.h \
+    IUserID.h \
+    IGroupID.h
 
 unix:!symbian {
     maemo5 {
