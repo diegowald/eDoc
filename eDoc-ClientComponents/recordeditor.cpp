@@ -7,6 +7,7 @@ RecordEditor::RecordEditor(QWidget *parent) :
     ui(new Ui::RecordEditor)
 {
     ui->setupUi(this);
+    enabledEdition = true;
 }
 
 RecordEditor::~RecordEditor()
@@ -30,6 +31,7 @@ void RecordEditor::setRecord(IRecord * record)
             collection[fieldName] = sw;
         }
     }
+    setEnabledStatus();
 }
 
 void RecordEditor::applyValuesToRecord(IRecord *record)
@@ -41,5 +43,21 @@ void RecordEditor::applyValuesToRecord(IRecord *record)
         {
             record->value(fieldName)->setValue(collection[fieldName]->value());
         }
+    }
+}
+
+
+void RecordEditor::setEnabledEdition(bool enabled)
+{
+    enabledEdition = enabled;
+    setEnabledStatus();
+}
+
+
+void RecordEditor::setEnabledStatus()
+{
+    foreach (StringWidget* w, collection)
+    {
+        w->setEnabled(enabledEdition);
     }
 }

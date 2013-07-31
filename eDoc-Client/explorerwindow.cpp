@@ -1,6 +1,7 @@
 #include "explorerwindow.h"
 #include "ui_explorerwindow.h"
 #include <QsLog.h>
+#include "../eDoc-ClientComponents/recordeditor.h"
 
 
 ExplorerWindow::ExplorerWindow(QWidget *parent) :
@@ -132,7 +133,7 @@ void ExplorerWindow::on_btnAddToSearch_released()
 
 void ExplorerWindow::on_btnSearchAgain_released()
 {
-    ui->searchResult->clear();
+    ui->searchResult->setRowCount(0);
     if (filter.size() > 0)
     {
         QList<IRecordID*> result = f.databaseEngine()->search(filter);
@@ -142,8 +143,12 @@ void ExplorerWindow::on_btnSearchAgain_released()
             IRecord *rec = f.databaseEngine()->getRecord(id);
             int rowNum = ui->searchResult->rowCount();
             ui->searchResult->insertRow(rowNum);
-            ui->searchResult->item(rowNum, 0)->setText(rec->value("campo1")->asVariant().toString());
-            ui->searchResult->item(rowNum, 1)->setText(rec->value("campo1")->asVariant().toString());
+            rowNum = ui->searchResult->rowCount() - 1;
+            ui->searchResult->setItem(rowNum, 0, new QTableWidgetItem(rec->value("campo1")->asVariant().toString()));
+            ui->searchResult->setItem(rowNum, 1, new QTableWidgetItem(rec->value("campo2")->asVariant().toString()));
+            QVariant r;
+            r.setValue(rec);
+            ui->searchResult->item(rowNum, 0)->setData(Qt::UserRole, r);
         }
     }
 }
@@ -157,5 +162,16 @@ void ExplorerWindow::on_btnClearSearch_released()
 
 void ExplorerWindow::on_searchResult_itemSelectionChanged()
 {
-    int x = ui->searchResult->selectedItems().count();
+    QList<QTableWidgetItem*> selection = ui->searchResult->selectedItems();
+    if (selection.count() == 0)
+        return;
+
+    IRecord *rec = ui->searchResult->item(selection.at(0)->row(), 0)->data(Qt::UserRole).value<IRecord*>();
+
+    RecordEditor *r = new RecordEditor(this);
+    r->setEnabledEdition(false);
+    r->setRecord(rec);
+    QVBoxLayout* layout = new QVBoxLayout();
+    layout->addWidget(r);
+    ui->frameProperties->setLayout(layout);
 }

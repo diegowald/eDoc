@@ -20,9 +20,14 @@ public:
 
     virtual void setRecord(IRecord * record);
     virtual void applyValuesToRecord(IRecord *record);
+    virtual void setEnabledEdition(bool enabled);
+
+private:
+    void setEnabledStatus();
 private:
     Ui::RecordEditor *ui;
     QMap<QString, StringWidget*> collection;
+    bool enabledEdition;
 };
 
 #endif // RECORDEDITOR_H
