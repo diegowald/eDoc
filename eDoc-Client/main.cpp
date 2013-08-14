@@ -3,9 +3,12 @@
 #include <QsLog.h>
 #include <QDir>
 #include "explorerwindow.h"
+#include <../eDoc-Configuration/meter.h>
 
 int main(int argc, char *argv[])
 {
+    meter m("main", __FUNCTION__);
+
     QApplication a(argc, argv);
 
     QsLogging::Logger & logger = QsLogging::Logger::instance();

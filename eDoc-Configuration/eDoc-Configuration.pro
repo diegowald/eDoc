@@ -17,14 +17,16 @@ DEFINES += EDOCCONFIGURATION_LIBRARY
 SOURCES += edocconfiguration.cpp \
         xmlcollection.cpp \
         xmlelement.cpp \
-        qobjectlgging.cpp
+        qobjectlgging.cpp \
+    meter.cpp
 
 HEADERS += edocconfiguration.h\
         edoc-configuration_global.h \
         IXMLContent.h \
         xmlcollection.h \
         xmlelement.h \
-        qobjectlgging.h
+        qobjectlgging.h \
+    meter.h
 
 unix:!symbian {
     maemo5 {
