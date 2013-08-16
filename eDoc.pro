@@ -13,6 +13,7 @@ SUBDIRS += \
     InMemoryDatabasePlugin \
     GenericDatabasePlugin \
     eDoc-ClientComponents \
-    eDoc-InMemoryTagging
+    eDoc-InMemoryTagging \
+    eDoc-HttpClient
 
 
