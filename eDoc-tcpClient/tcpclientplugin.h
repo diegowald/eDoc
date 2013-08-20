@@ -6,7 +6,7 @@
 #include <../eDoc-Configuration/xmlcollection.h>
 #include <QTcpSocket>
 #include <QNetworkSession>
-
+#include <QDataStream>
 
 class TCPClientPlugin : public QObject, public IDocEngine
 {
@@ -24,6 +24,10 @@ public:
     virtual bool deleteDocument(IDocID *id);
     virtual QString name();
     virtual ~TCPClientPlugin();
+
+private:
+    void sendData(const QByteArray &blob);
+
 
 private slots:
     void readInfo();

@@ -3,8 +3,8 @@
 #include <../eDoc-Configuration/xmlcollection.h>
 #include <QtNetwork/QNetworkConfigurationManager>
 #include <QSettings>
-
-#include "../tcpMessages/tcpAddDocumentRequest.h"
+#include <QDataStream>
+#include "../tcpMessages/tcpadddocumentrequest.h"
 
 /*ver estos links
 http://doc.qt.digia.com/solutions/4/qtservice/qtservice-example-server.html
@@ -58,10 +58,17 @@ void TCPClientPlugin::initialize(IXMLContent *configuration, QObjectLogging *log
 
 IDocID* TCPClientPlugin::addDocument(const QByteArray& blob)
 {
+    TCPAddDocumentRequest req;
+    req.setBlob(blob);
+    sendData(req.asBlob());
+}
+
+void TCPClientPlugin::sendData(const QByteArray &blob)
+{
     if (!tcpSocket->isOpen())
         tcpSocket->open(QTcpSocket::ReadWrite);
 
-    tcpSocket->write()
+    tcpSocket->write(blob);
 }
 
 IDocBase* TCPClientPlugin::getDocument(IDocID *id)

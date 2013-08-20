@@ -1,12 +1,25 @@
 #ifndef TCPADDDOCUMENTREQUEST_H
 #define TCPADDDOCUMENTREQUEST_H
 
+#include <QObject>
+#include "messagebase.h"
 #include "tcpmessages_global.h"
-#include "messageBase.h"
 
-struct TCPMESSAGESSHARED_EXPORT TCPAddDocumentRequest : public messageBase
+
+class TCPMESSAGESSHARED_EXPORT TCPAddDocumentRequest : public MessageBase
 {
-    QByteArray blob;
+    Q_OBJECT
+public:
+    explicit TCPAddDocumentRequest(QObject *parent = 0);
+    virtual ~TCPAddDocumentRequest();
+    void setBlob(const QByteArray &blob);
+    virtual QByteArray asBlob();
+signals:
+    
+public slots:
+
+private:
+    QByteArray m_Blob;
 };
 
 #endif // TCPADDDOCUMENTREQUEST_H

@@ -14,7 +14,8 @@ SUBDIRS += \
     GenericDatabasePlugin \
     eDoc-ClientComponents \
     eDoc-InMemoryTagging \
+    tcpMessages \
     eDoc-tcpClient \
-    tcpMessages
+    eDoc-Console
 
 

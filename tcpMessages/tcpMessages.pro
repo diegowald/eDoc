@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       -= core
+QT       += core
 
 TARGET = tcpMessages
 TEMPLATE = lib
@@ -12,12 +12,14 @@ DESTDIR = ../
 
 DEFINES += TCPMESSAGES_LIBRARY
 
-SOURCES += tcpmessages.cpp
+SOURCES += tcpmessages.cpp \
+    messagebase.cpp \
+    tcpadddocumentrequest.cpp
 
 HEADERS += tcpmessages.h\
         tcpmessages_global.h \
-    messageBase.h \
-    tcpAddDocumentRequest.h
+    messagebase.h \
+    tcpadddocumentrequest.h
 
 unix:!symbian {
     maemo5 {
