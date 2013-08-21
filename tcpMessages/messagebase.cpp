@@ -1,11 +1,11 @@
-#include "messagebase.h"
+#include "messageBase.h"
 #include <QIODevice>
 
 MessageBase::MessageBase(MessageType type, QObject *parent) :
     QObject(parent), messageType(type)
 {
     ds = new QDataStream(&block, QIODevice::WriteOnly);
-    ds->setVersion(QDataStream::Qt_5_0);
+    ds->setVersion(QDataStream::Qt_4_8);
 }
 
 MessageBase::~MessageBase()

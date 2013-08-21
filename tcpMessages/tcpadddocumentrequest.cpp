@@ -1,4 +1,4 @@
-#include "tcpadddocumentrequest.h"
+#include "tcpAddDocumentRequest.h"
 
 TCPAddDocumentRequest::TCPAddDocumentRequest(QObject *parent) :
     MessageBase(ADD_DOCUMENT, parent)

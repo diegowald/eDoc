@@ -4,7 +4,8 @@
 #include <QtNetwork/QNetworkConfigurationManager>
 #include <QSettings>
 #include <QDataStream>
-#include "../tcpMessages/tcpadddocumentrequest.h"
+#include "../tcpMessages/tcpAddDocumentRequest.h"
+
 
 /*ver estos links
 http://doc.qt.digia.com/solutions/4/qtservice/qtservice-example-server.html

@@ -19,7 +19,9 @@ SOURCES += tcpmessages.cpp \
 HEADERS += tcpmessages.h\
         tcpmessages_global.h \
     messagebase.h \
-    tcpadddocumentrequest.h
+    tcpadddocumentrequest.h \
+    messageBase.h \
+    tcpAddDocumentRequest.h
 
 unix:!symbian {
     maemo5 {

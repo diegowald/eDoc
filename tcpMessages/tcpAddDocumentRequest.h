@@ -2,7 +2,7 @@
 #define TCPADDDOCUMENTREQUEST_H
 
 #include <QObject>
-#include "messagebase.h"
+#include "messageBase.h"
 #include "tcpmessages_global.h"
 
 

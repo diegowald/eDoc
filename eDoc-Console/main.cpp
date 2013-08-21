@@ -1,6 +1,8 @@
 #include <QCoreApplication>
 #include <QsLog.h>
 #include <QDir>
+#include "task.h"
+#include <QTimer>
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +11,7 @@ int main(int argc, char *argv[])
     QsLogging::Logger & logger = QsLogging::Logger::instance();
     logger.setLoggingLevel(QsLogging::TraceLevel);
 
-    const QString logPath(QDir(a.applicationDirPath()).filePath("eDoc-Client.log"));
+    const QString logPath(QDir(a.applicationDirPath()).filePath("eDoc-Console.log"));
 
 
     // Create log destinations
@@ -22,6 +24,11 @@ int main(int argc, char *argv[])
     logger.addDestination(debugDestination);
     logger.addDestination(fileDestination);
     QLOG_TRACE() << "Starting application";
+
+    Task *task = new Task(&a);
+    QObject::connect(task, SIGNAL(finished()), &a, SLOT(quit()));
+
+    QTimer::singleShot(0, task, SLOT(run()));
 
     return a.exec();
 }
