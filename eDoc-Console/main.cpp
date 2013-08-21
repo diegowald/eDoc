@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     logger.addDestination(fileDestination);
     QLOG_TRACE() << "Starting application";
 
-    Task *task = new Task(&a);
+    Task *task = new Task(a.applicationDirPath(), &a);
     QObject::connect(task, SIGNAL(finished()), &a, SLOT(quit()));
 
     QTimer::singleShot(0, task, SLOT(run()));

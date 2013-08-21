@@ -11,6 +11,7 @@ QT       -= gui
 TARGET = eDoc-Console
 CONFIG   += console
 CONFIG   -= app_bundle
+DESTDIR = ../
 
 TEMPLATE = app
 

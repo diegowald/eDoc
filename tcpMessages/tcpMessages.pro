@@ -18,8 +18,6 @@ SOURCES += tcpmessages.cpp \
 
 HEADERS += tcpmessages.h\
         tcpmessages_global.h \
-    messagebase.h \
-    tcpadddocumentrequest.h \
     messageBase.h \
     tcpAddDocumentRequest.h
 
