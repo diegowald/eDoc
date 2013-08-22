@@ -8,12 +8,12 @@ QT       += core
 
 QT       -= gui
 
-TARGET = eDoc-Console
+TARGET = eDocConsole
 CONFIG   += console
 CONFIG   -= app_bundle
 DESTDIR = ../
-
 TEMPLATE = app
+
 
 SOURCES += main.cpp \
     task.cpp
