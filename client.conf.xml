@@ -1,12 +1,9 @@
 <?xml version="1.0" ?>
 <edoc name="edoc">
-	<engine name="Cache" class="MemoryDocEngine">
-		<maxCachedFiles>100</maxCachedFiles>
-		<engine name="engine1" class="SimpleFileEngine">
-			<folder>./files</folder>
-			<logfile>SimpleFileLogger.log</logfile>
-		</engine>
-	</engine>
+	<engine name="remote" class="tcpClientPlugin">
+		<url>192.168.0.104</url>
+		<port>55555</port>
+        </engine>
 	<database name="DB1" class="GenericDatabase">
 		<database_type>sqlite</database_type>
 		<server>./dbTest.db</server>
@@ -22,7 +19,7 @@
 			</field1>
 			<field2 name="campo2">
 				<type>string</type>
-				<readonly>1</readonly>
+				<readonly>0</readonly>
 				<visible>1</visible>
 				<fieldname>campo2</fieldname>
 			</field2>
@@ -35,7 +32,7 @@
 			<field4 name="archivo">
 				<type>document</type>
 				<readonly>0</readonly>
-				<visible>1</visible>
+				<visible>0</visible>
 				<fieldname>id_file</fieldname>
 			</field4>
 		</fields>

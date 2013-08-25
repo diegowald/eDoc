@@ -5,6 +5,7 @@
 #include "../eDoc-Factory/edocfactory.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include "../eDoc-API/IDocID.h"
+#include <QtNetwork>
 
 class Task : public QObject
 {
@@ -14,13 +15,23 @@ public:
 
 signals:
     void finished();
+
 public slots:
     void run();
+    
+private:
+    void sessionOpened();
+
+private slots:
+    void newConnection();
+    void readyRead();
 
 private:
     EDocFactory f;
     QString m_ApplicationPath;
     QObjectLogging logger;
+    QTcpServer *tcpServer;
+    QNetworkSession *networkSession;
 };
 
 #endif // TASK_H

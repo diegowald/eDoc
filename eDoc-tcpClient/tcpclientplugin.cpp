@@ -67,9 +67,12 @@ IDocID* TCPClientPlugin::addDocument(const QByteArray& blob)
 void TCPClientPlugin::sendData(const QByteArray &blob)
 {
     if (!tcpSocket->isOpen())
+    {
+        tcpSocket->connectToHost(url, port, QTcpSocket::ReadWrite);
         tcpSocket->open(QTcpSocket::ReadWrite);
-
-    tcpSocket->write(blob);
+    }
+    qint64 result = tcpSocket->write(blob);
+    m_Logger->logDebug(QString::number(result));
 }
 
 IDocBase* TCPClientPlugin::getDocument(IDocID *id)

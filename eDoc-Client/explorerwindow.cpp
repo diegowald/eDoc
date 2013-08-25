@@ -202,12 +202,12 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
                 QByteArray blob = file.readAll();
 
                 IDocID *docId = f.docEngine()->addDocument(blob);
-                QVariant doc;
+                /*QVariant doc;
                 IDocument * iDoc = (IDocument*)e->getDocument(docId);
                 doc.setValue(iDoc);
                 rec->value("archivo")->setValue(doc);
 
-                db->addRecord(rec);
+                db->addRecord(rec);*/
             }
         }
     }
