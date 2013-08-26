@@ -4,22 +4,25 @@
 MessageBase::MessageBase(MessageType type, QObject *parent) :
     QObject(parent), messageType(type)
 {
-    ds = new QDataStream(&block, QIODevice::WriteOnly);
-    ds->setVersion(QDataStream::Qt_4_8);
 }
 
 MessageBase::~MessageBase()
 {
-    delete ds;
 }
 
-QByteArray MessageBase::asBlob()
+QDataStream& operator<<( QDataStream& dataStream, const MessageBase& messageBase )
 {
-    return block;
+    dataStream << messageBase.messageType;
+    dataStream << messageBase.messageSize;
+    return dataStream;
 }
 
-void MessageBase::writeHeader()
+// Important: this will throw a UserException on error
+QDataStream& operator>>( QDataStream& dataStream, MessageBase& messageBase)
 {
-    (*ds) << messageType;
-    (*ds) << messageSize;
+    int aux = 0;
+    dataStream >> aux;
+    messageBase.messageType = (MessageType) aux;
+    dataStream >> messageBase.messageSize;
+    return dataStream;
 }

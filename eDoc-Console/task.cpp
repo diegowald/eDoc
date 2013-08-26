@@ -123,7 +123,8 @@ void Task::newConnection()
         out << (quint16)(block.size() - sizeof(quint16));
     //! [6] //! [7]
 
-        establishedCommunications.push_back(new TCPCommunicator(tcpServer->nextPendingConnection(), this));
+        establishedCommunications.push_back(new TCPCommunicator(tcpServer->nextPendingConnection(),
+                                                                &f, &logger, this));
 
 
 /*        clientConnection->write(block);

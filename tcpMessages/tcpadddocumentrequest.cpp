@@ -9,14 +9,20 @@ TCPAddDocumentRequest::~TCPAddDocumentRequest()
 {
 }
 
-void TCPAddDocumentRequest::setBlob(const QByteArray &blob)
+QDataStream& operator<<( QDataStream& dataStream, const TCPAddDocumentRequest& message)
 {
-    m_Blob = blob;
+    dataStream << message.messageType
+               << message.messageSize
+               << message.m_Blob;
+    return dataStream;
 }
 
-QByteArray TCPAddDocumentRequest::asBlob()
+// Important: this will throw a UserException on error
+QDataStream& operator>>( QDataStream& dataStream, TCPAddDocumentRequest& message) // deprecated: throw( UserException )
 {
-    writeHeader();
-    (*ds) << m_Blob;
-    return block;
+    int aux = 0;
+    dataStream >> aux;
+    dataStream >> message.messageSize
+                  >> message.m_Blob;
+    return dataStream;
 }

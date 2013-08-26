@@ -17,15 +17,14 @@ public:
     explicit MessageBase(MessageType type, QObject *parent = 0);
     virtual ~MessageBase();
 
+public:
     int messageSize;
     MessageType messageType;
-
-    virtual QByteArray asBlob();
-    virtual void writeHeader();
-
-protected:
-    QByteArray block;
-    QDataStream *ds;
 };
+
+QDataStream& operator<<( QDataStream& dataStream, const MessageBase& messageBase );
+
+// Important: this will throw a UserException on error
+QDataStream& operator>>( QDataStream& dataStream, MessageBase& messageBase); // deprecated: throw( UserException )
 
 #endif // MESSAGEBASE_H

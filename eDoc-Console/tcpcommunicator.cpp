@@ -27,4 +27,5 @@ void TCPCommunicator::readyRead()
 
 void TCPCommunicator::parse()
 {
+
 }

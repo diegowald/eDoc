@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QtNetwork>
+#include "../eDoc-Factory/edocfactory.h"
+#include "../eDoc-Configuration/qobjectlgging.h"
 
 class TCPCommunicator : public QObject
 {
