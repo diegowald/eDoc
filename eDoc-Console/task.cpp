@@ -2,6 +2,7 @@
 #include <QsLog.h>
 #include <unistd.h>
 #include <QCoreApplication>
+#include "tcpcommunicator.h"
 
 Task::Task(const QString &appPath, QObject *parent) :
     QObject(parent)
@@ -9,7 +10,15 @@ Task::Task(const QString &appPath, QObject *parent) :
     QLOG_TRACE() << "Task::Task(const QString &appPath, QObject *parent)";
     m_ApplicationPath = appPath;
     f.initialize(m_ApplicationPath, "./console.conf.xml", &logger);
-    
+    establishedCommunications.clear();
+}
+
+Task::~Task()
+{
+    foreach (TCPCommunicator* comm, establishedCommunications)
+    {
+        comm->deleteLater();
+    }
 }
 
 void Task::sessionOpened()
@@ -114,22 +123,10 @@ void Task::newConnection()
         out << (quint16)(block.size() - sizeof(quint16));
     //! [6] //! [7]
 
-        QTcpSocket *clientConnection = tcpServer->nextPendingConnection();
-        connect(clientConnection, SIGNAL(disconnected()),
-                clientConnection, SLOT(deleteLater()));
+        establishedCommunications.push_back(new TCPCommunicator(tcpServer->nextPendingConnection(), this));
 
-        connect(clientConnection, SIGNAL(readyRead()),
-                this, SLOT(readyRead()));
-    //! [7] //! [8]
-
-        QLOG_TRACE() << clientConnection->readBufferSize();
 
 /*        clientConnection->write(block);
         clientConnection->disconnectFromHost();*/
     //! [5]
-}
-
-void Task::readyRead()
-{
-    QLOG_TRACE() << "void Task::readyRead()";
 }
