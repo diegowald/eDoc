@@ -11,6 +11,9 @@ TCPCommunicator::TCPCommunicator(QTcpSocket *socket, EDocFactory *f, QObjectLogg
 
     m_DocFactory = f;
     m_logger = logger;
+
+    connect(&messageParser, SIGNAL(addDocumentRequestArrived(TCPAddDocumentRequest&)),
+            this, SLOT(addDocumentRequestArrived(TCPAddDocumentRequest&)));
 }
 
 TCPCommunicator::~TCPCommunicator()
@@ -28,4 +31,10 @@ void TCPCommunicator::readyRead()
 void TCPCommunicator::parse()
 {
     QDataStream ds(readBlock);
+    messageParser.parse(ds);
+}
+
+void TCPCommunicator::addDocumentRequestArrived(TCPAddDocumentRequest &msg)
+{
+
 }

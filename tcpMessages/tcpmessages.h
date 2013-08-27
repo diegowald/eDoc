@@ -4,14 +4,17 @@
 #include "tcpmessages_global.h"
 #include "messageBase.h"
 #include "tcpAddDocumentRequest.h"
+#include <QDataStream>
+
 
 class TCPMESSAGESSHARED_EXPORT TcpMessages : public QObject
 {
+    Q_OBJECT
 public:
     TcpMessages();
-    bool parse();
+    void parse(QDataStream &dataStream);
 signals:
-    void addDocumentRequestArrived(TCPAddDocumentRequest *msg);
+    void addDocumentRequestArrived(TCPAddDocumentRequest &msg);
 
 };
 

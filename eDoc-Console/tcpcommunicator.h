@@ -5,6 +5,7 @@
 #include <QtNetwork>
 #include "../eDoc-Factory/edocfactory.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
+#include "../tcpMessages/tcpmessages.h"
 
 class TCPCommunicator : public QObject
 {
@@ -18,6 +19,7 @@ public:
 
 private slots:
     void readyRead();
+    void addDocumentRequestArrived(TCPAddDocumentRequest &msg);
 
 private:
     void parse();
@@ -26,6 +28,7 @@ private:
     EDocFactory *m_DocFactory;
     QObjectLogging *m_logger;
     QByteArray readBlock;
+    TcpMessages messageParser;
 };
 
 #endif // TCPCOMMUNICATOR_H

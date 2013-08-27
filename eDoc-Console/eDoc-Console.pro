@@ -38,16 +38,12 @@ DEPENDPATH += $$PWD/../eDoc-MetadataFramework
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Factory
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Factory
-else:unix: LIBS += -L$$OUT_PWD/.. -leDoc-Factory
+unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-Factory
 
 INCLUDEPATH += $$PWD/../eDoc-Factory
 DEPENDPATH += $$PWD/../eDoc-Factory
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -ltcpMessages
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -ltcpMessages
-else:unix: LIBS += -L$$OUT_PWD/.. -ltcpMessages
+unix|win32: LIBS += -L$$OUT_PWD/../ -ltcpMessages
 
 INCLUDEPATH += $$PWD/../tcpMessages
 DEPENDPATH += $$PWD/../tcpMessages

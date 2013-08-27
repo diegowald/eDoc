@@ -1,6 +1,11 @@
 #include "messageBase.h"
 #include <QIODevice>
 
+MessageBase::MessageBase(QObject *parent) :
+    QObject(parent)
+{
+}
+
 MessageBase::MessageBase(MessageType type, QObject *parent) :
     QObject(parent), messageType(type)
 {

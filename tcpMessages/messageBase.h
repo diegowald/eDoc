@@ -14,7 +14,8 @@ class TCPMESSAGESSHARED_EXPORT MessageBase : public QObject
 {
     Q_OBJECT
 public:
-    explicit MessageBase(MessageType type, QObject *parent = 0);
+    explicit MessageBase(QObject *parent = 0);
+    MessageBase(MessageType type, QObject *parent = 0);
     virtual ~MessageBase();
 
 public:
