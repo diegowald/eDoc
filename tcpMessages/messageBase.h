@@ -22,9 +22,10 @@ public:
     MessageType messageType;
 };
 
-QDataStream& operator<<( QDataStream& dataStream, const MessageBase& messageBase );
+TCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& dataStream, const MessageBase& messageBase);
 
 // Important: this will throw a UserException on error
-QDataStream& operator>>( QDataStream& dataStream, MessageBase& messageBase); // deprecated: throw( UserException )
+TCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& dataStream, MessageBase& messageBase); // deprecated: throw( UserException )
+
 
 #endif // MESSAGEBASE_H

@@ -27,5 +27,5 @@ void TCPCommunicator::readyRead()
 
 void TCPCommunicator::parse()
 {
-
+    QDataStream ds(readBlock);
 }

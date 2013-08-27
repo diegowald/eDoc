@@ -10,7 +10,7 @@ MessageBase::~MessageBase()
 {
 }
 
-QDataStream& operator<<( QDataStream& dataStream, const MessageBase& messageBase )
+QDataStream& operator<<(QDataStream& dataStream, MessageBase const & messageBase)
 {
     dataStream << messageBase.messageType;
     dataStream << messageBase.messageSize;
@@ -18,7 +18,7 @@ QDataStream& operator<<( QDataStream& dataStream, const MessageBase& messageBase
 }
 
 // Important: this will throw a UserException on error
-QDataStream& operator>>( QDataStream& dataStream, MessageBase& messageBase)
+QDataStream& operator>>(QDataStream& dataStream, MessageBase& messageBase)
 {
     int aux = 0;
     dataStream >> aux;

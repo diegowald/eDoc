@@ -7,6 +7,7 @@
 #include <QTcpSocket>
 #include <QNetworkSession>
 #include <QDataStream>
+#include <../tcpMessages/messageBase.h>
 
 class TCPClientPlugin : public QObject, public IDocEngine
 {
@@ -26,7 +27,7 @@ public:
     virtual ~TCPClientPlugin();
 
 private:
-    void sendData(const QByteArray &blob);
+    void sendData(MessageBase *msg);
 
 
 private slots:
