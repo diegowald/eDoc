@@ -14,7 +14,8 @@ public:
     TcpMessages();
     void parse(QDataStream &dataStream);
 signals:
-    void addDocumentRequestArrived(TCPAddDocumentRequest &msg);
+    void badMessage();
+    void addDocumentRequestArrived(AddDocumentRequest &msg);
 
 };
 

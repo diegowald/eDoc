@@ -59,7 +59,7 @@ void TCPClientPlugin::initialize(IXMLContent *configuration, QObjectLogging *log
 
 IDocID* TCPClientPlugin::addDocument(const QByteArray& blob)
 {
-    TCPAddDocumentRequest req;
+    AddDocumentRequest req;
     req.setBlob(blob);
     sendData(&req);
 }
@@ -97,7 +97,6 @@ void TCPClientPlugin::readInfo()
 
 void TCPClientPlugin::handleError(QAbstractSocket::SocketError socketError)
 {
-
 }
 
 

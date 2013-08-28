@@ -19,7 +19,8 @@ public:
 
 private slots:
     void readyRead();
-    void addDocumentRequestArrived(TCPAddDocumentRequest &msg);
+    void badMessage();
+    void addDocumentRequestArrived(AddDocumentRequest &msg);
 
 private:
     void parse();

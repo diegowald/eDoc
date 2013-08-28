@@ -12,8 +12,11 @@ TCPCommunicator::TCPCommunicator(QTcpSocket *socket, EDocFactory *f, QObjectLogg
     m_DocFactory = f;
     m_logger = logger;
 
-    connect(&messageParser, SIGNAL(addDocumentRequestArrived(TCPAddDocumentRequest&)),
-            this, SLOT(addDocumentRequestArrived(TCPAddDocumentRequest&)));
+    connect(&messageParser, SIGNAL(addDocumentRequestArrived(AddDocumentRequest&)),
+            this, SLOT(addDocumentRequestArrived(AddDocumentRequest&)));
+
+    connect(&messageParser, SIGNAL(badMessage()),
+            this, SLOT(badMessage()));
 }
 
 TCPCommunicator::~TCPCommunicator()
@@ -34,7 +37,10 @@ void TCPCommunicator::parse()
     messageParser.parse(ds);
 }
 
-void TCPCommunicator::addDocumentRequestArrived(TCPAddDocumentRequest &msg)
+void TCPCommunicator::addDocumentRequestArrived(AddDocumentRequest &msg)
 {
+}
 
+void TCPCommunicator::badMessage()
+{
 }

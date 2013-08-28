@@ -14,12 +14,14 @@ DEFINES += TCPMESSAGES_LIBRARY
 
 SOURCES += tcpmessages.cpp \
     messagebase.cpp \
-    tcpadddocumentrequest.cpp
+    tcpadddocumentrequest.cpp \
+    adddocumentresponse.cpp
 
 HEADERS += tcpmessages.h\
         tcpmessages_global.h \
     messageBase.h \
-    tcpAddDocumentRequest.h
+    tcpAddDocumentRequest.h \
+    adddocumentresponse.h
 
 unix:!symbian {
     maemo5 {
