@@ -5,7 +5,8 @@
 #include <QSettings>
 #include <QDataStream>
 #include "../tcpMessages/tcpAddDocumentRequest.h"
-
+#include "tcpproxyfileid.h"
+#include "tcpproxydocument.h"
 
 /*ver estos links
 http://doc.qt.digia.com/solutions/4/qtservice/qtservice-example-server.html
@@ -28,7 +29,7 @@ void TCPClientPlugin::initialize(IXMLContent *configuration, QObjectLogging *log
     m_Logger = logger;
     tcpSocket = new QTcpSocket(this);
 
-    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readInfo()));
+    //connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readInfo()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(handleError(QAbstractSocket::SocketError)));
 
@@ -61,12 +62,24 @@ IDocID* TCPClientPlugin::addDocument(const QByteArray& blob)
 {
     AddDocumentRequest req;
     req.setBlob(blob);
-    sendData(&req);
+    QByteArray result = sendData(&req);
+    QDataStream ds(result);
+    MessageBase msg;
+    ds >> msg;
+    TCPProxyFileID *ID = NULL;
+    if (msg.messageType == ADD_DOCUMENT_RESP)
+    {
+        QString id;
+        ds >> id;
+        ID = new TCPProxyFileID(id, this);
+    }
+    return ID;
 }
 
-void TCPClientPlugin::sendData(MessageBase *msg)
+QByteArray TCPClientPlugin::sendData(MessageBase *msg)
 {
     QByteArray block;
+    QByteArray res;
     QDataStream ds(&block, QIODevice::WriteOnly);
     ds << *msg;
     if (!tcpSocket->isOpen())
@@ -76,10 +89,26 @@ void TCPClientPlugin::sendData(MessageBase *msg)
     }
     qint64 result = tcpSocket->write(block);
     m_Logger->logDebug(QString::number(result));
+
+    while (tcpSocket->bytesAvailable() < 1)
+    {
+        if (!tcpSocket->waitForReadyRead())
+        {
+            m_Logger->logError(QString("Timeout: %1 %2")
+                               .arg(tcpSocket->error())
+                               .arg(tcpSocket->errorString()));
+            return res;
+        }
+    }
+
+    res = tcpSocket->readAll();
+    return res;
 }
 
 IDocBase* TCPClientPlugin::getDocument(IDocID *id)
 {
+    TCPProxyDocument *doc = new TCPProxyDocument(tcpSocket, id, this);
+    return doc;
 }
 
 bool TCPClientPlugin::deleteDocument(IDocID *id)
@@ -91,14 +120,9 @@ QString TCPClientPlugin::name()
     return "tcpClientPlugin";
 }
 
-void TCPClientPlugin::readInfo()
-{
-}
-
 void TCPClientPlugin::handleError(QAbstractSocket::SocketError socketError)
 {
 }
-
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(eDoc-tcpClient, TCPClientPlugin)

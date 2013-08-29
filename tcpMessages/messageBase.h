@@ -9,7 +9,9 @@ enum MessageType
 {
     INVALID_MESSAGE,
     ADD_DOCUMENT_REQ,
-    ADD_DOCUMENT_RESP
+    ADD_DOCUMENT_RESP,
+    GET_BLOB_REQ,
+    GET_BLOB_RESP
 };
 
 class TCPMESSAGESSHARED_EXPORT MessageBase : public QObject

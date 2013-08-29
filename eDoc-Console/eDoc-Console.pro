@@ -16,14 +16,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    task.cpp \
-    tcpcommunicator.cpp
+    task.cpp
 
 include(../Logging/QsLog.pri)
 
 HEADERS += \
-    task.h \
-    tcpcommunicator.h
+    task.h
 
 unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
 

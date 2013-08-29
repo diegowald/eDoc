@@ -2,7 +2,7 @@
 #include <QsLog.h>
 #include <unistd.h>
 #include <QCoreApplication>
-#include "tcpcommunicator.h"
+#include "../tcpMessages/tcpcommunicator.h"
 
 Task::Task(const QString &appPath, QObject *parent) :
     QObject(parent)

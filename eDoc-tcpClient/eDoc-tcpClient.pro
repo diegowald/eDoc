@@ -13,10 +13,14 @@ DESTDIR = ../plugins
 
 
 SOURCES += \
-    tcpclientplugin.cpp
+    tcpclientplugin.cpp \
+    tcpproxydocument.cpp \
+    tcpproxyfileid.cpp
 
 HEADERS += \
-    tcpclientplugin.h
+    tcpclientplugin.h \
+    tcpproxydocument.h \
+    tcpproxyfileid.h
 OTHER_FILES += eDoc-HttpClient.json
 
 unix:!symbian {

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core network
 
 TARGET = tcpMessages
 TEMPLATE = lib
@@ -15,13 +15,19 @@ DEFINES += TCPMESSAGES_LIBRARY
 SOURCES += tcpmessages.cpp \
     messagebase.cpp \
     tcpadddocumentrequest.cpp \
-    adddocumentresponse.cpp
+    adddocumentresponse.cpp \
+    tcpcommunicator.cpp \
+    getblobrequest.cpp \
+    getblobresponse.cpp
 
 HEADERS += tcpmessages.h\
         tcpmessages_global.h \
     messageBase.h \
     tcpAddDocumentRequest.h \
-    adddocumentresponse.h
+    adddocumentresponse.h \
+    tcpcommunicator.h \
+    getblobrequest.h \
+    getblobresponse.h
 
 unix:!symbian {
     maemo5 {
@@ -31,3 +37,8 @@ unix:!symbian {
     }
     INSTALLS += target
 }
+
+unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-API
+
+INCLUDEPATH += $$PWD/../eDoc-API
+DEPENDPATH += $$PWD/../eDoc-API

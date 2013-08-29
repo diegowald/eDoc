@@ -1,9 +1,12 @@
 <?xml version="1.0" ?>
 <edoc name="edoc">
-	<engine name="remote" class="tcpClientPlugin">
-		<url>192.168.0.104</url>
-		<port>55555</port>
-        </engine>
+    <engine name="Cache" class="MemoryDocEngine">
+		<maxCachedFiles>100</maxCachedFiles>
+		<engine name="engine1" class="tcpClientPlugin">
+			<url>127.0.0.1</url>
+			<port>55555</port>
+		</engine>
+	</engine>		
 	<database name="DB1" class="GenericDatabase">
 		<database_type>sqlite</database_type>
 		<server>./dbTest.db</server>

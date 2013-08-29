@@ -27,11 +27,9 @@ public:
     virtual ~TCPClientPlugin();
 
 private:
-    void sendData(MessageBase *msg);
-
+    QByteArray sendData(MessageBase *msg);
 
 private slots:
-    void readInfo();
     void handleError(QAbstractSocket::SocketError socketError);
 
 private:
@@ -41,7 +39,6 @@ private:
 
     QTcpSocket *tcpSocket;
     QNetworkSession *networkSession;
-
 };
 
 #endif // HTTPCLIENTPLUGIN_H
