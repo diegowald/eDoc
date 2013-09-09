@@ -95,7 +95,7 @@ void Task::run()
     connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
 
     int i = 0;
-    while (i < 100)
+    while (i < 10000)
     {
         sleep(1);
         QLOG_TRACE() << "void Task::run()";

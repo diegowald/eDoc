@@ -81,7 +81,15 @@ QByteArray TCPClientPlugin::sendData(MessageBase *msg)
     QByteArray block;
     QByteArray res;
     QDataStream ds(&block, QIODevice::WriteOnly);
-    ds << *msg;
+    switch (msg->messageType) {
+    case ADD_DOCUMENT_REQ:
+        ds << (*(AddDocumentRequest*)msg);
+        break;
+    case GET_BLOB_REQ:
+    default:
+        ds << *msg;
+        break;
+    }
     if (!tcpSocket->isOpen())
     {
         tcpSocket->connectToHost(url, port, QTcpSocket::ReadWrite);

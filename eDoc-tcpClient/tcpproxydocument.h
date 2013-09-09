@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "../eDoc-API/IDocument.h"
-#include "TCPProxyFileID.h"
+#include "tcpproxyfileid.h"
 #include <QtNetwork>
 
 class TCPProxyDocument : public QObject, public IDocument
