@@ -1,4 +1,6 @@
 #include "tcpcommunicator.h"
+#include "adddocumentresponse.h"
+#include <QDataStream>
 
 TCPCommunicator::TCPCommunicator(QTcpSocket *socket, EDocFactory *f, QObjectLogging *logger, QObject *parent) :
     QObject(parent)
@@ -39,8 +41,28 @@ void TCPCommunicator::parse()
 
 void TCPCommunicator::addDocumentRequestArrived(AddDocumentRequest &msg)
 {
+    IDocID *id = m_DocFactory->docEngine()->addDocument(msg.m_Blob);
+    AddDocumentResponse resp;
+    resp.m_DocID = id->asString();
+    sendData(&resp);
 }
 
 void TCPCommunicator::badMessage()
 {
+}
+
+void TCPCommunicator::sendData(MessageBase *msg)
+{
+    QByteArray block;
+    QDataStream ds(&block, QIODevice::WriteOnly);
+    ds << *msg;
+    if (m_Socket->isOpen())
+    {
+        qint64 result = m_Socket->write(block);
+        m_logger->logDebug(QString::number(result));
+    }
+    else
+    {
+        m_logger->logDebug("Socket is closed.");
+    }
 }

@@ -26,6 +26,7 @@ private slots:
 
 private:
     void parse();
+    void sendData(MessageBase *msg);
 private:
     QTcpSocket *m_Socket;
     EDocFactory *m_DocFactory;
