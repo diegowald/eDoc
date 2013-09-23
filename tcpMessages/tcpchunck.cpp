@@ -1,6 +1,6 @@
 #include "tcpchunck.h"
 
-TCPChunck::TCPChunck() :
+TCPChunck::TCPChunck(QObject *parent) :
     MessageBase(TCP_CHUNK_SEND, parent)
 {
 }

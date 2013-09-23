@@ -3,10 +3,10 @@
 
 #include "messageBase.h"
 
-class TCPChunck : public MessageBase
+class TCPMESSAGESSHARED_EXPORT TCPChunck : public MessageBase
 {
 public:
-    TCPChunck();
+    TCPChunck(QObject *parent = 0);
 
 public:
     QByteArray m_Blob;
