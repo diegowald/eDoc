@@ -18,7 +18,8 @@ SOURCES += tcpmessages.cpp \
     adddocumentresponse.cpp \
     tcpcommunicator.cpp \
     getblobrequest.cpp \
-    getblobresponse.cpp
+    getblobresponse.cpp \
+    tcpchunck.cpp
 
 HEADERS += tcpmessages.h\
         tcpmessages_global.h \
@@ -27,7 +28,8 @@ HEADERS += tcpmessages.h\
     adddocumentresponse.h \
     tcpcommunicator.h \
     getblobrequest.h \
-    getblobresponse.h
+    getblobresponse.h \
+    tcpchunck.h
 
 unix:!symbian {
     maemo5 {
