@@ -69,9 +69,12 @@ IDocID* TCPClientPlugin::addDocument(const QByteArray& blob)
         for (int i = 0; i< req.getChunkCount(); ++i)
         {
             result = sendData(req.getChunk(i));
+            MessageBase msg;
+            QDataStream ds(result);
+            ds >> msg;
             if (msg.messageType == TCP_CHUNK_RESP)
             {
-             aca hay que terminar
+
             }
         }
     }
