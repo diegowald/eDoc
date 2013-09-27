@@ -21,6 +21,13 @@ void TcpMessages::parse(QDataStream &dataStream)
         // y asi con todos
         break;
     }
+    case TCP_CHUNK_SEND:
+    {
+        TCPChunck req;
+        dataStream >> req;
+        emit ChunkArrived(req);
+        break;
+    }
     default:
         emit badMessage();
         break;

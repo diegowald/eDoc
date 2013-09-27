@@ -16,7 +16,7 @@ public:
 signals:
     void badMessage();
     void addDocumentRequestArrived(AddDocumentRequest &msg);
-
+    void ChunkArrived(TCPChunck &msg);
 };
 
 #endif // TCPMESSAGES_H

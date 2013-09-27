@@ -10,7 +10,7 @@ class TCPMESSAGESSHARED_EXPORT AddDocumentRequest : public MessageBase
 {
     Q_OBJECT
 public:
-    explicit AddDocumentRequest(int chunkSize = 0, QObject *parent = 0);
+    explicit AddDocumentRequest(int chunkSize = 1024, QObject *parent = 0);
     virtual ~AddDocumentRequest();
     virtual void setBlob(const QByteArray &blob);
     virtual bool requiresSplit() const;
