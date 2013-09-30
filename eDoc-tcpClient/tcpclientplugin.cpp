@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QDataStream>
 #include "../tcpMessages/tcpAddDocumentRequest.h"
+#include "../tcpMessages/tcpchunck.h"
 #include "tcpproxyfileid.h"
 #include "tcpproxydocument.h"
 
@@ -99,6 +100,9 @@ QByteArray TCPClientPlugin::sendData(MessageBase *msg)
     switch (msg->messageType) {
     case ADD_DOCUMENT_REQ:
         ds << (*(AddDocumentRequest*)msg);
+        break;
+    case TCP_CHUNK_SEND:
+        ds << (*(TCPChunck*)msg);
         break;
     case GET_BLOB_REQ:
     default:
