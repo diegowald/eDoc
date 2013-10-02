@@ -23,16 +23,19 @@ private slots:
     void readyRead();
     void badMessage();
     void addDocumentRequestArrived(AddDocumentRequest &msg);
+    void ChunkArrived(TCPChunck &msg);
 
 private:
     void parse();
     void sendData(MessageBase *msg);
+
 private:
     QTcpSocket *m_Socket;
     EDocFactory *m_DocFactory;
     QObjectLogging *m_logger;
     QByteArray readBlock;
     TcpMessages messageParser;
+    QMap<QString, IDocBase*> partialDocuments;
 };
 
 #endif // TCPCOMMUNICATOR_H

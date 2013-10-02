@@ -17,6 +17,9 @@ TCPCommunicator::TCPCommunicator(QTcpSocket *socket, EDocFactory *f, QObjectLogg
     connect(&messageParser, SIGNAL(addDocumentRequestArrived(AddDocumentRequest&)),
             this, SLOT(addDocumentRequestArrived(AddDocumentRequest&)));
 
+    connect(&messageParser, SIGNAL(ChunkArrived(TCPChunck&)),
+            this, SLOT(ChunkArrived(TCPChunck&)));
+
     connect(&messageParser, SIGNAL(badMessage()),
             this, SLOT(badMessage()));
 }
@@ -41,10 +44,15 @@ void TCPCommunicator::parse()
 
 void TCPCommunicator::addDocumentRequestArrived(AddDocumentRequest &msg)
 {
+    if (msg.)
     IDocID *id = m_DocFactory->docEngine()->addDocument(msg.m_Blob);
     AddDocumentResponse resp;
     resp.m_DocID = id->asString();
     sendData(&resp);
+}
+
+void TCPCommunicator::ChunkArrived(TCPChunck &msg)
+{
 }
 
 void TCPCommunicator::badMessage()
