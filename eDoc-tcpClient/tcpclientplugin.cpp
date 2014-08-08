@@ -64,8 +64,9 @@ IDocID* TCPClientPlugin::addDocument(const QByteArray& blob)
     AddDocumentRequest req;
     req.setBlob(blob);
     QByteArray result;
-    if (!req.requiresSplit())
-        result = sendData(&req);
+
+    result = sendData(&req.header());
+
     else {
         for (int i = 0; i< req.getChunkCount(); ++i)
         {

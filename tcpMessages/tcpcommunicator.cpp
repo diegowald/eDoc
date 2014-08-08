@@ -1,6 +1,7 @@
 #include "tcpcommunicator.h"
 #include "adddocumentresponse.h"
 #include <QDataStream>
+#include <QUuid>
 
 TCPCommunicator::TCPCommunicator(QTcpSocket *socket, EDocFactory *f, QObjectLogging *logger, QObject *parent) :
     QObject(parent)
@@ -44,10 +45,18 @@ void TCPCommunicator::parse()
 
 void TCPCommunicator::addDocumentRequestArrived(AddDocumentRequest &msg)
 {
-    if (msg.)
-    IDocID *id = m_DocFactory->docEngine()->addDocument(msg.m_Blob);
-    AddDocumentResponse resp;
-    resp.m_DocID = id->asString();
+    IDocID * id = NULL;
+    if (!msg.requiresSplit())
+    {
+        id = m_DocFactory->docEngine()->addDocument(msg.m_Blob);
+        AddDocumentResponse resp;
+        resp.m_DocID = id->asString();
+    }
+    else
+    {
+        id = QUuid::createUuid(); esta mal
+
+    }
     sendData(&resp);
 }
 

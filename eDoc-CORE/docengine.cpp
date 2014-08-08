@@ -39,4 +39,9 @@ bool DocEngine::deleteDocument(IDocID *id)
     return true;
 }
 
+IDocID* DocEngine::IValueToIDocId(IValue *value)
+{
+    return new DocID(value->content().toString());
+}
+
 //Q_EXPORT_PLUGIN2(edoccore, DocEngine);

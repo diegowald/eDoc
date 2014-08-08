@@ -14,18 +14,18 @@ DlgAddDocument::~DlgAddDocument()
     delete ui;
 }
 
-void DlgAddDocument::setData(const QString &filename, IRecord* record)
+void DlgAddDocument::setData(const QString & filename, IRecord* record)
 {
     m_FileName = filename;
     m_Record = record;
 
     recEditor = new RecordEditor(this);
     recEditor->setRecord(record);
-    QVBoxLayout* layout = new QVBoxLayout();
+    QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(recEditor);
     ui->frame->setLayout(layout);
 
-    ui->lblFilename->setText(m_FileName);
+    ui->lblFilename->setText(filename);
 }
 
 void DlgAddDocument::applyData(IRecord *record)

@@ -101,7 +101,7 @@ DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)
 
 void SQLManager::addParameters(QSqlQuery &query, const QString &SQL, DBRecordPtr record)
 {
-    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::addParameters(QSqlQuery &query, QString &SQL, DBRecordPtr record)");
+    //m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::addParameters(QSqlQuery &query, QString &SQL, DBRecordPtr record)");
     foreach(QString key, record->keys())
     {
         QString param(":" + key);
@@ -126,8 +126,23 @@ void SQLManager::addParameters(QSqlQuery &query, const QString &SQL, DBRecordPtr
             default:
                 break;
             }
-            m_Logger->logDebug("param: " + param);
-            m_Logger->logDebug("value: " + value.toString());
+          //  m_Logger->logDebug("param: " + param);
+            //m_Logger->logDebug("value: " + value.toString());
+            query.bindValue(param, value);
+        }
+    }
+}
+
+void SQLManager::addParameters(QSqlQuery &query, const QString &SQL, const QList<QPair<QString, QString> >& filter)
+{
+    //m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::addParameters(QSqlQuery &query, QString &SQL, DBRecordPtr record)");
+    QPair<QString, QString> filterColumn;
+    foreach(filterColumn, filter)
+    {
+        QString param(":" + filterColumn.first);
+        if (SQL.contains(param))
+        {
+            QVariant value = filterColumn.second;
             query.bindValue(param, value);
         }
     }
@@ -135,7 +150,7 @@ void SQLManager::addParameters(QSqlQuery &query, const QString &SQL, DBRecordPtr
 
 void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)
 {
-    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)");
+    //m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)");
     if (!tryReconnect())
     {
         m_Logger->logError(QString("Can't open Database."
@@ -157,21 +172,57 @@ void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)
     db.close();
 }
 
+QStringList SQLManager::getDistintValues(const QString &sql, const QList<QPair<QString, QString> >& filter)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "QStringList SQLManager::getDistintValues(const QString &sql, const QStringList& filter)");
+    QStringList response;
+
+    if (!tryReconnect())
+    {
+        m_Logger->logError(QString("Can't open Database."
+                           " Reason: ") +
+                           db.lastError().text());
+        // Error
+        return response;
+    }
+
+    QSqlQuery q;
+    q.prepare(sql);
+    addParameters(q, sql, filter);
+    q.exec();
+
+    while (q.next())
+    {
+        QSqlRecord rec = q.record();
+        for (int i = 0; i < rec.count(); i++)
+        {
+            response.push_back(rec.field(0).value().toString());
+        }
+    }
+
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+        m_Logger->logError(QString("SQL Error: %1").arg(q.lastError().text()));
+    }
+    db.close();
+    return response;
+}
+
 bool SQLManager::tryReconnect()
 {
-    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "bool SQLManager::tryReconnect()");
+//    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "bool SQLManager::tryReconnect()");
     if (!db.isOpen() && !db.open())
     {
         switch (m_DBType)
         {
         case DB2:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
+           // m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
             break;
         case IBASE:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
+        //    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
             break;
         case MYSQL:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "Database trying to reconnect: MySQL Database");
+      ////      m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "Database trying to reconnect: MySQL Database");
             db = QSqlDatabase::addDatabase("QMYSQL");
             db.setHostName(m_Server);
             db.setDatabaseName(m_database);
@@ -179,29 +230,29 @@ bool SQLManager::tryReconnect()
             db.setPassword(m_Password);
             break;
         case OCI:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
+      //      m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
             break;
         case ODBC:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
+       ///     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
             break;
         case PSQL:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
+         //   m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
             break;
         case SQLITE:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "Database trying to reconnect: SQLite Database");
+       //     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "Database trying to reconnect: SQLite Database");
             db = QSqlDatabase::addDatabase("QSQLITE");
             db.setHostName("localhost");
             db.setDatabaseName(m_Server);
             break;
         case SQLITE2:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
+      //      m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
             break;
         case TDS:
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
+        //    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DATABASE TYPE NOT IMPLEMENTED YET");
             break;
         case INVALID_DB_TYPE:
             // Fall through
-            m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "INVALID DATABASE TYPE");
+       //     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "INVALID DATABASE TYPE");
         default:
             return false;
         }

@@ -4,6 +4,8 @@
 #include "configreader.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
+#include "queryengine.h"
+
 
 EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
@@ -24,6 +26,11 @@ EDocFactory::~EDocFactory()
 
     /*if (m_Logger != NULL)
         delete m_Logger;*/
+
+    if (query != NULL)
+    {
+        delete query;
+    }
 }
 
 void EDocFactory::readAvailablePlugins()
@@ -66,10 +73,9 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     ConfigReader reader(this->xmlFile);
     configuration = reader.getConfiguration();
     m_Logger->logDebug(configuration->toDebugString());
-
     engine = createEngine();
     database = createDatabase();
-
+    query = createQueryEngine();
 }
 
 IDocEngine* EDocFactory::docEngine()
@@ -82,6 +88,12 @@ IDatabase* EDocFactory::databaseEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase* EDocFactory::databaseEngine()");
     return database;
+}
+
+IQueryEngine * EDocFactory::queryEngine()
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IQueryEngine * EDocFactory::queryEngine()");
+    return query;
 }
 
 IDocEngine *EDocFactory::createEngine()
@@ -100,6 +112,7 @@ IDocEngine *EDocFactory::createEngine()
             engine->initialize(conf, m_Logger, plugins);
             return qobject_cast<IDocEngine *>(plugin);
         }
+        m_Logger->logError("Cannot create Engine " + engineClass);
     }
     m_Logger->logError("Cannot create Engine");
     return NULL;
@@ -123,5 +136,20 @@ IDatabase *EDocFactory::createDatabase()
         }
     }
     m_Logger->logError("Cannot create database engine");
+    return NULL;
+}
+
+IQueryEngine *EDocFactory::createQueryEngine()
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IQueryEngine *EDocFactory::createQueryEngine()");
+    if ("edoc" == configuration->key())
+    {
+        XMLCollection *c = (XMLCollection*) configuration;
+        XMLCollection *conf = (XMLCollection*)c->get("queries");
+        query = new QueryEngine();
+        query->initialize(conf);
+        return query;
+    }
+    m_Logger->logError("Cannot create Query engine");
     return NULL;
 }

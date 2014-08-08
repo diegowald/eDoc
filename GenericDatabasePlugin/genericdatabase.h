@@ -30,6 +30,7 @@ public:
     virtual IRecord* getRecord(IRecordID *id);
     virtual void updateRecord(IRecord* record);
     virtual void deleteRecord(IRecordID *id);
+    virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName);
     virtual QString name();
 
 protected:

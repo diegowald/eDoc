@@ -32,8 +32,9 @@ public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger);
     virtual QString name();
     virtual QString type();
-    virtual bool isReadOnly();
-    virtual bool isVisible();
+    virtual bool isReadOnly() const;
+    virtual bool isVisible() const;
+    virtual bool isQueryable() const;
     virtual QList<VALIDQUERY> validQueries();    
     virtual IValue* createEmptyValue();
 
@@ -49,6 +50,7 @@ private:
     QString m_Type;
     bool m_ReadOnly;
     bool m_Visible;
+    bool m_Queryable;
     QList<VALIDQUERY> m_ValidQeries;
     QObjectLogging *m_Logger;
     DATATYPE m_DataType;

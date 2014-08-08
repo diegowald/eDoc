@@ -4,7 +4,7 @@
 #include "edoc-clientcomponents_global.h"
 #include <QWidget>
 #include "../eDoc-API/IRecord.h"
-#include "stringwidget.h"
+#include "QFieldWidget.h"
 
 namespace Ui {
 class RecordEditor;
@@ -24,10 +24,21 @@ public:
 
 private:
     void setEnabledStatus();
+    QFieldWidget *createWidget(IRecord *record, const QString &fieldName, QWidget* parent);
+
+signals:
+    void downloadFile(IRecord* record, const IValue* value);
+    void uploadFile(IRecord* record, const IValue* value);
+
+private slots:
+    void download(const IValue* value);
+    void upload(const IValue* value);
+
 private:
     Ui::RecordEditor *ui;
-    QMap<QString, StringWidget*> collection;
+    QMap<QString, QFieldWidget*> collection;
     bool enabledEdition;
+    IRecord* m_Record;
 };
 
 #endif // RECORDEDITOR_H

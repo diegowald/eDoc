@@ -9,6 +9,8 @@
 #include "../eDoc-InMemoryTagging/inmemorytagprocessor.h"
 #include <QSet>
 #include "../eDoc-MetadataFramework/parameter.h"
+#include <QPair>
+#include <QList>
 
 GenericDatabase::GenericDatabase(QObject *parent) :
     QObject(parent), m_SQLManager(this)
@@ -152,10 +154,10 @@ std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *para
         (*r)[QString("%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString();
         break;
     case IS_NULL:
-        whereClause = QString("%1 IS NULL").arg(parameter->field()->name());
+        whereClause = QString("(%1 IS NULL OR %1 = '')").arg(parameter->field()->name());
         break;
     case IS_NOT_NULL:
-        whereClause = QString("%1 IS NOT NULL").arg(parameter->field()->name());
+        whereClause = QString("(%1 IS NOT NULL AND %1 <> '')").arg(parameter->field()->name());
         break;
     }
 
@@ -303,6 +305,29 @@ QString GenericDatabase::getParametersString()
     foreach(QString field, fields)
         parameters.append(":" + field);
     return parameters.join(", ");
+}
+
+QStringList GenericDatabase::getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName)
+{
+    QString sql = "SELECT DISTINCT %1 FROM %2 WHERE %1 <> '' AND %1 IS NOT NULL %3";
+    QString whereClause = "";
+    if (filter.count() > 0)
+    {
+        QString field;
+        QPair<QString, QString> column;
+        foreach (column, filter)
+        {
+            field = "%1 = :%2";
+            whereClause += whereClause.length() > 0 ? " AND " : "";
+            whereClause += field.arg(column.first, column.first);
+        }
+        whereClause = " AND " + whereClause;
+    }
+    QString sqlToExecute = sql.arg(columnName).arg(m_TableName).arg(whereClause);
+
+    QStringList result = m_SQLManager.getDistintValues(sqlToExecute, filter);
+
+    return result;
 }
 
 #if QT_VERSION < 0x050000

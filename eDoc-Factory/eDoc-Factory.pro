@@ -15,11 +15,13 @@ DESTDIR = ../
 DEFINES += EDOCFACTORY_LIBRARY
 
 SOURCES += edocfactory.cpp \
-    configreader.cpp
+    configreader.cpp \
+    queryengine.cpp
 
 HEADERS += edocfactory.h\
         edoc-factory_global.h \
-    configreader.h
+    configreader.h \
+    queryengine.h
 
 unix:!symbian {
     maemo5 {

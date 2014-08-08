@@ -2,12 +2,12 @@
 #define TASK_H
 
 #include <QObject>
+#include <QtNetwork>
+#include <QList>
 #include "../eDoc-Factory/edocfactory.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include "../eDoc-API/IDocID.h"
-#include <QtNetwork>
-#include "tcpcommunicator.h"
-#include "QList"
+#include "../tcpMessages/tcpcommunicator.h"
 
 class Task : public QObject
 {

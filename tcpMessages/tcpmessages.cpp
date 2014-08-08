@@ -13,6 +13,13 @@ void TcpMessages::parse(QDataStream &dataStream)
     dataStream.device()->seek(0);
     switch (msg.messageType)
     {
+    case INVALID_MESSAGE:
+    {
+        InvalidMessage req;
+        dataStream >> req;
+        emit InvalidMessageArrived(req);
+        break;
+    }
     case ADD_DOCUMENT_REQ:
     {
         AddDocumentRequest req;
@@ -21,6 +28,8 @@ void TcpMessages::parse(QDataStream &dataStream)
         // y asi con todos
         break;
     }
+        ADD_DOCUMENT_RESP,
+
     case TCP_CHUNK_SEND:
     {
         TCPChunck req;
@@ -28,6 +37,9 @@ void TcpMessages::parse(QDataStream &dataStream)
         emit ChunkArrived(req);
         break;
     }
+        TCP_CHUNK_RESP,
+        GET_BLOB_REQ,
+        GET_BLOB_RESP
     default:
         emit badMessage();
         break;

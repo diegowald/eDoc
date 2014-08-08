@@ -2,7 +2,7 @@
 #include "ui_stringwidget.h"
 
 StringWidget::StringWidget(QWidget *parent) :
-    QWidget(parent),
+    QFieldWidget(parent),
     ui(new Ui::StringWidget)
 {
     ui->setupUi(this);

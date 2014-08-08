@@ -9,8 +9,9 @@ FieldDefinition::FieldDefinition(QObject *parent) :
 {
     m_Name = "";
     m_Type = "";
-    m_ReadOnly = "";
-    m_Visible = "";
+    m_ReadOnly = false;
+    m_Visible = false;
+    m_Queryable = false;
 }
 
 FieldDefinition::~FieldDefinition()
@@ -29,11 +30,18 @@ void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *log
     m_Visible = ((XMLElement*)((XMLCollection*) configuration)->get("visible"))->value() == "1" ? true : false;
     m_DataType = analyzeType();
     m_FieldNameInDatabase = ((XMLElement*)((XMLCollection*)configuration)->get("fieldname"))->value();
-    switch (m_DataType) {
+    m_Queryable = true;
+    switch (m_DataType)
+    {
     case IRECORD_REFERENCE_TYPE:
     case IMULTIRECORD_REFERENCE_TYPE:
         m_OtherDatabaseName = ((XMLElement*)((XMLCollection*)configuration)->get("datanase"))->value();
         m_FieldToShow = ((XMLElement*)((XMLCollection*)configuration)->get("display_field"))->value();
+        break;
+    case IDOCBASE_TYPE:
+    case IDOCUMENT_TYPE:
+    case IMULTIDOCUMENT_TYPE:
+        m_Queryable = false;
         break;
     default:
         break;
@@ -89,14 +97,19 @@ QString FieldDefinition::type()
     return m_Type;
 }
 
-bool FieldDefinition::isReadOnly()
+bool FieldDefinition::isReadOnly() const
 {
     return m_ReadOnly;
 }
 
-bool FieldDefinition::isVisible()
+bool FieldDefinition::isVisible() const
 {
     return m_Visible;
+}
+
+bool FieldDefinition::isQueryable() const
+{
+    return m_Queryable;
 }
 
 QList<VALIDQUERY> FieldDefinition::validQueries()
@@ -134,7 +147,7 @@ IValue* FieldDefinition::createEmptyValue()
         value->setNull();
         break;
     case IDOCUMENT_TYPE:
-        value = new IDocumentValue(NULL, this);
+        value = new IDocumentIDValue(NULL, this);
         value->setNull();
         break;
     case IMULTIDOCUMENT_TYPE:

@@ -24,6 +24,7 @@ public:
     virtual IDocID* addDocument(const QByteArray& blob);
     virtual IDocument* getDocument(IDocID *id);
     virtual bool deleteDocument(IDocID *id);
+    virtual IDocID* IValueToIDocId(IValue* value);
     virtual QString name();
 
     

@@ -14,12 +14,15 @@ DEFINES += EDOCCLIENTCOMPONENTS_LIBRARY
 
 SOURCES += edocclientcomponents.cpp \
     stringwidget.cpp \
-    recordeditor.cpp
+    recordeditor.cpp \
+    documentwidget.cpp
 
 HEADERS += edocclientcomponents.h\
         edoc-clientcomponents_global.h \
     stringwidget.h \
-    recordeditor.h
+    recordeditor.h \
+    documentwidget.h \
+    QFieldWidget.h
 
 unix:!symbian {
     maemo5 {
@@ -32,7 +35,8 @@ unix:!symbian {
 
 FORMS += \
     stringwidget.ui \
-    recordeditor.ui
+    recordeditor.ui \
+    documentwidget.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-API
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-API

@@ -4,6 +4,7 @@
 #include "edoc-factory_global.h"
 #include "../eDoc-API/IDocEngine.h"
 #include "../eDoc-API/IDatabase.h"
+#include "../eDoc-API/IQueryEngine.h"
 #include <QMap>
 #include "../eDoc-Configuration/IXMLContent.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
@@ -16,11 +17,14 @@ public:
     virtual void initialize(const QString &pluginPath, const QString &xmlFile, QObjectLogging *logger);
     virtual IDocEngine* docEngine();
     virtual IDatabase* databaseEngine();
+    virtual IQueryEngine *queryEngine();
 
 protected:
     void readAvailablePlugins();
     IDocEngine *createEngine();
     IDatabase *createDatabase();
+    IQueryEngine *createQueryEngine();
+
 private:
     QString pluginPath;
     QString xmlFile;
@@ -29,6 +33,7 @@ private:
     IXMLContent *configuration;
     IDocEngine *engine;
     IDatabase *database;
+    IQueryEngine *query;
     QObjectLogging *m_Logger;
 };
 

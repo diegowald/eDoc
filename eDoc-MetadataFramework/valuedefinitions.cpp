@@ -202,33 +202,38 @@ QVariant IDocBaseValue::content()
         return get()->id()->asString();
 }
 
-IDocumentValue::IDocumentValue(IDocument *value, QObject *parent) :
+IDocumentIDValue::IDocumentIDValue(IDocID *value, QObject *parent) :
+    QObject(parent), Value(value ? value->asString() : QString())
+{
+}
+
+IDocumentIDValue::IDocumentIDValue(const QString &value, QObject *parent) :
     QObject(parent), Value(value)
 {
 }
 
-IDocumentValue::~IDocumentValue()
+
+IDocumentIDValue::~IDocumentIDValue()
 {
 }
 
-void IDocumentValue::setValue(const QVariant &newValue)
+void IDocumentIDValue::setValue(const QVariant &newValue)
 {
     // Esto es una exception
-    IDocument* v = newValue.value<IDocument*>();
-    setValue2(v);
+    setValue2(newValue.toString());
 }
 
-QVariant IDocumentValue::asVariant()
+QVariant IDocumentIDValue::asVariant()
 {
     return qVariantFromValue(get());
 }
 
-QVariant IDocumentValue::content()
+QVariant IDocumentIDValue::content()
 {
     if (isNull())
         return QVariant(QVariant::String);
     else
-        return get()->id()->asString();
+        return get();
 }
 
 IMultiDocumentValue::IMultiDocumentValue(IMultiDocument *value, QObject *parent) :

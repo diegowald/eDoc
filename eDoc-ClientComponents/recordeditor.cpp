@@ -1,6 +1,7 @@
 #include "recordeditor.h"
 #include "ui_recordeditor.h"
 #include "stringwidget.h"
+#include "documentwidget.h"
 
 RecordEditor::RecordEditor(QWidget *parent) :
     QWidget(parent),
@@ -8,6 +9,7 @@ RecordEditor::RecordEditor(QWidget *parent) :
 {
     ui->setupUi(this);
     enabledEdition = true;
+    m_Record = NULL;
 }
 
 RecordEditor::~RecordEditor()
@@ -17,35 +19,70 @@ RecordEditor::~RecordEditor()
 
 void RecordEditor::setRecord(IRecord * record)
 {
+    m_Record = record;
     ui->lstFields->clear();
     foreach (QString fieldName, record->fieldNames())
     {
-        if (record->fieldDefinition(fieldName)->isVisible())
+        IFieldDefinition *fieldDef = record->fieldDefinition(fieldName);
+        if (fieldDef->isVisible())
         {
-            QListWidgetItem *item = new QListWidgetItem("");
-            ui->lstFields->addItem(item);
-            StringWidget *sw = new StringWidget(ui->lstFields);
-            ui->lstFields->setItemWidget(item, sw);
-            item->setSizeHint(sw->size());
-            sw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
-            collection[fieldName] = sw;
+            QFieldWidget *w = createWidget(record, fieldName, ui->lstFields);
+            if (w != NULL)
+            {
+                QListWidgetItem *item = new QListWidgetItem("");
+                ui->lstFields->addItem(item);
+                ui->lstFields->setItemWidget(item, w);
+                item->setSizeHint(w->size());
+                collection[fieldName] = w;
+            }
         }
     }
     setEnabledStatus();
 }
 
+QFieldWidget *RecordEditor::createWidget(IRecord *record, const QString &fieldName, QWidget* parent)
+{
+    QFieldWidget *w = NULL;
+    QString fieldType = record->fieldDefinition(fieldName)->type();
+
+    if (fieldType == "string")
+    {
+        StringWidget *sw = new StringWidget(parent);
+        sw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
+        w = sw;
+    }
+    else if (fieldType == "tag")
+    {
+        StringWidget *sw = new StringWidget(parent);
+        sw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
+        w = sw;
+    }
+    else if (fieldType == "document")
+    {
+        DocumentWidget *dw = new DocumentWidget(parent);
+        dw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
+        w = dw;
+        connect(dw, SIGNAL(download(const IValue*)), this, SLOT(download(const IValue*)));
+        connect(dw, SIGNAL(upload(const IValue*)), this, SLOT(upload(const IValue*)));
+    }
+    return w;
+}
+
 void RecordEditor::applyValuesToRecord(IRecord *record)
 {
-    ui->lstFields->clear();
-    foreach (QString fieldName, record->fieldNames())
+    QStringList fields = collection.keys();
+    foreach (QString fieldName, fields)
     {
-        if (record->fieldDefinition(fieldName)->isVisible())
+        IFieldDefinition* fieldDef = record->fieldDefinition(fieldName);
+        if (fieldDef && (fieldDef->isVisible() && fieldDef->isQueryable()))
         {
+            QVariant v = collection[fieldName]->value();
+            //record->value(fieldName)->setValue(v);
             record->value(fieldName)->setValue(collection[fieldName]->value());
         }
     }
+    fields.clear();
 }
-
 
 void RecordEditor::setEnabledEdition(bool enabled)
 {
@@ -56,8 +93,18 @@ void RecordEditor::setEnabledEdition(bool enabled)
 
 void RecordEditor::setEnabledStatus()
 {
-    foreach (StringWidget* w, collection)
+    foreach (QFieldWidget* w, collection.values())
     {
         w->setEnabled(enabledEdition);
     }
+}
+
+void RecordEditor::download(const IValue* value)
+{
+    emit downloadFile(m_Record, value);
+}
+
+void RecordEditor::upload(const IValue* value)
+{
+    emit uploadFile(m_Record, value);
 }

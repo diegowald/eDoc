@@ -5,6 +5,9 @@
 #include "../eDoc-Factory/edocfactory.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include "../eDoc-API/IDocID.h"
+#include <QTreeWidgetItem>
+#include <QList>
+#include <QPair>
 
 namespace Ui {
 class ExplorerWindow;
@@ -21,7 +24,13 @@ public:
 private:
     void fillFieldsCombo();
     void fillOperatorsCombo();
-    
+    void fillTreeCombo();
+    void fillSubTree(QTreeWidgetItem *parent);
+    QList<QPair<QString, QString> > getTreeFilter(QTreeWidgetItem *parent);
+    void doSearch(QList<IParameter *> &filter);
+    IParameter *createSearchParameter(const QString &fieldName, VALIDQUERY queryType, QVariant value1, QVariant value2);
+    void updateTreeFilter(QTreeWidgetItem *node);
+
 private slots:
     void on_LogTrace(const QString& text);
     void on_LogDebug(const QString& text);
@@ -42,11 +51,18 @@ private slots:
 
     void on_actionAdd_Document_triggered();
 
+    void downloadFile(IRecord* record, const IValue *value);
+    void uploadFile(IRecord* record, const IValue* value);
+    void on_cboTree_currentIndexChanged(const QString &arg1);
+
+    void on_treeStructure_itemSelectionChanged();
+
 private:
     Ui::ExplorerWindow *ui;
     EDocFactory f;
     QObjectLogging logger;
-    QList<IParameter *> filter;
+    QList<IParameter *> searchFilter;
+    QList<IParameter *> treefilter;
 };
 
 #endif // EXPLORERWINDOW_H

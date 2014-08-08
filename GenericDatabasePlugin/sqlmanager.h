@@ -37,11 +37,14 @@ public:
 
     virtual DBRecordSet getRecords(const QString &sql, DBRecordPtr record);
     virtual void executeCommand(const QString &sql, DBRecordPtr record);
+
+    virtual QStringList getDistintValues(const QString &sql, const QList<QPair<QString, QString> >& filter);
     
 private:
     bool tryReconnect();
     DBType String2DBType();
     void addParameters(QSqlQuery &query, const QString &SQL, DBRecordPtr record);
+    void addParameters(QSqlQuery &query, const QString &SQL, const QList<QPair<QString, QString> >& filter);
 signals:
     
 public slots:

@@ -97,6 +97,12 @@ void InMemoryDatabase::deleteRecord(IRecordID *id)
     m_Records.remove(id->asString());
 }
 
+QStringList InMemoryDatabase::getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "InMemoryDatabase", "QStringList InMemoryDatabase::getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName) TODO");
+    return QStringList();
+}
+
 QString InMemoryDatabase::name()
 {
     return "InMemoryDatabase";

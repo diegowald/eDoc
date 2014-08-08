@@ -2,14 +2,15 @@
 #define STRINGWIDGET_H
 
 #include "edoc-clientcomponents_global.h"
-#include <QWidget>
 #include "../eDoc-API/IValue.h"
 #include "../eDoc-API/IFieldDefinition.h"
+#include "QFieldWidget.h"
+
 namespace Ui {
 class StringWidget;
 }
 
-class EDOCCLIENTCOMPONENTSSHARED_EXPORT StringWidget : public QWidget
+class EDOCCLIENTCOMPONENTSSHARED_EXPORT StringWidget : public QFieldWidget
 {
     Q_OBJECT
     
