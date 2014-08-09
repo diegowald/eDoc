@@ -295,8 +295,10 @@ void ExplorerWindow::on_cboTree_currentIndexChanged(const QString &arg1)
 {
     (void)arg1;
     ui->treeStructure->clear();
-    fillSubTree(NULL);
-    updateTreeFilter(NULL);
+    QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeStructure, QStringList(QString("/")));
+    ui->treeStructure->addTopLevelItem(item);
+    fillSubTree(item);
+    updateTreeFilter(item);
     doSearch(treefilter);
 }
 
@@ -360,7 +362,7 @@ QList<QPair<QString, QString> > ExplorerWindow::getTreeFilter(QTreeWidgetItem *p
 {
     QTreeWidgetItem *currentNode = parent;
     QList<QPair<QString, QString> > list;
-    while (currentNode)
+    while (currentNode && currentNode->parent())
     {
         QPair<QString, QString> value;
         value.first = currentNode->data(0, Qt::UserRole).toString();
