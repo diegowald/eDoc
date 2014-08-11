@@ -294,6 +294,7 @@ void ExplorerWindow::uploadFile(IRecord* record, const IValue *value)
 void ExplorerWindow::on_cboTree_currentIndexChanged(const QString &arg1)
 {
     (void)arg1;
+    ui->treeStructure->clearSelection();
     ui->treeStructure->clear();
     QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeStructure, QStringList(QString("/")));
     ui->treeStructure->addTopLevelItem(item);
@@ -304,10 +305,13 @@ void ExplorerWindow::on_cboTree_currentIndexChanged(const QString &arg1)
 
 void ExplorerWindow::on_treeStructure_itemSelectionChanged()
 {
-    fillSubTree(ui->treeStructure->selectedItems().at(0));
-    updateTreeFilter(ui->treeStructure->selectedItems().at(0));
-    doSearch(treefilter);
-    ui->treeStructure->selectedItems().at(0)->setExpanded(true);
+    if (ui->treeStructure->selectedItems().count() > 0)
+    {
+        fillSubTree(ui->treeStructure->selectedItems().at(0));
+        updateTreeFilter(ui->treeStructure->selectedItems().at(0));
+        doSearch(treefilter);
+        ui->treeStructure->selectedItems().at(0)->setExpanded(true);
+    }
 }
 
 void ExplorerWindow::updateTreeFilter(QTreeWidgetItem *node)
@@ -372,3 +376,36 @@ QList<QPair<QString, QString> > ExplorerWindow::getTreeFilter(QTreeWidgetItem *p
     }
     return list;
 }
+
+void ExplorerWindow::on_actionAdd_1000_Documents_triggered()
+{
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Select file"), ".");
+
+    if (filenames.count() > 0)
+    {
+        IDatabase* db = f.databaseEngine();
+        IDocEngine *e = f.docEngine();
+
+        QString filename = filenames.at(0);
+
+        for (int i = 0; i < 100000; ++i)
+        {
+            IRecord *rec = db->createEmptyRecord();
+
+            QFile file(filename);
+            file.open(QIODevice::ReadOnly);
+            QByteArray blob = file.readAll();
+
+            IDocID *docId = e->addDocument(blob);
+            IDocument *doc = (IDocument*)e->getDocument(docId);
+
+            rec->value("archivo")->setValue(doc->id()->asString());
+
+            rec->value("campo1")->setValue(QVariant(QString("Campo1 %1").arg(i % 20)));
+            rec->value("campo2")->setValue(QVariant(QString("Campo2 %1").arg(i % 7)));
+
+            db->addRecord(rec);
+        }
+    }
+}
+

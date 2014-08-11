@@ -57,6 +57,8 @@ private slots:
 
     void on_treeStructure_itemSelectionChanged();
 
+    void on_actionAdd_1000_Documents_triggered();
+
 private:
     Ui::ExplorerWindow *ui;
     EDocFactory f;

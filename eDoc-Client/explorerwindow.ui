@@ -280,6 +280,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionAdd_Document"/>
+   <addaction name="actionAdd_1000_Documents"/>
   </widget>
   <action name="actionAdd_Document">
    <property name="text">
@@ -287,6 +288,11 @@
    </property>
    <property name="toolTip">
     <string>Adds a new document to storage</string>
+   </property>
+  </action>
+  <action name="actionAdd_1000_Documents">
+   <property name="text">
+    <string>Add 1000 Documents</string>
    </property>
   </action>
  </widget>
