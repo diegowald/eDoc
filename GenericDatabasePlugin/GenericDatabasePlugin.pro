@@ -11,19 +11,19 @@ TEMPLATE = lib
 CONFIG += plugin
 DESTDIR = ../plugins
 
+CONFIG += c++11
+
 win32 {
 INCLUDEPATH += c:/boost/boost_1_54_0
 }
 
 SOURCES += \
     genericdatabase.cpp \
-    recordid.cpp \
-    sqlmanager.cpp
+    recordid.cpp
 
 HEADERS += \
     genericdatabase.h \
-    recordid.h \
-    sqlmanager.h
+    recordid.h
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
@@ -37,6 +37,7 @@ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-API
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-API
 else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-API
 
+
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
@@ -49,7 +50,10 @@ DEPENDPATH += $$PWD/../eDoc-MetadataFramework
 OTHER_FILES += \
     GenericDatabasePlugin.json
 
-unix|win32: LIBS += -L$$OUT_PWD/.. -leDoc-InMemoryTagging
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -lsqlmanager
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -lsqlmanager
+else:unix: LIBS += -L$$OUT_PWD/../ -lsqlmanager
 
-INCLUDEPATH += $$PWD/../eDoc-InMemoryTagging
-DEPENDPATH += $$PWD/../eDoc-InMemoryTagging
+
+INCLUDEPATH += $$PWD/../sqlmanager
+DEPENDPATH += $$PWD/../sqlmanager

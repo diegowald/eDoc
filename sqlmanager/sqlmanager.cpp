@@ -21,6 +21,7 @@ SQLManager::~SQLManager()
 
 void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
 {
+    (void)pluginStock;
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
@@ -78,6 +79,43 @@ DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)
     QSqlQuery q;
     q.prepare(sql);
     addParameters(q, sql, record);
+    q.exec();
+
+    while (q.next())
+    {
+        QSqlRecord rec = q.record();
+        DBRecordPtr record = boost::make_shared<DBRecord>();
+        for (int i = 0; i < rec.count(); i++)
+        {
+            (*record)[rec.fieldName(i)] = rec.field(i).value();
+        }
+        response->push_back(record);
+    }
+
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+        m_Logger->logError(QString("SQL Error: %1").arg(q.lastError().text()));
+    }
+    db.close();
+    return response;
+}
+
+DBRecordSet SQLManager::getRecords(const QString &sql)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DBRecordSet SQLManager::getRecords(const QString &sql)");
+    DBRecordSet response = boost::make_shared<QList<DBRecordPtr> >();
+
+    if (!tryReconnect())
+    {
+        m_Logger->logError(QString("Can't open Database."
+                           " Reason: ") +
+                           db.lastError().text());
+        // Error
+        return response;
+    }
+
+    QSqlQuery q;
+    q.prepare(sql);
     q.exec();
 
     while (q.next())

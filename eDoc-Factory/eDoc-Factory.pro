@@ -12,6 +12,8 @@ TARGET = eDoc-Factory
 TEMPLATE = lib
 DESTDIR = ../
 
+CONFIG += c++11
+
 DEFINES += EDOCFACTORY_LIBRARY
 
 SOURCES += edocfactory.cpp \

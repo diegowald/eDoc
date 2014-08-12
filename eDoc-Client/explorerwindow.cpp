@@ -261,7 +261,7 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
                 IDocument *doc = (IDocument*)e->getDocument(docId);
 
                 rec->value("archivo")->setValue(doc->id()->asString());
-
+                rec->value("filename")->setValue(file.fileName());
                 db->addRecord(rec);
             }
         }

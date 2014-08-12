@@ -56,6 +56,12 @@ void EDocFactory::readAvailablePlugins()
                 DBplugins[db->name()] = f;
                 m_Logger->logDebug("DBEngine Name: " + db->name() + ", File: " + f);
             }
+            ITagProcessor *tag = qobject_cast<ITagProcessor*>(plugin);
+            if (tag)
+            {
+                tagPlugins[tag->name()] = f;
+                m_Logger->logDebug("Tag Processor Name: " + tag->name() + ", File: " + f);
+            }
         }
         delete plugin;
     }
@@ -76,6 +82,7 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     engine = createEngine();
     database = createDatabase();
     query = createQueryEngine();
+    tagEngine = createTagEngine();
 }
 
 IDocEngine* EDocFactory::docEngine()
@@ -151,5 +158,26 @@ IQueryEngine *EDocFactory::createQueryEngine()
         return query;
     }
     m_Logger->logError("Cannot create Query engine");
+    return NULL;
+}
+
+ITagProcessor *EDocFactory::createTagEngine()
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "ITagEngine *EDocFactory::createTagEngine()");
+    if ("edoc" == configuration->key())
+    {
+        XMLCollection *c = (XMLCollection*) configuration;
+        XMLCollection *conf = (XMLCollection*)c->get("tagengine");
+        QString engineClass = ((XMLElement*)conf->get("class"))->value();
+
+        QPluginLoader pluginLoader(tagPlugins[engineClass]);
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+            ITagProcessor *engine = qobject_cast<ITagProcessor*>(plugin);
+            engine->initialize(conf, m_Logger, plugins);
+            return qobject_cast<ITagProcessor *>(plugin);
+        }
+    }
+    m_Logger->logError("Cannot create database engine");
     return NULL;
 }

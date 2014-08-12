@@ -12,6 +12,8 @@ TARGET = eDoc-Configuration
 TEMPLATE = lib
 DESTDIR = ../
 
+CONFIG += c++11
+
 DEFINES += EDOCCONFIGURATION_LIBRARY
 
 SOURCES += edocconfiguration.cpp \

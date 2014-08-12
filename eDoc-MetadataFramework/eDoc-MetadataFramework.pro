@@ -12,6 +12,8 @@ DESTDIR = ../
 
 DEFINES += EDOCMETADATAFRAMEWORK_LIBRARY
 
+CONFIG += c++11
+
 SOURCES += edocmetadataframework.cpp \
     valuedefinitions.cpp \
     fielddefinition.cpp \

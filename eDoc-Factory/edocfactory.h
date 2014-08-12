@@ -5,6 +5,7 @@
 #include "../eDoc-API/IDocEngine.h"
 #include "../eDoc-API/IDatabase.h"
 #include "../eDoc-API/IQueryEngine.h"
+#include "../eDoc-API/ITagProcessor.h"
 #include <QMap>
 #include "../eDoc-Configuration/IXMLContent.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
@@ -24,16 +25,19 @@ protected:
     IDocEngine *createEngine();
     IDatabase *createDatabase();
     IQueryEngine *createQueryEngine();
+    ITagProcessor *createTagEngine();
 
 private:
     QString pluginPath;
     QString xmlFile;
     QMap<QString, QString> plugins;
     QMap<QString, QString> DBplugins;
+    QMap<QString, QString> tagPlugins;
     IXMLContent *configuration;
     IDocEngine *engine;
     IDatabase *database;
     IQueryEngine *query;
+    ITagProcessor *tagEngine;
     QObjectLogging *m_Logger;
 };
 

@@ -1,6 +1,7 @@
 #ifndef SQLMANAGER_H
 #define SQLMANAGER_H
 
+#include "sqlmanager_global.h"
 #include <QObject>
 #include <QSqlDatabase>
 #include <QMap>
@@ -27,7 +28,7 @@ enum DBType
     TDS
 };
 
-class SQLManager : public QObject
+class SQLMANAGERSHARED_EXPORT SQLManager : public QObject
 {
     Q_OBJECT
 public:
@@ -36,17 +37,18 @@ public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
 
     virtual DBRecordSet getRecords(const QString &sql, DBRecordPtr record);
+    virtual DBRecordSet getRecords(const QString &sql);
     virtual void executeCommand(const QString &sql, DBRecordPtr record);
 
     virtual QStringList getDistintValues(const QString &sql, const QList<QPair<QString, QString> >& filter);
-    
+
 private:
     bool tryReconnect();
     DBType String2DBType();
     void addParameters(QSqlQuery &query, const QString &SQL, DBRecordPtr record);
     void addParameters(QSqlQuery &query, const QString &SQL, const QList<QPair<QString, QString> >& filter);
 signals:
-    
+
 public slots:
 
 private:

@@ -12,6 +12,8 @@ TARGET = eDocClient
 TEMPLATE = app
 DESTDIR = ../
 
+CONFIG += c++11
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     dlgadddocument.cpp \

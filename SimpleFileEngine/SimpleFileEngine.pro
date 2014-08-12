@@ -13,6 +13,8 @@ CONFIG += plugin
 
 DESTDIR = ../plugins
 
+CONFIG += c++11
+
 SOURCES += fileengine.cpp \
     simplefileid.cpp \
     simplefiledocument.cpp \

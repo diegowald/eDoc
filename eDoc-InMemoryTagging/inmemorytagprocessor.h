@@ -9,25 +9,40 @@
 #include "../eDoc-API/ITag.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include "../eDoc-API/ITagProcessor.h"
+#include "../sqlmanager/sqlmanager.h"
 
 class EDOCINMEMORYTAGGINGSHARED_EXPORT InMemoryTagProcessor : public QObject, public ITagProcessor
 {
     Q_OBJECT
+#if QT_VERSION >= 0x050000
+    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.ITagProcessor/0.0" FILE "TagProcessorPlugin.json")
+#endif // QT_VERSION >= 0x050000
+    Q_INTERFACES(ITagProcessor)
+
 public:
     explicit InMemoryTagProcessor(QObject *parent = 0);
 
-    virtual void initialize(QObjectLogging *logger);
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
     virtual void addTagRecord(IRecordID *recordID, ITag* tag);
-    virtual QSet<IRecordID*> findByTags(const QStringList &tags);
+    virtual QSet<QString> findByTags(const QStringList &tags);
     virtual void removeRecord(IRecordID* recordID, ITag* tag);
+    virtual QString name();
+
+private:
+    void loadIntoMemory();
 
 signals:
     
 public slots:
 
 private:
-    QMap<QString, QSet<IRecordID*> > m_Tag;
+    QMap<QString, QPair<int, QSet<QString>>> m_Tag;
     QObjectLogging *m_Logger;
+
+    QString m_Name;
+    QString m_keywordsTableName;
+    QString m_indexTableName;
+    SQLManager m_SQLManager;
 };
 
 #endif // INMEMORYTAGPROCESSOR_H

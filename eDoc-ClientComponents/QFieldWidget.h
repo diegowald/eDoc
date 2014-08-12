@@ -15,7 +15,7 @@ public:
     explicit QFieldWidget(QWidget *parent = 0) : QWidget(parent) {}
     virtual ~QFieldWidget(){}
 
-    virtual void setField(IFieldDefinition* fieldDefinition, IValue* value) {}
+    virtual void setField(IFieldDefinition* fieldDefinition, IValue* value) {(void)fieldDefinition; (void)value;}
     virtual QVariant value() {return QVariant();}
 };
 

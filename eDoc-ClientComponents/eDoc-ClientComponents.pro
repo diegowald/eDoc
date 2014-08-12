@@ -10,6 +10,8 @@ TARGET = eDoc-ClientComponents
 TEMPLATE = lib
 DESTDIR = ../
 
+CONFIG += c++11
+
 DEFINES += EDOCCLIENTCOMPONENTS_LIBRARY
 
 SOURCES += edocclientcomponents.cpp \

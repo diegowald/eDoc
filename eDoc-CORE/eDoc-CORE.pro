@@ -13,6 +13,8 @@ CONFIG += plugin
 #CONFIG += staticlib
 DESTDIR = ../plugins
 
+CONFIG += c++11
+
 DEFINES += EDOCCORE_LIBRARY
 
 SOURCES += docengine.cpp \

@@ -31,7 +31,6 @@ void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *log
 
     m_TableName = ((XMLElement*)((XMLCollection*)configuration)->get("tablename"))->value();
     m_SQLManager.initialize(configuration, logger, pluginStock);
-    m_TagProcessor = new InMemoryTagProcessor(this);
 }
 
 void GenericDatabase::createFields(IXMLContent* configuration)
@@ -161,7 +160,8 @@ std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *para
         break;
     }
 
-    return std::make_pair<QString, DBRecordPtr>(whereClause, r);
+
+    return std::pair<QString, DBRecordPtr>(whereClause, r);
 }
 
 QMap<QString, IRecordID*> GenericDatabase::search(IParameter* parameter)

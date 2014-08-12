@@ -11,6 +11,7 @@ TEMPLATE = lib
 DESTDIR = ../
 
 DEFINES += EDOCAPI_LIBRARY
+CONFIG += c++11
 
 SOURCES += edocapi.cpp
 
