@@ -59,6 +59,8 @@ private slots:
 
     void on_actionAdd_1000_Documents_triggered();
 
+    void on_btnBrowse_pressed();
+
 private:
     Ui::ExplorerWindow *ui;
     EDocFactory f;

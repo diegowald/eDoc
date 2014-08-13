@@ -19,7 +19,7 @@ public:
     virtual IDocEngine* docEngine();
     virtual IDatabase* databaseEngine();
     virtual IQueryEngine *queryEngine();
-
+    virtual ITagProcessor *tagEngine();
 protected:
     void readAvailablePlugins();
     IDocEngine *createEngine();
@@ -37,7 +37,7 @@ private:
     IDocEngine *engine;
     IDatabase *database;
     IQueryEngine *query;
-    ITagProcessor *tagEngine;
+    ITagProcessor *tagger;
     QObjectLogging *m_Logger;
 };
 

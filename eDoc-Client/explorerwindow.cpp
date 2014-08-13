@@ -262,7 +262,13 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
 
                 rec->value("archivo")->setValue(doc->id()->asString());
                 rec->value("filename")->setValue(file.fileName());
-                db->addRecord(rec);
+
+                IRecordID *record_id = db->addRecord(rec);
+
+                if (!rec->value("keywords")->isNull())
+                {
+                    f.tagEngine()->processKeywordString(record_id, rec->value("keywords")->content().toString());
+                }
             }
         }
     }
@@ -406,6 +412,34 @@ void ExplorerWindow::on_actionAdd_1000_Documents_triggered()
 
             db->addRecord(rec);
         }
+    }
+}
+
+
+void ExplorerWindow::on_btnBrowse_pressed()
+{
+    QString keywords = ui->txtKeyowrds->toPlainText();
+
+    QStringList keywordsList = keywords.split(' ');
+
+    ITagProcessor* tagger = f.tagEngine();
+
+    QSet<QString> result = tagger->findByTags(keywordsList);
+
+    ui->searchResult->setRowCount(0);
+
+
+    foreach (QString id, result)
+    {
+        IRecord *rec = f.databaseEngine()->getRecord(id);
+        int rowNum = ui->searchResult->rowCount();
+        ui->searchResult->insertRow(rowNum);
+        rowNum = ui->searchResult->rowCount() - 1;
+        ui->searchResult->setItem(rowNum, 0, new QTableWidgetItem(rec->value("campo1")->asVariant().toString()));
+        ui->searchResult->setItem(rowNum, 1, new QTableWidgetItem(rec->value("campo2")->asVariant().toString()));
+        QVariant r;
+        r.setValue(rec);
+        ui->searchResult->item(rowNum, 0)->setData(Qt::UserRole, r);
     }
 }
 

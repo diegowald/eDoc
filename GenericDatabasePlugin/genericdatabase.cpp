@@ -203,12 +203,17 @@ IRecordID *GenericDatabase::addRecord(IRecord *record)
 
 IRecord* GenericDatabase::getRecord(IRecordID *id)
 {
+    return getRecord(id->asString());
+}
+
+IRecord* GenericDatabase::getRecord(const QString &id)
+{
     QString SQLSelect = "SELECT %1 FROM %2 WHERE %3 = %4";
     QString sql = SQLSelect.arg(getFieldsString())
             .arg(m_TableName).arg("record_id").arg(":record_id");
 
     DBRecordPtr r = boost::make_shared<DBRecord>();
-    (*r)["record_id"] = id->asString();
+    (*r)["record_id"] = id;
     DBRecordSet res = m_SQLManager.getRecords(sql, r);
     if (0 == res->count())
         return NULL;

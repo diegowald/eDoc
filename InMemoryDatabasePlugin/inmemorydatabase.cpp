@@ -84,7 +84,12 @@ IRecordID* InMemoryDatabase::addRecord(IRecord *record)
 
 IRecord* InMemoryDatabase::getRecord(IRecordID *id)
 {
-    return (IRecord*) m_Records[id->asString()];
+    return getRecord(id->asString());
+}
+
+IRecord* InMemoryDatabase::getRecord(const QString &id)
+{
+    return (IRecord*) m_Records[id];
 }
 
 void InMemoryDatabase::updateRecord(IRecord* record)

@@ -21,15 +21,20 @@ class EDOCINMEMORYTAGGINGSHARED_EXPORT InMemoryTagProcessor : public QObject, pu
 
 public:
     explicit InMemoryTagProcessor(QObject *parent = 0);
+    virtual ~InMemoryTagProcessor();
 
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
     virtual void addTagRecord(IRecordID *recordID, ITag* tag);
+    virtual void processKeywordString(IRecordID *recordID, const QString &keywords);
+    virtual void processKeywordString(IRecordID *recordID, const QStringList &keywords);
     virtual QSet<QString> findByTags(const QStringList &tags);
     virtual void removeRecord(IRecordID* recordID, ITag* tag);
     virtual QString name();
 
 private:
     void loadIntoMemory();
+    void saveAll();
+    void saveKeyword(const QString &keyword);
 
 signals:
     
@@ -43,6 +48,7 @@ private:
     QString m_keywordsTableName;
     QString m_indexTableName;
     SQLManager m_SQLManager;
+    int maxIdUsed;
 };
 
 #endif // INMEMORYTAGPROCESSOR_H

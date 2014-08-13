@@ -32,3 +32,11 @@ unix:!symbian {
 
 OTHER_FILES += \
     TagProcessorPlugin.json
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -lsqlmanager
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -lsqlmanager
+else:unix: LIBS += -L$$OUT_PWD/../ -lsqlmanager
+
+
+INCLUDEPATH += $$PWD/../sqlmanager
+DEPENDPATH += $$PWD/../sqlmanager

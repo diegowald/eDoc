@@ -31,6 +31,9 @@ EDocFactory::~EDocFactory()
     {
         delete query;
     }
+
+    if (tagger != NULL)
+        delete tagger;
 }
 
 void EDocFactory::readAvailablePlugins()
@@ -82,7 +85,7 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     engine = createEngine();
     database = createDatabase();
     query = createQueryEngine();
-    tagEngine = createTagEngine();
+    tagger = createTagEngine();
 }
 
 IDocEngine* EDocFactory::docEngine()
@@ -101,6 +104,12 @@ IQueryEngine * EDocFactory::queryEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IQueryEngine * EDocFactory::queryEngine()");
     return query;
+}
+
+ITagProcessor *EDocFactory::tagEngine()
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "ITagProcessor *EDocFactory::tagEngine()");
+    return tagger;
 }
 
 IDocEngine *EDocFactory::createEngine()
@@ -181,3 +190,4 @@ ITagProcessor *EDocFactory::createTagEngine()
     m_Logger->logError("Cannot create database engine");
     return NULL;
 }
+

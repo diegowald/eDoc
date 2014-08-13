@@ -3,9 +3,15 @@
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
+#include "boost/make_shared.hpp"
 
 InMemoryTagProcessor::InMemoryTagProcessor(QObject *parent) :
-    QObject(parent)
+    QObject(parent), m_SQLManager(this)
+{
+    maxIdUsed = -1;
+}
+
+InMemoryTagProcessor::~InMemoryTagProcessor()
 {
 }
 
@@ -25,9 +31,30 @@ void InMemoryTagProcessor::addTagRecord(IRecordID *recordID, ITag* tag)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::addTagRecord(IRecordID *recordID, ITag* tag)");
     QStringList tags = tag->keys();
-    foreach (QString tagString, tags)
+    processKeywordString(recordID, tags);
+}
+
+void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QString &keywords)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QString &keywords)");
+    QString s = keywords;
+    s = s.replace(".", " ").replace(",", " ");
+    QStringList tags = s.split(' ', QString::SkipEmptyParts);
+    processKeywordString(recordID, tags);
+}
+
+void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStringList &keywords)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStringList &keywords)");
+    foreach (QString tagString, keywords)
     {
+        if (!m_Tag.contains(tagString))
+        {
+            maxIdUsed++;
+            m_Tag[tagString].first = maxIdUsed;
+        }
         m_Tag[tagString].second.insert(recordID->asString());
+        saveKeyword(tagString);
     }
 }
 
@@ -97,6 +124,7 @@ void InMemoryTagProcessor::loadIntoMemory()
         int id((*rec)["keyword_id"].toInt());
         m_Tag[word].first = id;
         index[id] = word;
+        maxIdUsed = (maxIdUsed < id) ? id : maxIdUsed;
     }
 
     SQL = "SELECT keyword_id, record_id from %1";
@@ -108,6 +136,50 @@ void InMemoryTagProcessor::loadIntoMemory()
     {
         int id((*rec)["keyword_id"].toInt());
         m_Tag[index[id]].second.insert((*rec)["record_id"].toString());
+    }
+}
+
+void InMemoryTagProcessor::saveAll()
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::saveAll()");
+
+    foreach (QString key, this->m_Tag.keys())
+    {
+        saveKeyword(key);
+    }
+}
+
+
+void InMemoryTagProcessor::saveKeyword(const QString &keyword)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::saveKeyword(const int keyword_id)");
+
+    DBRecordPtr keywordRecord = boost::make_shared<DBRecord>();
+    // Borro el keyword y sus occurrences
+    (*keywordRecord)["keyword_id"] = m_Tag[keyword].first;
+    QString SQL = "DELETE from %1 WHERE keyword_id = :keyword_id";
+    QString sql = SQL.arg(m_keywordsTableName);
+    m_SQLManager.executeCommand(sql, keywordRecord);
+
+    sql = SQL.arg(m_indexTableName);
+    m_SQLManager.executeCommand(sql, keywordRecord);
+
+    SQL = "INSERT into %1 (keyword_id, word) VALUES (:keyword_id, :word);";
+    sql = SQL.arg(m_keywordsTableName);
+    DBRecordPtr record = boost::make_shared<DBRecord>();
+    DBRecordPtr recordOccurrence = boost::make_shared<DBRecord>();
+
+    QString SQLOccurrence = "INSERT INTO %1 (keyword_id, record_id) VALUES (:keyword_id, :record_id);";
+    QString sql2 = SQLOccurrence.arg(m_indexTableName);
+    (*record)["keyword_id"] = m_Tag[keyword].first;
+    (*record)["word"] = keyword;
+    m_SQLManager.executeCommand(sql, record);
+
+    (*recordOccurrence)["keyword_id"] = m_Tag[keyword].first;
+    foreach (QString id, m_Tag[keyword].second)
+    {
+        (*recordOccurrence)["record_id"] = id;
+        m_SQLManager.executeCommand(sql2, recordOccurrence);
     }
 }
 
