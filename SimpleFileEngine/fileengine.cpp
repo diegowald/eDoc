@@ -13,8 +13,16 @@ FileEngine::~FileEngine()
 {
 }
 
-void FileEngine::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
+void FileEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                            const QMap<QString, QString> &docpluginStock,
+                            const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &tagPlugins,
+                            const QMap<QString, QString> &serverPlugins)
 {
+    (void)docpluginStock;
+    (void)DBplugins;
+    (void)tagPlugins;
+    (void)serverPlugins;
     folder = ((XMLElement*)((XMLCollection*) configuration)->get("folder"))->value();
     m_Logger = logger;
     fileManager = new FileManagement(folder, this);

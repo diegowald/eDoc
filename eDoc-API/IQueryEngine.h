@@ -2,13 +2,12 @@
 #define IQUERYENGINE_H
 
 #include <QStringList>
-#include "../eDoc-Configuration/xmlcollection.h"
+#include "IInitializable.h"
 
-struct IQueryEngine
+struct IQueryEngine : public IInitializable
 {
     virtual ~IQueryEngine() {}
 
-    virtual void initialize(XMLCollection *configuration) = 0;
     virtual QStringList getTreeNames() const = 0;
     virtual QStringList getFieldsForTree(const QString &viewName) = 0;
 };

@@ -15,7 +15,11 @@ InMemoryTagProcessor::~InMemoryTagProcessor()
 {
 }
 
-void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
+void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                                      const QMap<QString, QString> &docpluginStock,
+                                      const QMap<QString, QString> &DBplugins,
+                                      const QMap<QString, QString> &tagPlugins,
+                                      const QMap<QString, QString> &serverPlugins)
 {
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "InMemoryTagProcessor", "void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
@@ -23,7 +27,7 @@ void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging
 
     m_keywordsTableName = ((XMLElement*)((XMLCollection*)configuration)->get("keywordtablename"))->value();
     m_indexTableName = ((XMLElement*)((XMLCollection*)configuration)->get("indextablename"))->value();
-    m_SQLManager.initialize(configuration, logger, pluginStock);
+    m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
     loadIntoMemory();
 }
 
@@ -51,10 +55,11 @@ void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStri
         if (!m_Tag.contains(tagString))
         {
             maxIdUsed++;
-            m_Tag[tagString].first = maxIdUsed;
+            m_Tag[tagString].id = maxIdUsed;
+            m_Tag[tagString].saved = false;
         }
-        m_Tag[tagString].second.insert(recordID->asString());
-        saveKeyword(tagString);
+        m_Tag[tagString].occurrences.insert(recordID->asString());
+        saveKeyword(recordID, tagString);
     }
 }
 
@@ -67,7 +72,7 @@ QSet<QString> InMemoryTagProcessor::findByTags(const QStringList &tags)
     {
         QSet<QString> partialSet;
         if (m_Tag.contains(tag))
-            partialSet = m_Tag[tag].second;
+            partialSet = m_Tag[tag].occurrences;
 
         // Si no hay
         if (0 == partialSet.count())
@@ -95,8 +100,8 @@ void InMemoryTagProcessor::removeRecord(IRecordID* recordID, ITag* tag)
     {
         if (m_Tag.contains(tagLabel))
         {
-            m_Tag[tagLabel].second.remove(recordID->asString());
-            if (0 == m_Tag[tagLabel].second.count())
+            m_Tag[tagLabel].occurrences.remove(recordID->asString());
+            if (0 == m_Tag[tagLabel].occurrences.count())
                 m_Tag.remove(tagLabel);
         }
     }
@@ -122,7 +127,8 @@ void InMemoryTagProcessor::loadIntoMemory()
     {
         QString word((*rec)["word"].toString());
         int id((*rec)["keyword_id"].toInt());
-        m_Tag[word].first = id;
+        m_Tag[word].id = id;
+        m_Tag[word].saved = true;
         index[id] = word;
         maxIdUsed = (maxIdUsed < id) ? id : maxIdUsed;
     }
@@ -135,52 +141,42 @@ void InMemoryTagProcessor::loadIntoMemory()
     foreach (DBRecordPtr rec, *rs)
     {
         int id((*rec)["keyword_id"].toInt());
-        m_Tag[index[id]].second.insert((*rec)["record_id"].toString());
+        m_Tag[index[id]].occurrences.insert((*rec)["record_id"].toString());
     }
 }
 
-void InMemoryTagProcessor::saveAll()
-{
-    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::saveAll()");
-
-    foreach (QString key, this->m_Tag.keys())
-    {
-        saveKeyword(key);
-    }
-}
-
-
-void InMemoryTagProcessor::saveKeyword(const QString &keyword)
+void InMemoryTagProcessor::saveKeyword(IRecordID *recordID, const QString &keyword)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::saveKeyword(const int keyword_id)");
 
     DBRecordPtr keywordRecord = boost::make_shared<DBRecord>();
     // Borro el keyword y sus occurrences
-    (*keywordRecord)["keyword_id"] = m_Tag[keyword].first;
-    QString SQL = "DELETE from %1 WHERE keyword_id = :keyword_id";
-    QString sql = SQL.arg(m_keywordsTableName);
+    QString SQL = "DELETE from %1 WHERE keyword_id = :keyword_id AND record_id = :record_id";
+    (*keywordRecord)["keyword_id"] = m_Tag[keyword].id;
+    (*keywordRecord)["record_id"] = recordID->asString();
+    QString sql = SQL.arg(m_indexTableName);
     m_SQLManager.executeCommand(sql, keywordRecord);
 
-    sql = SQL.arg(m_indexTableName);
-    m_SQLManager.executeCommand(sql, keywordRecord);
+    if (!m_Tag[keyword].saved)
+    {
+        SQL = "INSERT into %1 (keyword_id, word) VALUES (:keyword_id, :word);";
+        sql = SQL.arg(m_keywordsTableName);
 
-    SQL = "INSERT into %1 (keyword_id, word) VALUES (:keyword_id, :word);";
-    sql = SQL.arg(m_keywordsTableName);
-    DBRecordPtr record = boost::make_shared<DBRecord>();
+        DBRecordPtr record = boost::make_shared<DBRecord>();
+        (*record)["keyword_id"] = m_Tag[keyword].id;
+        (*record)["word"] = keyword;
+        m_SQLManager.executeCommand(sql, record);
+        m_Tag[keyword].saved = true;
+    }
+
     DBRecordPtr recordOccurrence = boost::make_shared<DBRecord>();
-
     QString SQLOccurrence = "INSERT INTO %1 (keyword_id, record_id) VALUES (:keyword_id, :record_id);";
     QString sql2 = SQLOccurrence.arg(m_indexTableName);
-    (*record)["keyword_id"] = m_Tag[keyword].first;
-    (*record)["word"] = keyword;
-    m_SQLManager.executeCommand(sql, record);
 
-    (*recordOccurrence)["keyword_id"] = m_Tag[keyword].first;
-    foreach (QString id, m_Tag[keyword].second)
-    {
-        (*recordOccurrence)["record_id"] = id;
-        m_SQLManager.executeCommand(sql2, recordOccurrence);
-    }
+    (*recordOccurrence)["keyword_id"] = m_Tag[keyword].id;
+    (*recordOccurrence)["record_id"] = recordID->asString();
+
+    m_SQLManager.executeCommand(sql2, recordOccurrence);
 }
 
 #if QT_VERSION < 0x050000

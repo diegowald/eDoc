@@ -40,8 +40,3 @@ unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-Factory
 
 INCLUDEPATH += $$PWD/../eDoc-Factory
 DEPENDPATH += $$PWD/../eDoc-Factory
-
-unix|win32: LIBS += -L$$OUT_PWD/../ -ltcpMessages
-
-INCLUDEPATH += $$PWD/../tcpMessages
-DEPENDPATH += $$PWD/../tcpMessages

@@ -2,6 +2,7 @@
 
 Parameter::Parameter(QObject *parent) : QObject(parent)
 {
+    m_Field = NULL;
 }
 
 Parameter::~Parameter()

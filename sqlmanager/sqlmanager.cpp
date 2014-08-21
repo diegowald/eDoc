@@ -19,9 +19,17 @@ SQLManager::~SQLManager()
         db.close();
 }
 
-void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
+void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                            const QMap<QString, QString> &docpluginStock,
+                            const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &tagPlugins,
+                            const QMap<QString, QString> &serverPlugins)
 {
-    (void)pluginStock;
+    (void)docpluginStock;
+    (void)DBplugins;
+    (void)tagPlugins;
+    (void)serverPlugins;
+
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 

@@ -23,7 +23,11 @@ public:
     explicit InMemoryTagProcessor(QObject *parent = 0);
     virtual ~InMemoryTagProcessor();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+                            const QMap<QString, QString> &docpluginStock,
+                            const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &tagPlugins,
+                            const QMap<QString, QString> &serverPlugins);
     virtual void addTagRecord(IRecordID *recordID, ITag* tag);
     virtual void processKeywordString(IRecordID *recordID, const QString &keywords);
     virtual void processKeywordString(IRecordID *recordID, const QStringList &keywords);
@@ -33,15 +37,22 @@ public:
 
 private:
     void loadIntoMemory();
-    void saveAll();
-    void saveKeyword(const QString &keyword);
+    void saveKeyword(IRecordID *recordID, const QString &keyword);
 
 signals:
     
 public slots:
 
 private:
-    QMap<QString, QPair<int, QSet<QString>>> m_Tag;
+    struct TAGElement
+    {
+        int id;
+        bool saved;
+        QSet<QString> occurrences;
+    };
+
+    QMap<QString, TAGElement> m_Tag;
+
     QObjectLogging *m_Logger;
 
     QString m_Name;

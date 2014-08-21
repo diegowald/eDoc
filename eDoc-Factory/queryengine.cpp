@@ -1,5 +1,6 @@
 #include "queryengine.h"
 #include "../eDoc-Configuration/xmlelement.h"
+#include "../eDoc-Configuration/xmlcollection.h"
 
 QueryEngine::QueryEngine(QObject *parent) :
     QObject(parent)
@@ -10,15 +11,25 @@ QueryEngine::~QueryEngine()
 {
 }
 
-void QueryEngine::initialize(XMLCollection *configuration)
+void QueryEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                        const QMap<QString, QString> &docpluginStock,
+                        const QMap<QString, QString> &DBplugins,
+                        const QMap<QString, QString> &tagPlugins,
+                        const QMap<QString, QString> &serverPlugins)
 {
-    QString countStr = ((XMLElement*)configuration->get("count"))->value();
+    (void)logger;
+    (void)docpluginStock;
+    (void)DBplugins;
+    (void)tagPlugins;
+    (void)serverPlugins;
+
+    QString countStr = ((XMLElement*)((XMLCollection*)configuration)->get("count"))->value();
     int count = countStr.toInt();
 
     for (int i = 1; i <= count; ++i)
     {
         QString queryName = "query%1";
-        XMLCollection *queryConf = (XMLCollection*)configuration->get(queryName.arg(i));
+        XMLCollection *queryConf = (XMLCollection*)((XMLCollection*)configuration)->get(queryName.arg(i));
         createQueryFromConf(queryConf);
     }
 }

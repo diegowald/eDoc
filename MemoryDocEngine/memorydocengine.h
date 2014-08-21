@@ -20,14 +20,22 @@ public:
     MemoryDocEngine(QObject *parent = 0);
     virtual ~MemoryDocEngine();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+                            const QMap<QString, QString> &docpluginStock,
+                            const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &tagPlugins,
+                            const QMap<QString, QString> &serverPlugins);
     virtual IDocID* addDocument(const QByteArray& blob);
     virtual IDocBase* getDocument(IDocID *id);
     virtual bool deleteDocument(IDocID *id);
     virtual IDocID* IValueToIDocId(IValue *value);
     virtual QString name();
 private:
-    IDocEngine *createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock);
+    IDocEngine *createPersistentEngine(XMLCollection *confEngine,
+                                       const QMap<QString, QString> &docpluginStock,
+                                       const QMap<QString, QString> &DBplugins,
+                                       const QMap<QString, QString> &tagPlugins,
+                                       const QMap<QString, QString> &serverPlugins);
 
 private:
      IDocEngine *persistentEngine;

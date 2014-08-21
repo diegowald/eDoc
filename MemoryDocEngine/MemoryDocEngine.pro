@@ -10,7 +10,7 @@ QT       += widgets
 
 TARGET = $$qtLibraryTarget(MemoryDocEngine)
 TEMPLATE = lib
-CONFIG += plugin
+CONFIG += plugin c++11
 DESTDIR = ../plugins
 
 SOURCES += memorydocengine.cpp \

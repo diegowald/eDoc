@@ -17,7 +17,11 @@ public:
     FileEngine(QObject *parent = 0);
     virtual ~FileEngine();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+                            const QMap<QString, QString> &docpluginStock,
+                            const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &tagPlugins,
+                            const QMap<QString, QString> &serverPlugins);
     virtual IDocID* addDocument(const QByteArray& blob);
     virtual IDocBase* getDocument(IDocID *id);
     virtual bool deleteDocument(IDocID *id);

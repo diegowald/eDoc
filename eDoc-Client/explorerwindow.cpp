@@ -243,32 +243,19 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
         IDatabase* db = f.databaseEngine();
         IDocEngine *e = f.docEngine();
 
+        IRecord* rec = NULL;
         foreach (QString filename, filenames)
         {
-            IRecord *rec = db->createEmptyRecord();
+            rec = f.createEmptyRecord();
 
             DlgAddDocument dlg(this);
             dlg.setData(filename, rec);
+
             bool saveFile = dlg.exec() == QDialog::Accepted;
             if (saveFile)
             {
                 dlg.applyData(rec);
-                QFile file(filename);
-                file.open(QIODevice::ReadOnly);
-                QByteArray blob = file.readAll();
-
-                IDocID *docId = e->addDocument(blob);
-                IDocument *doc = (IDocument*)e->getDocument(docId);
-
-                rec->value("archivo")->setValue(doc->id()->asString());
-                rec->value("filename")->setValue(file.fileName());
-
-                IRecordID *record_id = db->addRecord(rec);
-
-                if (!rec->value("keywords")->isNull())
-                {
-                    f.tagEngine()->processKeywordString(record_id, rec->value("keywords")->content().toString());
-                }
+                f.addDocument(filename, rec);
             }
         }
     }
@@ -394,23 +381,19 @@ void ExplorerWindow::on_actionAdd_1000_Documents_triggered()
 
         QString filename = filenames.at(0);
 
-        for (int i = 0; i < 100000; ++i)
+        QFile file(filename);
+        file.open(QIODevice::ReadOnly);
+        QByteArray blob = file.readAll();
+
+        for (int i = 0; i < 1000; ++i)
         {
-            IRecord *rec = db->createEmptyRecord();
-
-            QFile file(filename);
-            file.open(QIODevice::ReadOnly);
-            QByteArray blob = file.readAll();
-
-            IDocID *docId = e->addDocument(blob);
-            IDocument *doc = (IDocument*)e->getDocument(docId);
-
-            rec->value("archivo")->setValue(doc->id()->asString());
+            IRecord *rec = f.createEmptyRecord();
 
             rec->value("campo1")->setValue(QVariant(QString("Campo1 %1").arg(i % 20)));
             rec->value("campo2")->setValue(QVariant(QString("Campo2 %1").arg(i % 7)));
+            rec->value("keywords")->setValue(QVariant(QString("esta es una prueba de keywords")));
 
-            db->addRecord(rec);
+            f.addDocument(blob, filename, rec);
         }
     }
 }
@@ -420,7 +403,7 @@ void ExplorerWindow::on_btnBrowse_pressed()
 {
     QString keywords = ui->txtKeyowrds->toPlainText();
 
-    QStringList keywordsList = keywords.split(' ');
+    QStringList keywordsList = keywords.split(' ', QString::SkipEmptyParts);
 
     ITagProcessor* tagger = f.tagEngine();
 

@@ -3,12 +3,10 @@
 
 #include "ITag.h"
 #include "IRecordID.h"
-#include "../eDoc-Configuration/IXMLContent.h"
-#include "../eDoc-Configuration/qobjectlgging.h"
+#include "IInitializable.h"
 
-struct ITagProcessor
+struct ITagProcessor : public IInitializable
 {
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
     virtual void addTagRecord(IRecordID *recordID, ITag* tag) = 0;
     virtual QSet<QString> findByTags(const QStringList &tags) = 0;
     virtual void removeRecord(IRecordID* recordID, ITag* tag) = 0;

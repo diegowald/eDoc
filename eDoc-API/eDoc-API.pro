@@ -36,7 +36,9 @@ HEADERS += edocapi_global.h \
     IGroup.h \
     IUserID.h \
     IGroupID.h \
-    IQueryEngine.h
+    IQueryEngine.h \
+    IServer.h \
+    IInitializable.h
 
 unix:!symbian {
     maemo5 {

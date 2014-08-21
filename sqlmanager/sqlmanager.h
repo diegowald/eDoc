@@ -34,7 +34,11 @@ class SQLMANAGERSHARED_EXPORT SQLManager : public QObject
 public:
     explicit SQLManager(QObject *parent = 0);
     virtual ~SQLManager();
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+                            const QMap<QString, QString> &docpluginStock,
+                            const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &tagPlugins,
+                            const QMap<QString, QString> &serverPlugins);
 
     virtual DBRecordSet getRecords(const QString &sql, DBRecordPtr record);
     virtual DBRecordSet getRecords(const QString &sql);

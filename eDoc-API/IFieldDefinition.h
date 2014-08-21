@@ -3,15 +3,12 @@
 
 #include <QString>
 #include "APIEnums.h"
-#include "../eDoc-Configuration/IXMLContent.h"
-#include "../eDoc-Configuration/qobjectlgging.h"
+#include "IInitializable.h"
 #include <QList>
 #include "IValue.h"
 
-
-struct IFieldDefinition {
+struct IFieldDefinition : public IInitializable {
 public:
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger) = 0;
     virtual QString name() = 0;
     virtual QString type() = 0;
     virtual bool isReadOnly() const = 0;

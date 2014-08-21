@@ -2,18 +2,16 @@
 #define IDOCENGINE_H
 
 #include <QtPlugin>
+#include "IInitializable.h"
 #include "IDocID.h"
 #include "IDocBase.h"
 #include "IMultiDocument.h"
 #include "IValue.h"
-#include "../eDoc-Configuration/IXMLContent.h"
-#include "../eDoc-Configuration/qobjectlgging.h"
 #include <QMap>
 
-struct IDocEngine
+struct IDocEngine : public IInitializable
 {
 public:
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
     virtual IDocID* addDocument(const QByteArray& blob) = 0;
     virtual IDocBase* getDocument(IDocID *id) = 0;
     virtual bool deleteDocument(IDocID *id) = 0;

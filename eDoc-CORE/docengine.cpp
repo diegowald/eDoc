@@ -10,8 +10,18 @@ DocEngine::~DocEngine()
 {
 }
 
-void DocEngine::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
+void DocEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                           const QMap<QString, QString> &docpluginStock,
+                           const QMap<QString, QString> &DBplugins,
+                           const QMap<QString, QString> &tagPlugins,
+                           const QMap<QString, QString> &serverPlugins)
 {
+    (void)configuration;
+    (void)logger;
+    (void)docpluginStock;
+    (void)DBplugins;
+    (void)tagPlugins;
+    (void)serverPlugins;
 }
 
 QString DocEngine::name()

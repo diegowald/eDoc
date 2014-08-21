@@ -5,7 +5,7 @@
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "queryengine.h"
-
+#include "../eDoc-API/IDocument.h"
 
 EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
@@ -34,6 +34,9 @@ EDocFactory::~EDocFactory()
 
     if (tagger != NULL)
         delete tagger;
+
+    if (engine != NULL)
+        delete server;
 }
 
 void EDocFactory::readAvailablePlugins()
@@ -44,8 +47,13 @@ void EDocFactory::readAvailablePlugins()
 
     foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
         QString f = pluginsDir.absoluteFilePath(fileName);
+        m_Logger->logDebug("File: " + f);
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = pluginLoader.instance();
+        if (plugin == NULL)
+        {
+            m_Logger->logError(pluginLoader.errorString());
+        }
         if (plugin) {
             IDocEngine* engine = qobject_cast<IDocEngine *>(plugin);
             if (engine)
@@ -64,6 +72,12 @@ void EDocFactory::readAvailablePlugins()
             {
                 tagPlugins[tag->name()] = f;
                 m_Logger->logDebug("Tag Processor Name: " + tag->name() + ", File: " + f);
+            }
+            IServer *serv = qobject_cast<IServer *>(plugin);
+            if (serv)
+            {
+                serverPlugins[serv->name()] = f;
+                m_Logger->logDebug("Tag Processor Name: " + serv->name() + ", File: " + f);
             }
         }
         delete plugin;
@@ -86,6 +100,7 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     database = createDatabase();
     query = createQueryEngine();
     tagger = createTagEngine();
+    server = createServerEngine();
 }
 
 IDocEngine* EDocFactory::docEngine()
@@ -112,6 +127,12 @@ ITagProcessor *EDocFactory::tagEngine()
     return tagger;
 }
 
+IServer *EDocFactory::serverEngine()
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IServer *EDocFactory::serverEngine()");
+    return server;
+}
+
 IDocEngine *EDocFactory::createEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDocEngine *EDocFactory::createEngine()");
@@ -119,16 +140,19 @@ IDocEngine *EDocFactory::createEngine()
     {
         XMLCollection *c = (XMLCollection*) configuration;
         XMLCollection *conf = (XMLCollection*)c->get("engine");
-        QString engineClass = ((XMLElement*)conf->get("class"))->value();
+        if (conf)
+        {
+            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+            QPluginLoader pluginLoader(plugins[engineClass]);
+            QObject *plugin = pluginLoader.instance();
+            if (plugin) {
+                IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
+                engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
 
-        QPluginLoader pluginLoader(plugins[engineClass]);
-        QObject *plugin = pluginLoader.instance();
-        if (plugin) {
-            IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
-            engine->initialize(conf, m_Logger, plugins);
-            return qobject_cast<IDocEngine *>(plugin);
+                return qobject_cast<IDocEngine *>(plugin);
+            }
+            m_Logger->logError("Cannot create Engine " + engineClass);
         }
-        m_Logger->logError("Cannot create Engine " + engineClass);
     }
     m_Logger->logError("Cannot create Engine");
     return NULL;
@@ -141,14 +165,16 @@ IDatabase *EDocFactory::createDatabase()
     {
         XMLCollection *c = (XMLCollection*) configuration;
         XMLCollection *conf = (XMLCollection*)c->get("database");
-        QString engineClass = ((XMLElement*)conf->get("class"))->value();
-
-        QPluginLoader pluginLoader(DBplugins[engineClass]);
-        QObject *plugin = pluginLoader.instance();
-        if (plugin) {
-            IDatabase *engine = qobject_cast<IDatabase*>(plugin);
-            engine->initialize(conf, m_Logger, plugins);
-            return qobject_cast<IDatabase *>(plugin);
+        if (conf)
+        {
+            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+            QPluginLoader pluginLoader(DBplugins[engineClass]);
+            QObject *plugin = pluginLoader.instance();
+            if (plugin) {
+                IDatabase *engine = qobject_cast<IDatabase*>(plugin);
+                engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
+                return qobject_cast<IDatabase *>(plugin);
+            }
         }
     }
     m_Logger->logError("Cannot create database engine");
@@ -162,9 +188,12 @@ IQueryEngine *EDocFactory::createQueryEngine()
     {
         XMLCollection *c = (XMLCollection*) configuration;
         XMLCollection *conf = (XMLCollection*)c->get("queries");
-        query = new QueryEngine();
-        query->initialize(conf);
-        return query;
+        if (conf)
+        {
+            query = new QueryEngine();
+            query->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
+            return query;
+        }
     }
     m_Logger->logError("Cannot create Query engine");
     return NULL;
@@ -177,17 +206,73 @@ ITagProcessor *EDocFactory::createTagEngine()
     {
         XMLCollection *c = (XMLCollection*) configuration;
         XMLCollection *conf = (XMLCollection*)c->get("tagengine");
-        QString engineClass = ((XMLElement*)conf->get("class"))->value();
+        if (conf)
+        {
+            QString engineClass = ((XMLElement*)conf->get("class"))->value();
 
-        QPluginLoader pluginLoader(tagPlugins[engineClass]);
-        QObject *plugin = pluginLoader.instance();
-        if (plugin) {
-            ITagProcessor *engine = qobject_cast<ITagProcessor*>(plugin);
-            engine->initialize(conf, m_Logger, plugins);
-            return qobject_cast<ITagProcessor *>(plugin);
+            QPluginLoader pluginLoader(tagPlugins[engineClass]);
+            QObject *plugin = pluginLoader.instance();
+            if (plugin) {
+                ITagProcessor *engine = qobject_cast<ITagProcessor*>(plugin);
+                engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
+                return qobject_cast<ITagProcessor *>(plugin);
+            }
         }
     }
     m_Logger->logError("Cannot create database engine");
     return NULL;
 }
 
+IServer *EDocFactory::createServerEngine()
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IServer *EDocFactory::createServerEngine()");
+    if ("edoc" == configuration->key())
+    {
+        XMLCollection *c = (XMLCollection*) configuration;
+        XMLCollection *conf = (XMLCollection*)c->get("server");
+        if (conf)
+        {
+            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+
+            QPluginLoader pluginLoader(serverPlugins[engineClass]);
+            QObject *plugin = pluginLoader.instance();
+            if (plugin) {
+                IServer *engine = qobject_cast<IServer*>(plugin);
+                engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
+                return qobject_cast<IServer *>(plugin);
+            }
+        }
+    }
+    m_Logger->logError("Cannot create server engine");
+    return NULL;
+}
+
+IRecord* EDocFactory::createEmptyRecord()
+{
+    return databaseEngine()->createEmptyRecord();
+}
+
+void EDocFactory::addDocument(const QString &filename, IRecord *record)
+{
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    QByteArray blob = file.readAll();
+    addDocument(blob, record);
+    file.close();
+}
+
+void EDocFactory::addDocument(QByteArray &blob, const QString &filename, IRecord *record)
+{
+    IDocID *docId = engine->addDocument(blob);
+    IDocument *doc = (IDocument*)engine->getDocument(docId);
+
+    record->value("archivo")->setValue(doc->id()->asString());
+    record->value("filename")->setValue(filename);
+
+    IRecordID *record_id = databaseEngine()->addRecord(record);
+
+    if (!record->value("keywords")->isNull())
+    {
+        tagEngine()->processKeywordString(record_id, record->value("keywords")->content().toString());
+    }
+}

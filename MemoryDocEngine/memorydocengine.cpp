@@ -12,13 +12,17 @@ MemoryDocEngine::~MemoryDocEngine()
 {
 }
 
-void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
+void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                                 const QMap<QString, QString> &docpluginStock,
+                                 const QMap<QString, QString> &DBplugins,
+                                 const QMap<QString, QString> &tagPlugins,
+                                 const QMap<QString, QString> &serverPlugins)
 {
     maxCachedFiles = ((XMLElement*)((XMLCollection*) configuration)->get("maxCachedFiles"))->value().toInt();
-    //m_Logger = logger;
+    m_Logger = logger;
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
     XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
-    persistentEngine = createPersistentEngine(confEngine, pluginStock);
+    persistentEngine = createPersistentEngine(confEngine, docpluginStock, DBplugins, tagPlugins, serverPlugins);
 }
 
 IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)
@@ -57,7 +61,11 @@ QString MemoryDocEngine::name()
 }
 
 
-IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)
+IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine,
+                                                    const QMap<QString, QString> &docpluginStock,
+                                                    const QMap<QString, QString> &DBplugins,
+                                                    const QMap<QString, QString> &tagPlugins,
+                                                    const QMap<QString, QString> &serverPlugins)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)");
 
@@ -66,12 +74,12 @@ IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, c
         XMLCollection *conf = (XMLCollection*) confEngine;
         QString engineClass = ((XMLElement*)conf->get("class"))->value();
 
-        if (pluginStock.contains(engineClass)) {
-            QPluginLoader pluginLoader(pluginStock[engineClass]);
+        if (docpluginStock.contains(engineClass)) {
+            QPluginLoader pluginLoader(docpluginStock[engineClass]);
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
                 IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
-                engine->initialize(confEngine, m_Logger, pluginStock);
+                engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
                 return qobject_cast<IDocEngine *>(plugin);
             }
             else {

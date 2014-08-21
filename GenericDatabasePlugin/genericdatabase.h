@@ -19,7 +19,11 @@ public:
     explicit GenericDatabase(QObject *parent = 0);
     virtual ~GenericDatabase();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock);
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+                            const QMap<QString, QString> &docpluginStock,
+                            const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &tagPlugins,
+                            const QMap<QString, QString> &serverPlugins);
     virtual QList<IFieldDefinition*> fields();
     virtual IFieldDefinition* field(const QString &fieldName);
     virtual QList<IRecordID*> search(const QList<IParameter*> &parameters);

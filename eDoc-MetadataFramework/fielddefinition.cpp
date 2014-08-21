@@ -18,8 +18,16 @@ FieldDefinition::~FieldDefinition()
 {
 }
 
-void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *logger)
+void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                                 const QMap<QString, QString> &docpluginStock,
+                                 const QMap<QString, QString> &DBplugins,
+                                 const QMap<QString, QString> &tagPlugins,
+                                 const QMap<QString, QString> &serverPlugins)
 {
+    (void)docpluginStock;
+    (void)DBplugins;
+    (void)tagPlugins;
+    (void)serverPlugins;
 
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-MetadataFramework", "void FieldDefinition::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
@@ -114,6 +122,7 @@ bool FieldDefinition::isQueryable() const
 
 QList<VALIDQUERY> FieldDefinition::validQueries()
 {
+    return QList<VALIDQUERY>();
 }
 
 IValue* FieldDefinition::createEmptyValue()

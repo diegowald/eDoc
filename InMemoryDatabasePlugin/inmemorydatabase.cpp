@@ -14,8 +14,16 @@ InMemoryDatabase::~InMemoryDatabase()
 {
 }
 
-void InMemoryDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
+void InMemoryDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                                  const QMap<QString, QString> &docpluginStock,
+                                  const QMap<QString, QString> &DBplugins,
+                                  const QMap<QString, QString> &tagPlugins,
+                                  const QMap<QString, QString> &serverPlugins)
 {
+    (void)docpluginStock;
+    (void)DBplugins;
+    (void)tagPlugins;
+    (void)serverPlugins;
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "InMemoryDatabasePlugin", "void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
     m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
@@ -39,7 +47,8 @@ void InMemoryDatabase::createFields(IXMLContent* configuration)
 IFieldDefinition *InMemoryDatabase::createField(IXMLContent *configuration)
 {
     IFieldDefinition *field = new FieldDefinition(this);
-    field->initialize(configuration, m_Logger);
+    QMap<QString, QString> empty;
+    field->initialize(configuration, m_Logger, empty, empty, empty, empty);
     return field;
 }
 

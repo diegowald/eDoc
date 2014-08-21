@@ -21,7 +21,11 @@ GenericDatabase::~GenericDatabase()
 {
 }
 
-void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)
+void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger,
+                                 const QMap<QString, QString> &docpluginStock,
+                                 const QMap<QString, QString> &DBplugins,
+                                 const QMap<QString, QString> &tagPlugins,
+                                 const QMap<QString, QString> &serverPlugins)
 {
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
@@ -30,7 +34,7 @@ void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *log
     createFields(confFields);
 
     m_TableName = ((XMLElement*)((XMLCollection*)configuration)->get("tablename"))->value();
-    m_SQLManager.initialize(configuration, logger, pluginStock);
+    m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
 }
 
 void GenericDatabase::createFields(IXMLContent* configuration)
@@ -51,7 +55,8 @@ void GenericDatabase::createFields(IXMLContent* configuration)
 IFieldDefinition *GenericDatabase::createField(IXMLContent *configuration)
 {
     IFieldDefinition *field = new FieldDefinition(this);
-    field->initialize(configuration, m_Logger);
+    QMap<QString, QString> empty;
+    field->initialize(configuration, m_Logger, empty, empty, empty, empty);
     return field;
 }
 

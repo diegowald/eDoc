@@ -2,19 +2,17 @@
 #define IDATABASE_H
 
 #include <QtPlugin>
-#include "../eDoc-Configuration/IXMLContent.h"
-#include "../eDoc-Configuration/qobjectlgging.h"
-
+#include "IInitializable.h"
 #include "IFieldDefinition.h"
 #include "IRecordID.h"
 #include "IRecord.h"
+#include "APIEnums.h"
 #include "IParameter.h"
 #include <QMap>
 
 
-struct IDatabase {
+struct IDatabase : public IInitializable {
 public:
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock) = 0;
     virtual QList<IFieldDefinition*> fields() = 0;
     virtual IFieldDefinition* field(const QString &fieldName) = 0;
     virtual IParameter* createEmptyParameter() = 0;

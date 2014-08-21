@@ -2,12 +2,9 @@
 #define TASK_H
 
 #include <QObject>
-#include <QtNetwork>
-#include <QList>
 #include "../eDoc-Factory/edocfactory.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
-#include "../eDoc-API/IDocID.h"
-#include "../tcpMessages/tcpcommunicator.h"
+#include "../eDoc-API/IServer.h"
 
 class Task : public QObject
 {
@@ -21,20 +18,20 @@ signals:
 
 public slots:
     void run();
-    
-private:
-    void sessionOpened();
 
 private slots:
-    void newConnection();
+    void on_LogTrace(const QString& text);
+    void on_LogDebug(const QString& text);
+    void on_LogInfo(const QString& text);
+    void on_LogWarning(const QString& text);
+    void on_LogError(const QString& text);
+    void on_LogFatal(const QString& text);
 
 private:
     EDocFactory f;
     QString m_ApplicationPath;
     QObjectLogging logger;
-    QTcpServer *tcpServer;
-    QNetworkSession *networkSession;
-    QList<TCPCommunicator*> establishedCommunications;
+    IServer *_server;
 };
 
 #endif // TASK_H

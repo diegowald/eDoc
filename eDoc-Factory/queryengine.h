@@ -5,6 +5,7 @@
 #include "../eDoc-API/IQueryEngine.h"
 #include <QMap>
 #include <QStringList>
+#include "../eDoc-Configuration/xmlcollection.h"
 
 class QueryEngine : public QObject, public IQueryEngine
 {
@@ -13,7 +14,11 @@ public:
     explicit QueryEngine(QObject *parent = 0);\
     virtual ~QueryEngine();
 
-    virtual void initialize(XMLCollection *configuration);
+    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+                            const QMap<QString, QString> &docpluginStock,
+                            const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &tagPlugins,
+                            const QMap<QString, QString> &serverPlugins);
     virtual QStringList getTreeNames() const;
     virtual QStringList getFieldsForTree(const QString &viewName);
 
