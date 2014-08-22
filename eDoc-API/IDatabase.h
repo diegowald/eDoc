@@ -21,6 +21,7 @@ public:
     virtual IRecordID *addRecord(IRecord *record) = 0;
     virtual IRecord* getRecord(IRecordID *id) = 0;
     virtual IRecord* getRecord(const QString &id) = 0;
+    virtual QList<IRecord*> getRecords(const QStringList &ids) = 0;
     virtual void updateRecord(IRecord* record) = 0;
     virtual void deleteRecord(IRecordID *id) = 0;
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName) = 0;

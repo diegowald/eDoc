@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<edoc name="edoc">
+<!--	<engine name="remote" class="tcpClientPlugin">
+		<url>127.0.0.1</url>
+		<port>55555</port>
+        </engine>-->
+	<engine name="Cache" class="MemoryDocEngine">
+		<maxCachedFiles>100</maxCachedFiles>
+		<engine name="engine1" class="EDocTcpClient">
+			<url>localhost</url>
+			<port>24000</port>
+		</engine>
+	</engine>
+	<database name="remote" class="EDocTcpClient">
+		<url>localhost</url>
+		<port>24000</port>
+	</database>
+	<queries count="2">
+		<query1 name="Vista1">
+			<fields count="2">
+				<field1 name="campo1" />
+				<field2 name="campo2" />
+			</fields>
+		</query1>
+		<query2 name="Vista2">
+			<fields count="2">
+				<field1 name="campo2" />
+				<field2 name="campo1" />
+			</fields>
+		</query2>
+	</queries>
+	<tagengine name="keywords" class="InMemoryTagProcessor">
+		<database_type>sqlite</database_type>
+		<server>./dbTest.db</server>
+		<user></user>
+		<password></password>
+		<keywordtablename>keywords</keywordtablename>
+		<indextablename>keywordOccurrence</indextablename>
+	</tagengine>
+</edoc>

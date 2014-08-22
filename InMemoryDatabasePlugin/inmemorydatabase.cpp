@@ -106,6 +106,16 @@ void InMemoryDatabase::updateRecord(IRecord* record)
     m_Records[record->ID()->asString()] = (Record*)record;
 }
 
+QList<IRecord*> InMemoryDatabase::getRecords(const QStringList &ids)
+{
+    QList<IRecord*> records;
+    foreach (QString id, ids)
+    {
+        records.append((IRecord*) m_Records[id]);
+    }
+    return records;
+}
+
 void InMemoryDatabase::deleteRecord(IRecordID *id)
 {
     m_Records.remove(id->asString());

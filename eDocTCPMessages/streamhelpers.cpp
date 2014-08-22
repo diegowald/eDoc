@@ -35,7 +35,7 @@ QDataStream& operator>>(QDataStream& is, ProxyParameter &obj)
     {
         ProxyValue *value = new ProxyValue();
         is >> *value;
-        obj.values().push_back(value);
+        obj._values.push_back(value);
     }
     int queryType;
     is >> queryType;
@@ -161,5 +161,17 @@ QDataStream& operator>>(QDataStream& is, ProxyFieldDefinition &obj)
         is >> query;
         obj.addValidQuery((VALIDQUERY)query);
     }
+    return is;
+}
+
+QDataStream& operator<<(QDataStream& os, IDocID &obj)
+{
+    os << obj.asString();
+    return os;
+}
+
+QDataStream& operator>>(QDataStream& is, ProxyDocID &obj)
+{
+    is >> obj.id;
     return is;
 }

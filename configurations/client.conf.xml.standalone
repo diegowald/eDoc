@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<edoc name="edoc">
+<!--	<engine name="remote" class="tcpClientPlugin">
+		<url>127.0.0.1</url>
+		<port>55555</port>
+        </engine>-->
+	<engine name="Cache" class="MemoryDocEngine">
+		<maxCachedFiles>100</maxCachedFiles>
+		<engine name="engine1" class="SimpleFileEngine">
+			<folder>./files</folder>
+			<logfile>SimpleFileLogger.log</logfile>
+		</engine>
+	</engine>
+	<database name="DB1" class="GenericDatabase">
+		<database_type>sqlite</database_type>
+		<server>./dbTest.db</server>
+		<user></user>
+		<password></password>
+		<tablename>tabla1</tablename>
+		<fields count="5">
+			<field1 name="campo1">
+				<type>string</type>
+				<readonly>0</readonly>
+				<visible>1</visible>
+				<fieldname>campo1</fieldname>
+			</field1>
+			<field2 name="campo2">
+				<type>string</type>
+				<readonly>0</readonly>
+				<visible>1</visible>
+				<fieldname>campo2</fieldname>
+			</field2>
+			<field3 name="keywords">
+				<type>tag</type>
+				<readonly>0</readonly>
+				<visible>1</visible>
+				<fieldname>keywords</fieldname>
+			</field3>
+			<field4 name="archivo">
+				<type>document</type>
+				<readonly>0</readonly>
+				<visible>1</visible>
+				<fieldname>id_file</fieldname>
+			</field4>
+			<field5 name="filename">
+				<type>string</type>
+				<readonly>0</readonly>
+				<visible>1</visible>
+				<fieldname>filename</fieldname>
+			</field5>
+		</fields>
+	</database>
+	<queries count="2">
+		<query1 name="Vista1">
+			<fields count="2">
+				<field1 name="campo1" />
+				<field2 name="campo2" />
+			</fields>
+		</query1>
+		<query2 name="Vista2">
+			<fields count="2">
+				<field1 name="campo2" />
+				<field2 name="campo1" />
+			</fields>
+		</query2>
+	</queries>
+	<tagengine name="keywords" class="InMemoryTagProcessor">
+		<database_type>sqlite</database_type>
+		<server>./dbTest.db</server>
+		<user></user>
+		<password></password>
+		<keywordtablename>keywords</keywordtablename>
+		<indextablename>keywordOccurrence</indextablename>
+	</tagengine>
+</edoc>

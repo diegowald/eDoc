@@ -40,7 +40,11 @@ private:
                                       const QMap<QString, QString> &DBplugins,
                                       const QMap<QString, QString> &tagPlugins,
                                       const QMap<QString, QString> &serverPlugins);
-
+    IDocEngine *createDocEnginePersistance(XMLCollection *confEngine,
+                                           const QMap<QString, QString> &docpluginStock,
+                                           const QMap<QString, QString> &DBplugins,
+                                           const QMap<QString, QString> &tagPlugins,
+                                           const QMap<QString, QString> &serverPlugins);
 signals:
 public slots:
 
@@ -50,7 +54,8 @@ private slots:
 private:
     QObjectLogging *logger;
     QString m_Name;
-    IDatabase *persistance;
+    IDatabase *database;
+    IDocEngine *docEngine;
     QTcpServer *tcpServer;
     int port;
     QMap<QTcpSocket*, EDocTCPServerDatabasePlugin*> clientConnections;

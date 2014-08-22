@@ -248,6 +248,16 @@ IRecord* GenericDatabase::getRecord(const QString &id)
     return record;
 }
 
+QList<IRecord*> GenericDatabase::getRecords(const QStringList &ids)
+{
+    QList<IRecord*> records;
+    foreach (QString id, ids)
+    {
+        records.append(getRecord(id));
+    }
+    return records;
+}
+
 void GenericDatabase::updateRecord(IRecord* record)
 {
     QString SQLUpdate = "UPDATE %1 SET %2 WHERE %3 = %4;";

@@ -236,10 +236,15 @@ IServer *EDocFactory::createServerEngine()
 
             QPluginLoader pluginLoader(serverPlugins[engineClass]);
             QObject *plugin = pluginLoader.instance();
-            if (plugin) {
+            if (plugin)
+            {
                 IServer *engine = qobject_cast<IServer*>(plugin);
                 engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
                 return qobject_cast<IServer *>(plugin);
+            }
+            else
+            {
+                m_Logger->logError(pluginLoader.errorString());
             }
         }
     }
@@ -257,16 +262,16 @@ void EDocFactory::addDocument(const QString &filename, IRecord *record)
     QFile file(filename);
     file.open(QIODevice::ReadOnly);
     QByteArray blob = file.readAll();
-    addDocument(blob, record);
+    addDocumentFromBlob(blob, filename, record);
     file.close();
 }
 
-void EDocFactory::addDocument(QByteArray &blob, const QString &filename, IRecord *record)
+void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename, IRecord *record)
 {
     IDocID *docId = engine->addDocument(blob);
-    IDocument *doc = (IDocument*)engine->getDocument(docId);
+//    IDocument *doc = (IDocument*)engine->getDocument(docId);
 
-    record->value("archivo")->setValue(doc->id()->asString());
+    record->value("archivo")->setValue(docId->asString());
     record->value("filename")->setValue(filename);
 
     IRecordID *record_id = databaseEngine()->addRecord(record);

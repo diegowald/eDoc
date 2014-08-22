@@ -24,9 +24,9 @@ public:
     virtual IServer *serverEngine();
     virtual IRecord* createEmptyRecord();
     virtual void addDocument(const QString &filename, IRecord* record);
-    virtual void addDocument(QByteArray &blob, const QString &filename, IRecord* record);
 
 protected:
+    virtual void addDocumentFromBlob(QByteArray &blob, const QString &filename, IRecord* record);
     void readAvailablePlugins();
     IDocEngine *createEngine();
     IDatabase *createDatabase();

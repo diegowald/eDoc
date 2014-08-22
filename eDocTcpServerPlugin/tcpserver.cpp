@@ -6,7 +6,8 @@ TcpServer::TcpServer(QObject *parent) :
 {
     logger = NULL;
     m_Name = "";
-    persistance = NULL;
+    database = NULL;
+    docEngine = NULL;
     tcpServer = NULL;
     port = 0;
     clientConnections.clear();
@@ -28,7 +29,9 @@ void TcpServer::initialize(IXMLContent *configuration, QObjectLogging *logger,
 
     port = ((XMLElement*)((XMLCollection*) configuration)->get("port"))->value().toInt();
     XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("database");
-    persistance = createPersistentEngine(confEngine, docpluginStock, DBplugins, tagPlugins, serverPlugins);
+    database = createPersistentEngine(confEngine, docpluginStock, DBplugins, tagPlugins, serverPlugins);
+    confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
+    docEngine = createDocEnginePersistance(confEngine, docpluginStock, DBplugins, tagPlugins, serverPlugins);
 
     tcpServer = new QTcpServer(this);
     if (!tcpServer->listen(QHostAddress::Any, port))
@@ -72,15 +75,50 @@ IDatabase *TcpServer::createPersistentEngine(XMLCollection *confEngine,
     return NULL;
 }
 
+IDocEngine *TcpServer::createDocEnginePersistance(XMLCollection *confEngine,
+                                       const QMap<QString, QString> &docpluginStock,
+                                       const QMap<QString, QString> &DBplugins,
+                                       const QMap<QString, QString> &tagPlugins,
+                                       const QMap<QString, QString> &serverPlugins)
+{
+    //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)");
+
+    if (confEngine->key() == "engine")
+    {
+        XMLCollection *conf = (XMLCollection*) confEngine;
+        QString engineClass = ((XMLElement*)conf->get("class"))->value();
+
+        if (docpluginStock.contains(engineClass)) {
+            QPluginLoader pluginLoader(docpluginStock[engineClass]);
+            QObject *plugin = pluginLoader.instance();
+            if (plugin) {
+                IDocEngine* engine = qobject_cast<IDocEngine*>(plugin);
+                engine->initialize(confEngine, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
+                return qobject_cast<IDocEngine *>(plugin);
+            }
+            else {
+                logger->logError("Plugin: " + engineClass + " cannot be created.");
+            }
+        }
+        else {
+            logger->logError("Plugin: " + engineClass + " does not exist.");
+        }
+
+    }
+    return NULL;
+}
+
+
 void TcpServer::onNewConnection()
 {
     logger->logDebug("void TcpServer::onNewConnection()");
     QTcpSocket *client = tcpServer->nextPendingConnection();
-    clientConnections[client] = new EDocTCPServerDatabasePlugin(client, persistance, this);
+    clientConnections[client] = new EDocTCPServerDatabasePlugin(logger, client, database, docEngine, this);
 }
 
 void TcpServer::run()
 {
+    logger->logDebug("void TcpServer::run()");
     if (!tcpServer->isListening())
     {
         if (!tcpServer->listen(QHostAddress::Any, port))
@@ -93,6 +131,7 @@ void TcpServer::run()
 
 void TcpServer::stop()
 {
+    logger->logDebug("void TcpServer::stop()");
     tcpServer->close();
 }
 

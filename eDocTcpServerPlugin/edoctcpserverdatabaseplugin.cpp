@@ -7,109 +7,50 @@
 #include "../eDocTCPMessages/messagecodes.h"
 #include "../eDocTCPMessages/streamhelpers.h"
 
-EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QTcpSocket *socket, IDatabase *persistance, QObject *parent) :
-    QObject(parent)
+EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLogging *Logger, QTcpSocket *socket, IDatabase *persistance, IDocEngine* docEngine, QObject *parent) :
+    QThread(parent)
 {
     _persistance = NULL;
     _socket = socket;
     _persistance = persistance;
+    _docEngine = docEngine;
     blockSize = 0;
     blob.clear();
     buildingBlob.clear();
     out = NULL;
+    logger = Logger;
 
-    connect(_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
     connect(_socket, SIGNAL(connected()), this, SLOT(connected()));
-
-    _socket->waitForReadyRead();
+    start();
 }
 
 EDocTCPServerDatabasePlugin::~EDocTCPServerDatabasePlugin()
 {
+    logger->logDebug("EDocTCPServerDatabasePlugin::~EDocTCPServerDatabasePlugin()");
 }
 
-void EDocTCPServerDatabasePlugin::initialize(IXMLContent *configuration, QObjectLogging *logger,
-                                             const QMap<QString, QString> &docpluginStock,
-                                             const QMap<QString, QString> &DBplugins,
-                                             const QMap<QString, QString> &tagPlugins,
-                                             const QMap<QString, QString> &serverPlugins)
+void EDocTCPServerDatabasePlugin::run()
 {
-    this->logger = logger;
-    this->logger->logTrace(__FILE__, __LINE__, "EDocTCPServerDatabasePlugin", "void EDocTCPServerDatabasePlugin::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
-    m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    logger->logDebug("void EDocTCPServerDatabasePlugin::run()");
+    forever
+    {
+        if (_socket->state() == QAbstractSocket::ClosingState)
+        {
+            deleteLater();
+        }
 
-    XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("database");
-    _persistance = createPersistentEngine(confEngine, docpluginStock, DBplugins, tagPlugins, serverPlugins);
-}
-
-QList<IFieldDefinition*> EDocTCPServerDatabasePlugin::fields()
-{
-    return _persistance->fields();
-}
-
-IFieldDefinition* EDocTCPServerDatabasePlugin::field(const QString &fieldName)
-{
-    return _persistance->field(fieldName);
-}
-
-IParameter* EDocTCPServerDatabasePlugin::createEmptyParameter()
-{
-    return _persistance->createEmptyParameter();
-}
-
-QList<IRecordID*> EDocTCPServerDatabasePlugin::search(const QList<IParameter*> &parameters)
-{
-    return _persistance->search(parameters);
-}
-
-IRecord* EDocTCPServerDatabasePlugin::createEmptyRecord()
-{
-    return _persistance->createEmptyRecord();
-}
-
-IRecordID *EDocTCPServerDatabasePlugin::addRecord(IRecord *record)
-{
-    return _persistance->addRecord(record);
-}
-
-IRecord* EDocTCPServerDatabasePlugin::getRecord(IRecordID *id)
-{
-    return _persistance->getRecord(id);
-}
-
-IRecord* EDocTCPServerDatabasePlugin::getRecord(const QString &id)
-{
-    return _persistance->getRecord(id);
-}
-
-void EDocTCPServerDatabasePlugin::updateRecord(IRecord* record)
-{
-    _persistance->updateRecord(record);
-}
-
-void EDocTCPServerDatabasePlugin::deleteRecord(IRecordID *id)
-{
-    _persistance->deleteRecord(id);
-}
-
-QStringList EDocTCPServerDatabasePlugin::getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName)
-{
-    return _persistance->getDistinctColumnValues(filter, columnName);
-}
-
-QString EDocTCPServerDatabasePlugin::name()
-{
-    return "EDocTCPServerDatabasePlugin";
-}
-
-QMap<QString, IRecordID*> EDocTCPServerDatabasePlugin::search(IParameter* parameter)
-{
-    return QMap<QString, IRecordID*>();
+        _socket->waitForReadyRead();
+        if (_socket->bytesAvailable() > 0)
+        {
+            onReadyRead();
+        }
+    }
 }
 
 void EDocTCPServerDatabasePlugin::onReadyRead()
 {
+    logger->logDebug("void EDocTCPServerDatabasePlugin::onReadyRead()");
     QDataStream in(_socket);
     in.setVersion(QDataStream::Qt_5_3);
 
@@ -133,18 +74,32 @@ void EDocTCPServerDatabasePlugin::onReadyRead()
     in2.setVersion(QDataStream::Qt_5_3);
 
     process(in2);
+    _socket->waitForBytesWritten();
+
+    blob.clear();
+
+    buildingBlob.clear();
+    if (out != NULL)
+    {
+        delete out;
+        out = NULL;
+    }
 }
 
 void EDocTCPServerDatabasePlugin::error(QAbstractSocket::SocketError)
 {
+    logger->logDebug("void EDocTCPServerDatabasePlugin::error(QAbstractSocket::SocketError)");
+    logger->logError(_socket->errorString());
 }
 
 void EDocTCPServerDatabasePlugin::connected()
 {
+    logger->logDebug("void EDocTCPServerDatabasePlugin::connected()");
 }
 
 void EDocTCPServerDatabasePlugin::send()
 {
+    logger->logDebug("void EDocTCPServerDatabasePlugin::send()");
     blob.clear();
     QDataStream out(&blob, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_3);
@@ -161,6 +116,7 @@ void EDocTCPServerDatabasePlugin::send()
 
 void EDocTCPServerDatabasePlugin::process(QDataStream &in)
 {
+    logger->logDebug("void EDocTCPServerDatabasePlugin::process(QDataStream &in)");
     Header header;
     in >> header;
 
@@ -170,7 +126,7 @@ void EDocTCPServerDatabasePlugin::process(QDataStream &in)
     case MessageCodes::CodeNumber::REQ_fields:
     {
         prepareToSend(MessageCodes::CodeNumber::RSP_fields);
-        QList<IFieldDefinition*> rsp = fields();
+        QList<IFieldDefinition*> rsp = _persistance->fields();
         (*out) << rsp.count();
         foreach (IFieldDefinition* field, rsp)
         {
@@ -183,14 +139,14 @@ void EDocTCPServerDatabasePlugin::process(QDataStream &in)
         prepareToSend(MessageCodes::CodeNumber::RSP_field);
         QString fieldName("");
         in >> fieldName;
-        IFieldDefinition *fieldDef = field(fieldName);
+        IFieldDefinition *fieldDef = _persistance->field(fieldName);
         (*out) << *fieldDef;
         break;
     }
     case MessageCodes::CodeNumber::REQ_createEmptyParameter:
     {
         prepareToSend(MessageCodes::CodeNumber::RSP_createEmptyParameter);
-        IParameter *parameter = createEmptyParameter();
+        IParameter *parameter = _persistance->createEmptyParameter();
         (*out) << *parameter;
         break;
     }
@@ -205,7 +161,7 @@ void EDocTCPServerDatabasePlugin::process(QDataStream &in)
             in >> *param;
             parameters.push_back(param);
         }
-        QList<IRecordID*> rsp = search(parameters);
+        QList<IRecordID*> rsp = _persistance->search(parameters);
         prepareToSend(MessageCodes::CodeNumber::RSP_search);
         (*out) << rsp.count();
         foreach (IRecordID *record, rsp)
@@ -215,21 +171,48 @@ void EDocTCPServerDatabasePlugin::process(QDataStream &in)
         break;
     }
     case MessageCodes::CodeNumber::REQ_createEnptyRecord:
+    {
+        prepareToSend(MessageCodes::CodeNumber::RSP_createEnptyRecord);
+        IRecord *record = _persistance->createEmptyRecord();
+        (*out) << *record;
         break;
+    }
     case MessageCodes::CodeNumber::REQ_addRecord:
+    {
+        ProxyRecord record;
+        in >> record;
+        IRecordID *recordId = _persistance->addRecord(&record);
+        prepareToSend(MessageCodes::CodeNumber::RSP_addRecord);
+        (*out) << *recordId;
         break;
+    }
     case MessageCodes::CodeNumber::REQ_getRecord:
     {
         ProxyRecordID *proxyRecordID = new ProxyRecordID(this);
         in >> *proxyRecordID;
-        IRecord *record = getRecord(proxyRecordID);
+        IRecord *record = _persistance->getRecord(proxyRecordID);
         prepareToSend(MessageCodes::CodeNumber::RSP_getRecord);
         (*out) << *record;
         break;
     }
+    case MessageCodes::CodeNumber::REQ_getRecords:
+    {
+        QStringList ids;
+        in >> ids;
+        QList<IRecord*> records = _persistance->getRecords(ids);
+        prepareToSend(MessageCodes::CodeNumber::RSP_getRecords);
+        (*out) << records.count();
+        foreach (IRecord* record, records)
+        {
+            (*out) << *record;
+        }
+        break;
+    }
     case MessageCodes::CodeNumber::REQ_updateRecord:
+        Q_ASSERT(false);
         break;
     case MessageCodes::CodeNumber::REQ_deleteRecord:
+        Q_ASSERT(false);
         break;
     case MessageCodes::CodeNumber::REQ_getDistinctColumnValues:
     {
@@ -245,12 +228,22 @@ void EDocTCPServerDatabasePlugin::process(QDataStream &in)
         }
         QString columnName;
         in >> columnName;
-        QStringList rsp = getDistinctColumnValues(filter, columnName);
+        QStringList rsp = _persistance->getDistinctColumnValues(filter, columnName);
         prepareToSend(MessageCodes::CodeNumber::RSP_getDistinctColumnValues);
         (*out) << rsp;
         break;
     }
+    case MessageCodes::CodeNumber::REQ_addDocument:
+    {
+        QByteArray blob;
+        in >> blob;
+        IDocID *docId = _docEngine->addDocument(blob);
+        prepareToSend(MessageCodes::CodeNumber::RSP_addDocument);
+        (*out) << *docId;
+        break;
+    }
     default:
+        Q_ASSERT(false);
         break;
     }
     send();
@@ -258,6 +251,7 @@ void EDocTCPServerDatabasePlugin::process(QDataStream &in)
 
 void EDocTCPServerDatabasePlugin::prepareToSend(MessageCodes::CodeNumber code)
 {
+    logger->logDebug("void EDocTCPServerDatabasePlugin::prepareToSend(MessageCodes::CodeNumber code)");
     if (out != NULL)
     {
         delete out;
@@ -271,37 +265,4 @@ void EDocTCPServerDatabasePlugin::prepareToSend(MessageCodes::CodeNumber code)
     header.setCommand(code);
 
     (*out) << header;
-}
-
-IDatabase *EDocTCPServerDatabasePlugin::createPersistentEngine(XMLCollection *confEngine,
-                                                               const QMap<QString, QString> &docpluginStock,
-                                                               const QMap<QString, QString> &DBplugins,
-                                                               const QMap<QString, QString> &tagPlugins,
-                                                               const QMap<QString, QString> &serverPlugins)
-{
-    //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)");
-
-    if (confEngine->key() == "database")
-    {
-        XMLCollection *conf = (XMLCollection*) confEngine;
-        QString engineClass = ((XMLElement*)conf->get("class"))->value();
-
-        if (DBplugins.contains(engineClass)) {
-            QPluginLoader pluginLoader(DBplugins[engineClass]);
-            QObject *plugin = pluginLoader.instance();
-            if (plugin) {
-                IDatabase* engine = qobject_cast<IDatabase*>(plugin);
-                engine->initialize(confEngine, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
-                return qobject_cast<IDatabase *>(plugin);
-            }
-            else {
-                logger->logError("Plugin: " + engineClass + " cannot be created.");
-            }
-        }
-        else {
-            logger->logError("Plugin: " + engineClass + " does not exist.");
-        }
-
-    }
-    return NULL;
 }

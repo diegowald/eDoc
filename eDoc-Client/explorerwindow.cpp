@@ -193,9 +193,16 @@ void ExplorerWindow::doSearch(QList<IParameter *> &filter)
     {
         QList<IRecordID*> result = f.databaseEngine()->search(filter);
 
+        QStringList ids;
         foreach (IRecordID *id, result)
         {
-            IRecord *rec = f.databaseEngine()->getRecord(id);
+            ids.append(id->asString());
+        }
+        QList<IRecord*> records = f.databaseEngine()->getRecords(ids);
+
+        foreach (IRecord* rec, records)
+        {
+            //IRecord *rec = f.databaseEngine()->getRecord(id);
             int rowNum = ui->searchResult->rowCount();
             ui->searchResult->insertRow(rowNum);
             rowNum = ui->searchResult->rowCount() - 1;
@@ -381,10 +388,6 @@ void ExplorerWindow::on_actionAdd_1000_Documents_triggered()
 
         QString filename = filenames.at(0);
 
-        QFile file(filename);
-        file.open(QIODevice::ReadOnly);
-        QByteArray blob = file.readAll();
-
         for (int i = 0; i < 1000; ++i)
         {
             IRecord *rec = f.createEmptyRecord();
@@ -393,7 +396,7 @@ void ExplorerWindow::on_actionAdd_1000_Documents_triggered()
             rec->value("campo2")->setValue(QVariant(QString("Campo2 %1").arg(i % 7)));
             rec->value("keywords")->setValue(QVariant(QString("esta es una prueba de keywords")));
 
-            f.addDocument(blob, filename, rec);
+            f.addDocument(filename, rec);
         }
     }
 }

@@ -32,6 +32,7 @@ public:
     virtual IRecordID *addRecord(IRecord *record);
     virtual IRecord* getRecord(IRecordID *id);
     virtual IRecord* getRecord(const QString &id);
+    virtual QList<IRecord*> getRecords(const QStringList &ids);
     virtual void updateRecord(IRecord* record);
     virtual void deleteRecord(IRecordID *id);
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName);

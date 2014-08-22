@@ -14,6 +14,9 @@
 #include "proxyvalue.h"
 #include "proxyfielddefinition.h"
 
+#include "../eDoc-API/IDocID.h"
+#include "proxydocid.h"
+
 QDataStream& operator<<(QDataStream& os, IParameter &obj);
 QDataStream& operator>>(QDataStream& is, ProxyParameter &obj);
 
@@ -28,6 +31,10 @@ QDataStream& operator>>(QDataStream& is, ProxyValue &obj);
 
 QDataStream& operator<<(QDataStream& os, IFieldDefinition &obj);
 QDataStream& operator>>(QDataStream& is, ProxyFieldDefinition &obj);
+
+QDataStream& operator<<(QDataStream& os, IDocID &obj);
+QDataStream& operator>>(QDataStream& is, ProxyDocID &obj);
+
 
 #endif // STREAMHELPERS_H
 
