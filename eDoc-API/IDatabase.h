@@ -17,6 +17,7 @@ public:
     virtual IFieldDefinition* field(const QString &fieldName) = 0;
     virtual IParameter* createEmptyParameter() = 0;
     virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) = 0;
+    virtual QList<IRecordID*> searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records) = 0;
     virtual IRecord* createEmptyRecord() = 0;
     virtual IRecordID *addRecord(IRecord *record) = 0;
     virtual IRecord* getRecord(IRecordID *id) = 0;

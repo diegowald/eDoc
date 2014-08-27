@@ -5,7 +5,7 @@
 #include "edoctcpmessages_global.h"
 #include "../eDoc-API/IValue.h"
 
-class ProxyValue : public QObject, public IValue
+class EDOCTCPMESSAGESSHARED_EXPORT ProxyValue : public QObject, public IValue
 {
     Q_OBJECT
 public:

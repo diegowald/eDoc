@@ -17,11 +17,13 @@ InMemoryDatabase::~InMemoryDatabase()
 void InMemoryDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger,
                                   const QMap<QString, QString> &docpluginStock,
                                   const QMap<QString, QString> &DBplugins,
+                                  const QMap<QString, QString> &DBWithHistoryPlugins,
                                   const QMap<QString, QString> &tagPlugins,
                                   const QMap<QString, QString> &serverPlugins)
 {
     (void)docpluginStock;
     (void)DBplugins;
+    (void)DBWithHistoryPlugins;
     (void)tagPlugins;
     (void)serverPlugins;
     m_Logger = logger;
@@ -48,7 +50,7 @@ IFieldDefinition *InMemoryDatabase::createField(IXMLContent *configuration)
 {
     IFieldDefinition *field = new FieldDefinition(this);
     QMap<QString, QString> empty;
-    field->initialize(configuration, m_Logger, empty, empty, empty, empty);
+    field->initialize(configuration, m_Logger, empty, empty, empty, empty, empty);
     return field;
 }
 
@@ -63,6 +65,10 @@ IFieldDefinition* InMemoryDatabase::field(const QString &fieldName)
 }
 
 QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters)
+{
+}
+
+QList<IRecordID*> InMemoryDatabase::searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records)
 {
 }
 

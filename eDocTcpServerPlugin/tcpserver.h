@@ -28,6 +28,7 @@ public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
     virtual void run();
@@ -38,11 +39,20 @@ private:
     IDatabase *createPersistentEngine(XMLCollection *confEngine,
                                       const QMap<QString, QString> &docpluginStock,
                                       const QMap<QString, QString> &DBplugins,
+                                      const QMap<QString, QString> &DBWithHistoryPlugins,
                                       const QMap<QString, QString> &tagPlugins,
                                       const QMap<QString, QString> &serverPlugins);
+
+    IDatabaseWithHistory *createHistoryDBPersistentEngine(XMLCollection *confEngine,
+                                                          const QMap<QString, QString> &docpluginStock,
+                                                          const QMap<QString, QString> &DBplugins,
+                                                          const QMap<QString, QString> &DBWithHistoryPlugins,
+                                                          const QMap<QString, QString> &tagPlugins,
+                                                          const QMap<QString, QString> &serverPlugins);
     IDocEngine *createDocEnginePersistance(XMLCollection *confEngine,
                                            const QMap<QString, QString> &docpluginStock,
                                            const QMap<QString, QString> &DBplugins,
+                                           const QMap<QString, QString> &DBWithHistoryPlugins,
                                            const QMap<QString, QString> &tagPlugins,
                                            const QMap<QString, QString> &serverPlugins);
 signals:
@@ -55,6 +65,7 @@ private:
     QObjectLogging *logger;
     QString m_Name;
     IDatabase *database;
+    IDatabaseWithHistory *dbh;
     IDocEngine *docEngine;
     QTcpServer *tcpServer;
     int port;

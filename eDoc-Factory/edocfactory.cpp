@@ -6,10 +6,13 @@
 #include "../eDoc-Configuration/xmlelement.h"
 #include "queryengine.h"
 #include "../eDoc-API/IDocument.h"
+#include "databasewithhistorywrapper.h"
 
 EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
-    plugins(), DBplugins()
+    plugins(), DBWithHistoryPlugins(), DBplugins(), tagPlugins(), serverPlugins(),
+    configuration(NULL), engine(NULL), database(NULL), query(NULL), tagger(NULL),
+    m_Logger(NULL), server(NULL)
 {
 }
 
@@ -67,6 +70,12 @@ void EDocFactory::readAvailablePlugins()
                 DBplugins[db->name()] = f;
                 m_Logger->logDebug("DBEngine Name: " + db->name() + ", File: " + f);
             }
+            IDatabaseWithHistory *dbh = qobject_cast<IDatabaseWithHistory *>(plugin);
+            if (dbh)
+            {
+                DBWithHistoryPlugins[dbh->name()] = f;
+                m_Logger->logDebug("DBWithHistoryEngine Name: " + dbh->name() + ", File: " + f);
+            }
             ITagProcessor *tag = qobject_cast<ITagProcessor*>(plugin);
             if (tag)
             {
@@ -109,7 +118,7 @@ IDocEngine* EDocFactory::docEngine()
     return engine;
 }
 
-IDatabase* EDocFactory::databaseEngine()
+IDatabaseWithHistory* EDocFactory::databaseEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase* EDocFactory::databaseEngine()");
     return database;
@@ -147,7 +156,7 @@ IDocEngine *EDocFactory::createEngine()
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
                 IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
-                engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
+                engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 
                 return qobject_cast<IDocEngine *>(plugin);
             }
@@ -158,9 +167,39 @@ IDocEngine *EDocFactory::createEngine()
     return NULL;
 }
 
-IDatabase *EDocFactory::createDatabase()
+IDatabaseWithHistory *EDocFactory::createDatabase()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase *EDocFactory::createDatabase()");
+    if ("edoc" == configuration->key())
+    {
+        XMLCollection *c = (XMLCollection*) configuration;
+        XMLCollection *conf = (XMLCollection*)c->get("database");
+        if (conf)
+        {
+            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+            if (DBWithHistoryPlugins.contains(engineClass))
+            {
+                QPluginLoader pluginLoader(DBWithHistoryPlugins[engineClass]);
+                QObject *plugin = pluginLoader.instance();
+                if (plugin) {
+                    IDatabaseWithHistory *engine = qobject_cast<IDatabaseWithHistory*>(plugin);
+                    engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
+                    return qobject_cast<IDatabaseWithHistory *>(plugin);
+                }
+            }
+            else
+            {
+                return createDatabaseWithoutHistory();
+            }
+        }
+    }
+    m_Logger->logError("Cannot create database engine");
+    return NULL;
+}
+
+IDatabaseWithHistory *EDocFactory::createDatabaseWithoutHistory()
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabaseWithHistory *EDocFactory::createDatabaseWithoutHistory()");
     if ("edoc" == configuration->key())
     {
         XMLCollection *c = (XMLCollection*) configuration;
@@ -172,8 +211,9 @@ IDatabase *EDocFactory::createDatabase()
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
                 IDatabase *engine = qobject_cast<IDatabase*>(plugin);
-                engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
-                return qobject_cast<IDatabase *>(plugin);
+                engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
+                IDatabaseWithHistory *db = new DatabaseWithHistoryWrapper(engine, m_Logger);
+                return db;
             }
         }
     }
@@ -191,7 +231,7 @@ IQueryEngine *EDocFactory::createQueryEngine()
         if (conf)
         {
             query = new QueryEngine();
-            query->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
+            query->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
             return query;
         }
     }
@@ -214,7 +254,7 @@ ITagProcessor *EDocFactory::createTagEngine()
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
                 ITagProcessor *engine = qobject_cast<ITagProcessor*>(plugin);
-                engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
+                engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
                 return qobject_cast<ITagProcessor *>(plugin);
             }
         }
@@ -239,7 +279,7 @@ IServer *EDocFactory::createServerEngine()
             if (plugin)
             {
                 IServer *engine = qobject_cast<IServer*>(plugin);
-                engine->initialize(conf, m_Logger, plugins, DBplugins, tagPlugins, serverPlugins);
+                engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
                 return qobject_cast<IServer *>(plugin);
             }
             else

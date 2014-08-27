@@ -19,6 +19,8 @@ SUBDIRS += \
     eDoc-Console \
 #     tcpMessages
     eDocTcpServerPlugin/eDocTcpServerPlugin.pro \
-    eDocTCPMessages
+    eDocTCPMessages \
+    HistoricDatabasePlugin \
+    eDocTcpHistoricClient
 
 

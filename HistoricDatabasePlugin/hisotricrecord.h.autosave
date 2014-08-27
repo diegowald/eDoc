@@ -1,0 +1,30 @@
+#ifndef HISOTRICRECORD_H
+#define HISOTRICRECORD_H
+
+#include "historicdatabaseplugin_global.h"
+#include <QObject>
+#include "../eDoc-API/IRecord.h"
+
+class HISTORICDATABASEPLUGINSHARED_EXPORT HisotricRecord : public QObject, public IRecord
+{
+    Q_OBJECT
+public:
+    explicit HisotricRecord(IRecord* realRecord, QObject *parent = 0);
+    virtual ~HisotricRecord();
+
+    virtual void setID(IRecordID *ID);
+    virtual IRecordID *ID();
+    virtual IValue* value(IFieldDefinition* field);
+    virtual IValue* value(const QString &fieldName);
+    virtual IFieldDefinition* fieldDefinition(const QString &fieldName);
+    virtual QList<QString> fieldNames();
+    
+signals:
+
+public slots:
+
+private:
+    IRecord *_record;
+};
+
+#endif // HISOTRICRECORD_H

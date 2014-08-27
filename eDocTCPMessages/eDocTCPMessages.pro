@@ -3,7 +3,7 @@
 # Project created by QtCreator 2014-08-20T08:21:58
 #
 #-------------------------------------------------
-
+QT       += network
 QT       -= gui
 
 TARGET = eDocTCPMessages
@@ -23,7 +23,8 @@ SOURCES += edoctcpmessages.cpp \
            proxyvalue.cpp \
            streamhelpers.cpp \
     messagecodes.cpp \
-    proxydocid.cpp
+    proxydocid.cpp \
+    tcpclient.cpp
 
 HEADERS += edoctcpmessages.h\
            edoctcpmessages_global.h \
@@ -35,7 +36,8 @@ HEADERS += edoctcpmessages.h\
            proxyvalue.h \
            streamhelpers.h \
     messagecodes.h \
-    proxydocid.h
+    proxydocid.h \
+    tcpclient.h
 
 unix {
     target.path = /usr/lib

@@ -18,6 +18,7 @@ InMemoryTagProcessor::~InMemoryTagProcessor()
 void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger,
                                       const QMap<QString, QString> &docpluginStock,
                                       const QMap<QString, QString> &DBplugins,
+                                      const QMap<QString, QString> &DBWithHistoryPlugins,
                                       const QMap<QString, QString> &tagPlugins,
                                       const QMap<QString, QString> &serverPlugins)
 {

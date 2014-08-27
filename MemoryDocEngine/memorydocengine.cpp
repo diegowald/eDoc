@@ -15,6 +15,7 @@ MemoryDocEngine::~MemoryDocEngine()
 void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
                                  const QMap<QString, QString> &docpluginStock,
                                  const QMap<QString, QString> &DBplugins,
+                                 const QMap<QString, QString> &DBWithHistoryPlugins,
                                  const QMap<QString, QString> &tagPlugins,
                                  const QMap<QString, QString> &serverPlugins)
 {
@@ -22,7 +23,7 @@ void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLogging *log
     m_Logger = logger;
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
     XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
-    persistentEngine = createPersistentEngine(confEngine, docpluginStock, DBplugins, tagPlugins, serverPlugins);
+    persistentEngine = createPersistentEngine(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 }
 
 IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)
@@ -63,7 +64,7 @@ QString MemoryDocEngine::name()
 
 IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine,
                                                     const QMap<QString, QString> &docpluginStock,
-                                                    const QMap<QString, QString> &DBplugins,
+                                                    const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
                                                     const QMap<QString, QString> &tagPlugins,
                                                     const QMap<QString, QString> &serverPlugins)
 {
@@ -79,7 +80,7 @@ IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine,
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
                 IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
-                engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
+                engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
                 return qobject_cast<IDocEngine *>(plugin);
             }
             else {

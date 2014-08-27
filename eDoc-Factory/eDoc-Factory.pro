@@ -18,12 +18,14 @@ DEFINES += EDOCFACTORY_LIBRARY
 
 SOURCES += edocfactory.cpp \
     configreader.cpp \
-    queryengine.cpp
+    queryengine.cpp \
+    databasewithhistorywrapper.cpp
 
 HEADERS += edocfactory.h\
         edoc-factory_global.h \
     configreader.h \
-    queryengine.h
+    queryengine.h \
+    databasewithhistorywrapper.h
 
 unix:!symbian {
     maemo5 {

@@ -196,6 +196,11 @@ void SQLManager::addParameters(QSqlQuery &query, const QString &SQL, const QList
 
 void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)
 {
+    executeCommandAndReturnId(sql, record);
+}
+
+int SQLManager::executeCommandAndReturnId(const QString &sql, DBRecordPtr record)
+{
     //m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)");
     if (!tryReconnect())
     {
@@ -203,7 +208,7 @@ void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)
                            " Reason: ") +
                            db.lastError().text());
         // Error
-        return;
+        return -1;
     }
 
     QSqlQuery q;
@@ -214,8 +219,9 @@ void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)
     {
         m_Logger->logError("SQL Error:" + q.lastError().text());
     }
-
+    int id = q.lastInsertId().toInt();
     db.close();
+    return id;
 }
 
 QStringList SQLManager::getDistintValues(const QString &sql, const QList<QPair<QString, QString> >& filter)

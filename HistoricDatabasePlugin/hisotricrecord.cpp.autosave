@@ -1,0 +1,16 @@
+#include "hisotricrecord.h"
+
+HisotricRecord::HisotricRecord(IRecord* realRecord, QObject *parent) :
+    QObject(parent)
+{
+}
+
+explicit HisotricRecord(QObject *parent = 0);
+virtual ~HisotricRecord();
+
+virtual void setID(IRecordID *ID);
+virtual IRecordID *ID();
+virtual IValue* value(IFieldDefinition* field);
+virtual IValue* value(const QString &fieldName);
+virtual IFieldDefinition* fieldDefinition(const QString &fieldName);
+virtual QList<QString> fieldNames();

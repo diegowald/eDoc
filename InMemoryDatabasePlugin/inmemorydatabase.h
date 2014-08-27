@@ -21,11 +21,13 @@ public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
+                            const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
     virtual QList<IFieldDefinition*> fields();
     virtual IFieldDefinition* field(const QString &fieldName);
     virtual QList<IRecordID*> search(const QList<IParameter*> &parameters);
+    virtual QList<IRecordID*> searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records);
     virtual IParameter* createEmptyParameter();
     virtual IRecord* createEmptyRecord();
     virtual IRecordID *addRecord(IRecord *record);

@@ -1,3 +1,4 @@
+
 #include "edoctcpclientdatabaseplugin.h"
 
 #include <QtPlugin>
@@ -6,37 +7,17 @@
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDocTCPMessages/streamhelpers.h"
 
-
-eDocTcpClientDatabasePlugin::eDocTcpClientDatabasePlugin(QObject *parent) :QObject(parent)
+eDocTcpClientDatabasePlugin::eDocTcpClientDatabasePlugin(QObject *parent) :TcpClient(parent)
 {
-    tcpSocket = new QTcpSocket(this);
-    //networkSession = NULL;
-    ipAddress = "";
-    port = 0;
-    out = NULL;
-    timeOut = 15000;
-
-    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readyRead()));
-    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
-    connect(tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
 }
 
 eDocTcpClientDatabasePlugin::~eDocTcpClientDatabasePlugin()
 {
-    if (tcpSocket->isOpen())
-    {
-        tcpSocket->abort();
-        tcpSocket->close();
-    }
-    if (out != NULL)
-    {
-        delete out;
-    }
 }
 
 void eDocTcpClientDatabasePlugin::initialize(IXMLContent *configuration, QObjectLogging *logger,
                                              const QMap<QString, QString> &docpluginStock,
-                                             const QMap<QString, QString> &DBplugins,
+                                             const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
                                              const QMap<QString, QString> &tagPlugins,
                                              const QMap<QString, QString> &serverPlugins)
 {
@@ -130,6 +111,41 @@ QList<IRecordID*> eDocTcpClientDatabasePlugin::search(const QList<IParameter*> &
     in >> header;
     QList<IRecordID*> lst;
     if (header.command() == MessageCodes::CodeNumber::RSP_search)
+    {
+        int count = 0;
+        in >> count;
+        for (int i = 0; i < count; ++i)
+        {
+            ProxyRecordID* record = new ProxyRecordID(this);
+            in >> *record;
+            lst.push_back(record);
+        }
+    }
+    return lst;
+}
+
+QList<IRecordID*> eDocTcpClientDatabasePlugin::searchWithin(const QList<IParameter *> &parameters, const QList<IRecordID *> &records)
+{
+    prepareToSend(MessageCodes::CodeNumber::REQ_searchWithin);
+    (*out) << parameters.count();
+    foreach (IParameter *parameter, parameters)
+    {
+        (*out) << *parameter;
+    }
+    (*out) << records.count();
+    foreach (IRecordID* rec, records)
+    {
+        (*out) << *rec;
+    }
+    QByteArray response = send();
+
+    QDataStream in(&response, QIODevice::ReadOnly);
+    in.setVersion(QDataStream::Qt_5_3);
+
+    Header header;
+    in >> header;
+    QList<IRecordID*> lst;
+    if (header.command() == MessageCodes::CodeNumber::RSP_searchWithin)
     {
         int count = 0;
         in >> count;
@@ -338,135 +354,21 @@ IDocID* eDocTcpClientDatabasePlugin::IValueToIDocId(IValue* value)
 {
 }
 
-
-QByteArray eDocTcpClientDatabasePlugin::send()
+// ITagProcessor
+void eDocTcpClientDatabasePlugin::addTagRecord(IRecordID *recordID, ITag* tag)
 {
-    if (!tcpSocket->isOpen())
-    {
-        tcpSocket->abort();
-        tcpSocket->connectToHost(ipAddress, port);
-        if (!tcpSocket->waitForConnected(timeOut))
-        {
-            //error
-            return NULL;
-        }
-    }
-    blob.clear();
-    QDataStream out(&blob, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_3);
-
-    out << (buildingBlob.size() + (int)sizeof(int));
-    out << buildingBlob;
-
-    tcpSocket->write(blob);
-    tcpSocket->flush();
-    tcpSocket->waitForBytesWritten();
-    blob.clear();
-
-    QDataStream in(tcpSocket);
-    in.setVersion(QDataStream::Qt_5_3);
-
-
-    while (tcpSocket->bytesAvailable() < (int) sizeof(int))
-    {
-        if (!tcpSocket->waitForReadyRead(timeOut))
-        {
-            // error
-        }
-    }
-    in >> blockSize;
-
-    while (tcpSocket->bytesAvailable() < blockSize)
-    {
-        if (!tcpSocket->waitForReadyRead(timeOut) < blockSize)
-        {
-            // error
-        }
-    }
-
-    QByteArray response;
-    in >> response;
-    return response;
 }
 
-//void eDocTcpClientDatabasePlugin::send(const QByteArray &blobToSend)
-//{
-//    tcpSocket->abort();
-//    tcpSocket->connectToHost(ipAddress, port);
-//
-//    blob = blobToSend;
-//}
-
-void eDocTcpClientDatabasePlugin::readyRead()
+QSet<QString> eDocTcpClientDatabasePlugin::findByTags(const QStringList &tags)
 {
-//    QDataStream in(tcpSocket);
-//    in.setVersion(QDataStream::Qt_5_3);
-//
-//    if (blockSize == 0)
-//    {
-//        if (tcpSocket->bytesAvailable() < (int) sizeof(int))
-//        {
-//            return;
-//        }
-//
-//        in >> blockSize;
-//    }
-//
-//    if (tcpSocket->bytesAvailable() < blockSize)
-//    {
-//        return;
-//    }
-//
-//    Header header;
-//    in >> header;
-//
-//    processHeader(header);
 }
 
-void eDocTcpClientDatabasePlugin::error(QAbstractSocket::SocketError socketError)
+void eDocTcpClientDatabasePlugin::removeRecord(IRecordID* recordID, ITag* tag)
 {
-    switch (socketError) {
-     case QAbstractSocket::RemoteHostClosedError:
-         break;
-     case QAbstractSocket::HostNotFoundError:
-        logger->logError(tr("The host was not found. Please check the "
-                                     "host name and port settings."));
-         break;
-     case QAbstractSocket::ConnectionRefusedError:
-        logger->logError(tr("The connection was refused by the peer. "
-                                     "Make sure the fortune server is running, "
-                                     "and check that the host name and port "
-                                     "settings are correct."));
-         break;
-     default:
-        logger->logError(tr("The following error occurred: %1.")
-                         .arg(tcpSocket->errorString()));
-     }
 }
 
-void eDocTcpClientDatabasePlugin::connected()
+void eDocTcpClientDatabasePlugin::processKeywordString(IRecordID *recordID, const QString &keywords)
 {
-//    tcpSocket->write(blob);
-//    tcpSocket->flush();
-//    tcpSocket->waitForBytesWritten();
-//    blob.clear();
-}
-
-void eDocTcpClientDatabasePlugin::prepareToSend(MessageCodes::CodeNumber code)
-{
-    if (out != NULL)
-    {
-        delete out;
-    }
-
-    buildingBlob.clear();
-    out = new QDataStream(&buildingBlob, QIODevice::WriteOnly);
-    out->setVersion(QDataStream::Qt_5_3);
-
-    Header header;
-    header.setCommand(code);
-
-    (*out) << header;
 }
 
 #if QT_VERSION < 0x050000

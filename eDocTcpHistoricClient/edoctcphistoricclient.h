@@ -1,40 +1,34 @@
-#ifndef EDOCTCPCLIENT_H
-#define EDOCTCPCLIENT_H
+#ifndef EDOCTCPHISTORICCLIENT_H
+#define EDOCTCPHISTORICCLIENT_H
 
-#include "edoctcpclient_global.h"
+#include "edoctcphistoricclient_global.h"
 #include <QObject>
-#include <QtNetwork/QTcpSocket>
-
-//#include <QtNetwork/QNetworkSession>
-
-#include "../eDoc-API/IDatabase.h"
-#include "../eDoc-API/IDocEngine.h"
-#include "../eDoc-API/ITagProcessor.h"
-#include "../eDocTCPMessages/header.h"
-#include "../eDocTCPMessages/messagecodes.h"
+#include "../eDoc-API/IDatabaseWithHistory.h"
 #include "../eDocTCPMessages/tcpclient.h"
 
-class EDOCTCPCLIENTSHARED_EXPORT eDocTcpClientDatabasePlugin : public TcpClient, public IDatabase, public IDocEngine, public ITagProcessor
+class EDOCTCPHISTORICCLIENTSHARED_EXPORT EDocTcpHistoricClient : public TcpClient, public IDatabaseWithHistory
 {
     Q_OBJECT
 
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IDatabase" FILE "eDocTcpClient.json")
+    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IDatabase" FILE "eDocTcpHistoricClient.json")
 #endif // QT_VERSION >= 0x050000
-    Q_INTERFACES(IDatabase)
-    Q_INTERFACES(IDocEngine)
+    Q_INTERFACES(IDatabaseWithHistory)
 
 public:
-    explicit eDocTcpClientDatabasePlugin(QObject *parent = 0);
-    ~eDocTcpClientDatabasePlugin();
+    EDocTcpHistoricClient(QObject *parent = 0);
+    virtual ~EDocTcpHistoricClient();
 
-    // IDatabase
+    //IInitializable
+public:
     virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
+
+    //IDatabase
     virtual QList<IFieldDefinition*> fields();
     virtual IFieldDefinition* field(const QString &fieldName);
     virtual IParameter* createEmptyParameter();
@@ -53,26 +47,22 @@ public:
 protected:
     virtual QMap<QString, IRecordID*> search(IParameter* parameter);
 
+//IDatabaseWithHistory
 public:
-    // IDocEngine
-    virtual IDocID* addDocument(const QByteArray& blob);
-    virtual IDocBase* getDocument(IDocID *id);
-    virtual bool deleteDocument(IDocID *id);
-    virtual IDocID* IValueToIDocId(IValue* value);
+    virtual QList<IRecordID*> searchByDate(const QList<IParameter*> &parameters, const QDateTime &date);
+    virtual IRecord* getRecordByDate(IRecordID *id, const QDateTime &date);
+    virtual IRecord* getRecordByDate(const QString &id, const QDateTime &date);
+    virtual QList<IRecord*> getRecordsByDate(const QStringList &ids, const QDateTime& date);
+    virtual QStringList getDistinctColumnValuesByDate(const QList<QPair<QString, QString> >& filter, const QString & columnName, const QDateTime &date);
+    virtual QList<IRecord*> getHistory(IRecordID *recordID);
+    virtual QList<IRecordID*> getChanges(const QDateTime &fromDate, const QDateTime &toDate);
 
-public:
-    // ITagProcessor
-    virtual void addTagRecord(IRecordID *recordID, ITag* tag);
-    virtual QSet<QString> findByTags(const QStringList &tags);
-    virtual void removeRecord(IRecordID* recordID, ITag* tag);
-    virtual void processKeywordString(IRecordID *recordID, const QString &keywords);
-
-private slots:
+protected:
+    virtual QMap<QString, IRecordID*> searchByDate(IParameter* parameter, const QDateTime &date);
 
 private:
     QObjectLogging *logger;
     QString m_Name;
 };
 
-#endif // EDOCTCPCLIENT_H
-
+#endif // EDOCTCPHISTORICCLIENT_H

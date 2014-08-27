@@ -44,6 +44,8 @@ public:
     virtual DBRecordSet getRecords(const QString &sql);
     virtual void executeCommand(const QString &sql, DBRecordPtr record);
 
+    virtual int executeCommandAndReturnId(const QString &sql, DBRecordPtr record);
+
     virtual QStringList getDistintValues(const QString &sql, const QList<QPair<QString, QString> >& filter);
 
 private:

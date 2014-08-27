@@ -24,6 +24,7 @@ GenericDatabase::~GenericDatabase()
 void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger,
                                  const QMap<QString, QString> &docpluginStock,
                                  const QMap<QString, QString> &DBplugins,
+                                 const QMap<QString, QString> &DBWithHistoryPlugins,
                                  const QMap<QString, QString> &tagPlugins,
                                  const QMap<QString, QString> &serverPlugins)
 {
@@ -56,7 +57,7 @@ IFieldDefinition *GenericDatabase::createField(IXMLContent *configuration)
 {
     IFieldDefinition *field = new FieldDefinition(this);
     QMap<QString, QString> empty;
-    field->initialize(configuration, m_Logger, empty, empty, empty, empty);
+    field->initialize(configuration, m_Logger, empty, empty, empty, empty, empty);
     return field;
 }
 
@@ -107,6 +108,24 @@ QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters)
         }
     }
     return result.values();
+}
+
+QList<IRecordID*> GenericDatabase::searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records)
+{
+    QMap<QString, IRecordID*> recs;
+    foreach (IRecordID* rec, records)
+    {
+        recs[rec->asString()] = rec;
+    }
+
+    QList<IRecordID*> searchResult = search(parameters);
+    QMap<QString, IRecordID*> searchRecs;
+    foreach (IRecordID* rec, searchResult)
+    {
+        searchRecs[rec->asString()] = rec;
+    }
+
+    return intersect(recs, searchRecs).values();
 }
 
 std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *parameter)

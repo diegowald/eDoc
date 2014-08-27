@@ -16,6 +16,7 @@ public:
         REQ_field,
         REQ_createEmptyParameter,
         REQ_search,
+        REQ_searchWithin,
         REQ_createEnptyRecord,
         REQ_addRecord,
         REQ_getRecord,
@@ -27,6 +28,7 @@ public:
         RSP_field,
         RSP_createEmptyParameter,
         RSP_search,
+        RSP_searchWithin,
         RSP_createEnptyRecord,
         RSP_addRecord,
         RSP_getRecord,
@@ -43,6 +45,19 @@ public:
         RSP_getDocument,
         RSP_deleteDocument,
         RSP_IValueToIDocId,
+        // IDatabaseWithHistory
+        REQ_searchWithHistory,
+        REQ_getRecordWithHistory,
+        REQ_getRecordsWithHistory,
+        REQ_getDistinctColumnValuesWithHistory,
+        REQ_getHistory,
+        REQ_getHistoryChanges,
+        RSP_searchWithHistory,
+        RSP_getRecordWithHistory,
+        RSP_getRecordsWithHistory,
+        RSP_getDistinctColumnValuesWithHistory,
+        RSP_getHistory,
+        RSP_getHistoryChanges,
     };
 
     static QString toString(CodeNumber code);
