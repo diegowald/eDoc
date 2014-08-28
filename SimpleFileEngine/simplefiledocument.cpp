@@ -2,23 +2,23 @@
 #include <QFile>
 
 
-SimpleFileDocument::SimpleFileDocument(FileManagement *FileManager, QObject *parent) :
+SimpleFileDocument::SimpleFileDocument(QSharedPointer<FileManagement> FileManager, QObject *parent) :
     QObject(parent), fileManager(FileManager)
 {
-    idDocument = new SimpleFileID(this);
+    idDocument = QSharedPointer<SimpleFileID>(new SimpleFileID(this));
 }
 
-SimpleFileDocument::SimpleFileDocument(FileManagement *FileManager, QString stringID, QObject *parent) :
+SimpleFileDocument::SimpleFileDocument(QSharedPointer<FileManagement> FileManager, QString stringID, QObject *parent) :
     QObject(parent), fileManager(FileManager)
 {
-    idDocument = new SimpleFileID(stringID,this);
+    idDocument = QSharedPointer<SimpleFileID>(new SimpleFileID(stringID,this));
 }
 
 SimpleFileDocument::~SimpleFileDocument()
 {
 }
 
-IDocID* SimpleFileDocument::id()
+QSharedPointer<IDocID> SimpleFileDocument::id()
 {
     return idDocument;
 }

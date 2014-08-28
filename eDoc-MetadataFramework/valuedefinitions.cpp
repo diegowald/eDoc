@@ -175,7 +175,7 @@ QVariant QTimeValue::asVariant()
     return isNull() ? QVariant(QVariant::Time) : get();//.toString("hh:mm:ss");
 }
 
-IDocBaseValue::IDocBaseValue(IDocBase *value, QObject *parent) :
+IDocBaseValue::IDocBaseValue(QSharedPointer<IDocBase> value, QObject *parent) :
     QObject(parent), Value(value)
 {
 }
@@ -202,7 +202,7 @@ QVariant IDocBaseValue::content()
         return get()->id()->asString();
 }
 
-IDocumentIDValue::IDocumentIDValue(IDocID *value, QObject *parent) :
+IDocumentIDValue::IDocumentIDValue(QSharedPointer<IDocID> value, QObject *parent) :
     QObject(parent), Value(value ? value->asString() : QString())
 {
 }
@@ -236,7 +236,7 @@ QVariant IDocumentIDValue::content()
         return get();
 }
 
-IMultiDocumentValue::IMultiDocumentValue(IMultiDocument *value, QObject *parent) :
+IMultiDocumentValue::IMultiDocumentValue(QSharedPointer<IMultiDocument> value, QObject *parent) :
     QObject(parent), Value(value)
 {
 }
@@ -247,7 +247,7 @@ IMultiDocumentValue::~IMultiDocumentValue()
 
 void IMultiDocumentValue::setValue(const QVariant &newValue)
 {
-    setValue2(qvariant_cast<IMultiDocument*>(newValue));
+    setValue2(qvariant_cast<QSharedPointer<IMultiDocument>>(newValue));
 }
 
 QVariant IMultiDocumentValue::asVariant()
@@ -265,7 +265,7 @@ QVariant IMultiDocumentValue::content()
         return get()->id()->asString();
 }
 
-IRecordValue::IRecordValue(IRecord *value, QObject *parent) :
+IRecordValue::IRecordValue(QSharedPointer<IRecord> value, QObject *parent) :
     QObject(parent), Value(value)
 {
 }
@@ -276,7 +276,7 @@ IRecordValue::~IRecordValue()
 
 void IRecordValue::setValue(const QVariant &newValue)
 {
-    setValue2(qvariant_cast<IRecord*>(newValue));
+    setValue2(qvariant_cast<QSharedPointer<IRecord>>(newValue));
 }
 
 QVariant IRecordValue::asVariant()
@@ -294,7 +294,7 @@ QVariant IRecordValue::content()
         return get()->ID()->asString();
 }
 
-IMultiRecordValue::IMultiRecordValue(IMultiRecord *value, QObject *parent) :
+IMultiRecordValue::IMultiRecordValue(QSharedPointer<IMultiRecord> value, QObject *parent) :
     QObject(parent), Value(value)
 {
 }
@@ -305,7 +305,7 @@ IMultiRecordValue::~IMultiRecordValue()
 
 void IMultiRecordValue::setValue(const QVariant &newValue)
 {
-    setValue2(qvariant_cast<IMultiRecord*>(newValue));
+    setValue2(qvariant_cast<QSharedPointer<IMultiRecord>>(newValue));
 }
 
 QVariant IMultiRecordValue::asVariant()

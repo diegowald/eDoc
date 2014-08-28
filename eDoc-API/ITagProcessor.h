@@ -7,10 +7,10 @@
 
 struct ITagProcessor : public IInitializable
 {
-    virtual void addTagRecord(IRecordID *recordID, ITag* tag) = 0;
+    virtual void addTagRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag) = 0;
     virtual QSet<QString> findByTags(const QStringList &tags) = 0;
-    virtual void removeRecord(IRecordID* recordID, ITag* tag) = 0;
-    virtual void processKeywordString(IRecordID *recordID, const QString &keywords) = 0;
+    virtual void removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag) = 0;
+    virtual void processKeywordString(QSharedPointer<IRecordID> recordID, const QString &keywords) = 0;
     virtual QString name() = 0;
 
     virtual ~ITagProcessor() {}

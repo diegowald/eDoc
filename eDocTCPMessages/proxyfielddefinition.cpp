@@ -16,7 +16,8 @@ ProxyFieldDefinition::~ProxyFieldDefinition()
 {
 }
 
-void ProxyFieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void ProxyFieldDefinition::initialize(IXMLContent *configuration,
+                                      QSharedPointer<QObjectLogging> logger,
                                       const QMap<QString, QString> &docpluginStock,
                                       const QMap<QString, QString> &DBplugins,
                                       const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -62,9 +63,9 @@ QList<VALIDQUERY> ProxyFieldDefinition::validQueries()
     return _validQueries;
 }
 
-IValue* ProxyFieldDefinition::createEmptyValue()
+QSharedPointer<IValue> ProxyFieldDefinition::createEmptyValue()
 {
-    return new ProxyValue(this);
+    return QSharedPointer<IValue>(new ProxyValue(this));
 }
 
 void ProxyFieldDefinition::setName(const QString &newName)

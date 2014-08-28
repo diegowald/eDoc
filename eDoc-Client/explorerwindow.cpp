@@ -14,17 +14,18 @@ ExplorerWindow::ExplorerWindow(QWidget *parent) :
 {
     QLOG_TRACE() << "ExplorerWindow::ExplorerWindow(QWidget *parent)";
 
-    connect(&logger, SIGNAL(LogDebug(QString)), this, SLOT(on_LogDebug(QString)));
-    connect(&logger, SIGNAL(LogError(QString)), this, SLOT(on_LogError(QString)));
-    connect(&logger, SIGNAL(LogFatal(QString)), this, SLOT(on_LogFatal(QString)));
-    connect(&logger, SIGNAL(LogInfo(QString)), this, SLOT(on_LogInfo(QString)));
-    connect(&logger, SIGNAL(LogTrace(QString)), this, SLOT(on_LogTrace(QString)));
-    connect(&logger, SIGNAL(LogWarning(QString)), this, SLOT(on_LogWarning(QString)));
+    logger = QSharedPointer<QObjectLogging>(new QObjectLogging());
+    connect(logger.data(), SIGNAL(LogDebug(QString)), this, SLOT(on_LogDebug(QString)));
+    connect(logger.data(), SIGNAL(LogError(QString)), this, SLOT(on_LogError(QString)));
+    connect(logger.data(), SIGNAL(LogFatal(QString)), this, SLOT(on_LogFatal(QString)));
+    connect(logger.data(), SIGNAL(LogInfo(QString)), this, SLOT(on_LogInfo(QString)));
+    connect(logger.data(), SIGNAL(LogTrace(QString)), this, SLOT(on_LogTrace(QString)));
+    connect(logger.data(), SIGNAL(LogWarning(QString)), this, SLOT(on_LogWarning(QString)));
 
     ui->setupUi(this);
     ui->treeStructure->setColumnCount(1);
 
-    f.initialize(QApplication::applicationDirPath(), "./client.conf.xml", &logger);
+    f.initialize(QApplication::applicationDirPath(), "./client.conf.xml", logger);
 
     fillFieldsCombo();
     fillOperatorsCombo();
@@ -71,7 +72,7 @@ void ExplorerWindow::fillFieldsCombo()
 {
     ui->cboField->clear();
 
-    foreach (IFieldDefinition* fDef, f.databaseEngine()->fields())
+    foreach (QSharedPointer<IFieldDefinition> fDef, f.databaseEngine()->fields())
     {
         if (fDef->isVisible() && fDef->isQueryable())
             ui->cboField->addItem(fDef->name());
@@ -113,15 +114,15 @@ void ExplorerWindow::on_cboOperator_currentIndexChanged(int index)
     ui->searchValue2->setVisible(show2ndParameter);
 }
 
-IParameter *ExplorerWindow::createSearchParameter(const QString &fieldName, VALIDQUERY queryType, QVariant value1, QVariant value2)
+QSharedPointer<IParameter> ExplorerWindow::createSearchParameter(const QString &fieldName, VALIDQUERY queryType, QVariant value1, QVariant value2)
 {
-    IParameter *param = f.databaseEngine()->createEmptyParameter();
-    IFieldDefinition* fDef = f.databaseEngine()->field(fieldName);
+    QSharedPointer<IParameter> param = f.databaseEngine()->createEmptyParameter();
+    QSharedPointer<IFieldDefinition> fDef = f.databaseEngine()->field(fieldName);
 
-    IValue* v1 = fDef->createEmptyValue();
+    QSharedPointer<IValue> v1 = fDef->createEmptyValue();
     v1->setValue(value1);
 
-    IValue *v2 = NULL;
+    QSharedPointer<IValue> v2;
     if (queryType == BETWEEN)
     {
         v2 = fDef->createEmptyValue();
@@ -186,21 +187,21 @@ void ExplorerWindow::on_btnSearchAgain_released()
     doSearch(searchFilter);
 }
 
-void ExplorerWindow::doSearch(QList<IParameter *> &filter)
+void ExplorerWindow::doSearch(QList<QSharedPointer<IParameter>> &filter)
 {
     ui->searchResult->setRowCount(0);
     if (filter.size() > 0)
     {
-        QList<IRecordID*> result = f.databaseEngine()->search(filter);
+        QList<QSharedPointer<IRecordID>> result = f.databaseEngine()->search(filter);
 
         QStringList ids;
-        foreach (IRecordID *id, result)
+        foreach (QSharedPointer<IRecordID> id, result)
         {
             ids.append(id->asString());
         }
-        QList<IRecord*> records = f.databaseEngine()->getRecords(ids);
+        QList<QSharedPointer<IRecord>> records = f.databaseEngine()->getRecords(ids);
 
-        foreach (IRecord* rec, records)
+        foreach (QSharedPointer<IRecord> rec, records)
         {
             //IRecord *rec = f.databaseEngine()->getRecord(id);
             int rowNum = ui->searchResult->rowCount();
@@ -228,7 +229,7 @@ void ExplorerWindow::on_searchResult_itemSelectionChanged()
     if (selection.count() == 0)
         return;
 
-    IRecord *rec = ui->searchResult->item(selection.at(0)->row(), 0)->data(Qt::UserRole).value<IRecord*>();
+    QSharedPointer<IRecord>rec = ui->searchResult->item(selection.at(0)->row(), 0)->data(Qt::UserRole).value<QSharedPointer<IRecord>>();
 
     RecordEditor *r = new RecordEditor(this);
     connect(r, SIGNAL(downloadFile(IRecord*,const IValue*)), this, SLOT(downloadFile(IRecord*,const IValue*)));
@@ -247,10 +248,10 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
 
     if (filenames.count() > 0)
     {
-        IDatabase* db = f.databaseEngine();
-        IDocEngine *e = f.docEngine();
+        QSharedPointer<IDatabaseWithHistory> db = f.databaseEngine();
+        QSharedPointer<IDocEngine> e = f.docEngine();
 
-        IRecord* rec = NULL;
+        QSharedPointer<IRecord> rec;
         foreach (QString filename, filenames)
         {
             rec = f.createEmptyRecord();
@@ -268,17 +269,17 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
     }
 }
 
-void ExplorerWindow::downloadFile(IRecord* record, const IValue* value)
+void ExplorerWindow::downloadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value)
 {
     QString filename = QFileDialog::getSaveFileName(this, tr("Save file"), ".");
-    IDocEngine *e = f.docEngine();
+    QSharedPointer<IDocEngine> e = f.docEngine();
 
-    IDocumentIDValue *v = (IDocumentIDValue*) record->value("archivo");
-    IDocID *docId = e->IValueToIDocId(v);
-    IDocBase *doc = e->getDocument(docId);
+    QSharedPointer<IDocumentIDValue> v = record->value("archivo").dynamicCast<IDocumentIDValue>();
+    QSharedPointer<IDocID> docId = e->IValueToIDocId(v);
+    QSharedPointer<IDocBase> doc = e->getDocument(docId);
     if (!doc->isComplex())
     {
-        IDocument *document = (IDocument*)doc;
+        QSharedPointer<IDocument> document = doc.dynamicCast<IDocument>();
         QFile file(filename);
         file.open(QIODevice::WriteOnly);
         file.write(document->blob());
@@ -286,7 +287,7 @@ void ExplorerWindow::downloadFile(IRecord* record, const IValue* value)
     }
 }
 
-void ExplorerWindow::uploadFile(IRecord* record, const IValue *value)
+void ExplorerWindow::uploadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value)
 {
 
 }
@@ -383,14 +384,14 @@ void ExplorerWindow::on_actionAdd_1000_Documents_triggered()
 
     if (filenames.count() > 0)
     {
-        IDatabase* db = f.databaseEngine();
-        IDocEngine *e = f.docEngine();
+        QSharedPointer<IDatabaseWithHistory> db = f.databaseEngine();
+        QSharedPointer<IDocEngine> e = f.docEngine();
 
         QString filename = filenames.at(0);
 
         for (int i = 0; i < 1000; ++i)
         {
-            IRecord *rec = f.createEmptyRecord();
+            QSharedPointer<IRecord> rec = f.createEmptyRecord();
 
             rec->value("campo1")->setValue(QVariant(QString("Campo1 %1").arg(i % 20)));
             rec->value("campo2")->setValue(QVariant(QString("Campo2 %1").arg(i % 7)));
@@ -408,7 +409,7 @@ void ExplorerWindow::on_btnBrowse_pressed()
 
     QStringList keywordsList = keywords.split(' ', QString::SkipEmptyParts);
 
-    ITagProcessor* tagger = f.tagEngine();
+    QSharedPointer<ITagProcessor> tagger = f.tagEngine();
 
     QSet<QString> result = tagger->findByTags(keywordsList);
 
@@ -417,7 +418,7 @@ void ExplorerWindow::on_btnBrowse_pressed()
 
     foreach (QString id, result)
     {
-        IRecord *rec = f.databaseEngine()->getRecord(id);
+        QSharedPointer<IRecord> rec = f.databaseEngine()->getRecord(id);
         int rowNum = ui->searchResult->rowCount();
         ui->searchResult->insertRow(rowNum);
         rowNum = ui->searchResult->rowCount() - 1;

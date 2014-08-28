@@ -15,7 +15,7 @@ public:
     virtual bool isVisible() const = 0;
     virtual bool isQueryable() const = 0;
     virtual QList<VALIDQUERY> validQueries() = 0;
-    virtual IValue* createEmptyValue() = 0;
+    virtual QSharedPointer<IValue> createEmptyValue() = 0;
     virtual ~IFieldDefinition() {}
 };
 

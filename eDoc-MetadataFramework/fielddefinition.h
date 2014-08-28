@@ -29,7 +29,8 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT FieldDefinition : public QObject, publi
 public:
     explicit FieldDefinition(QObject *parent = 0);
     virtual ~FieldDefinition();
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -41,7 +42,7 @@ public:
     virtual bool isVisible() const;
     virtual bool isQueryable() const;
     virtual QList<VALIDQUERY> validQueries();    
-    virtual IValue* createEmptyValue();
+    virtual QSharedPointer<IValue> createEmptyValue();
 
     QString fieldNameInDatabase();
     DATATYPE dataType();
@@ -57,7 +58,7 @@ private:
     bool m_Visible;
     bool m_Queryable;
     QList<VALIDQUERY> m_ValidQeries;
-    QObjectLogging *m_Logger;
+    QSharedPointer<QObjectLogging> m_Logger;
     DATATYPE m_DataType;
     QString m_FieldNameInDatabase;
     QString m_OtherDatabaseName;

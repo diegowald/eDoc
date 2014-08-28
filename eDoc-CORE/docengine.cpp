@@ -10,7 +10,8 @@ DocEngine::~DocEngine()
 {
 }
 
-void DocEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void DocEngine::initialize(IXMLContent *configuration,
+                           QSharedPointer<QObjectLogging> logger,
                            const QMap<QString, QString> &docpluginStock,
                            const QMap<QString, QString> &DBplugins,
                            const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -31,29 +32,30 @@ QString DocEngine::name()
     return "DocEngine";
 }
 
-IDocID* DocEngine::addDocument(const QByteArray& blob)
+QSharedPointer<IDocID> DocEngine::addDocument(const QByteArray& blob)
 {
-    DocID *id = DocID::createNew();
-    Document *doc = new Document(id);
+    QSharedPointer<DocID> id = QSharedPointer<DocID>(DocID::createNew());
+    QSharedPointer<Document> doc = QSharedPointer<Document>(new Document(id));
     collection[*id] = doc;
     return id;
 }
 
-IDocument* DocEngine::getDocument(IDocID *id)
+QSharedPointer<IDocBase> DocEngine::getDocument(QSharedPointer<IDocID> id)
 {
-    DocID *iid = (DocID*)(id);
+    QSharedPointer<DocID> iid = id.dynamicCast<DocID>();
     return collection[*iid];
 }
 
-bool DocEngine::deleteDocument(IDocID *id)
+bool DocEngine::deleteDocument(QSharedPointer<IDocID> id)
 {
-    collection.remove(*(DocID*)id);
+    QSharedPointer<DocID> iid = id.dynamicCast<DocID>();
+    collection.remove(*iid);
     return true;
 }
 
-IDocID* DocEngine::IValueToIDocId(IValue *value)
+QSharedPointer<IDocID> DocEngine::IValueToIDocId(QSharedPointer<IValue> value)
 {
-    return new DocID(value->content().toString());
+    return QSharedPointer<IDocID>(new DocID(value->content().toString()));
 }
 
 //Q_EXPORT_PLUGIN2(edoccore, DocEngine);

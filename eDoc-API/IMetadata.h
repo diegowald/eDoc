@@ -5,12 +5,12 @@
 
 struct IMetadata
 {
-    virtual IUser *ownerUser() = 0;
-    virtual IGroup *ownerGroup() = 0;
-    virtual bool canReadByUser(IUser *user) = 0;
-    virtual bool canModifyByUser(IUser *user) = 0;
-    virtual void changeUser(IUser *newUser) = 0;
-    virtual void changeGroup(IGroup *newGroup) = 0;
+    virtual QSharedPointer<IUser> ownerUser() = 0;
+    virtual QSharedPointer<IGroup> ownerGroup() = 0;
+    virtual bool canReadByUser(QSharedPointer<IUser> user) = 0;
+    virtual bool canModifyByUser(QSharedPointer<IUser> user) = 0;
+    virtual void changeUser(QSharedPointer<IUser> newUser) = 0;
+    virtual void changeGroup(QSharedPointer<IGroup> newGroup) = 0;
     virtual ~IMetadata() {}
 };
 

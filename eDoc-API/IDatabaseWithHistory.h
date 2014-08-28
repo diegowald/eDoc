@@ -6,17 +6,17 @@
 struct IDatabaseWithHistory : public IDatabase
 {
 public:
-    virtual QList<IRecordID*> searchByDate(const QList<IParameter*> &parameters, const QDateTime &date) = 0;
-    virtual IRecord* getRecordByDate(IRecordID *id, const QDateTime &date) = 0;
-    virtual IRecord* getRecordByDate(const QString &id, const QDateTime &date) = 0;
-    virtual QList<IRecord*> getRecordsByDate(const QStringList &ids, const QDateTime& date) = 0;
+    virtual QList<QSharedPointer<IRecordID> > searchByDate(const QList<QSharedPointer<IParameter> > &parameters, const QDateTime &date) = 0;
+    virtual QSharedPointer<IRecord> getRecordByDate(QSharedPointer<IRecordID> id, const QDateTime &date) = 0;
+    virtual QSharedPointer<IRecord> getRecordByDate(const QString &id, const QDateTime &date) = 0;
+    virtual QList<QSharedPointer<IRecord> > getRecordsByDate(const QStringList &ids, const QDateTime& date) = 0;
     virtual QStringList getDistinctColumnValuesByDate(const QList<QPair<QString, QString> >& filter, const QString & columnName, const QDateTime &date) = 0;
-    virtual QList<IRecord*> getHistory(IRecordID *recordID) = 0;
-    virtual QList<IRecordID*> getChanges(const QDateTime &fromDate, const QDateTime &toDate) = 0;
+    virtual QList<QSharedPointer<IRecord> > getHistory(QSharedPointer<IRecordID> recordID) = 0;
+    virtual QList<QSharedPointer<IRecordID> > getChanges(const QDateTime &fromDate, const QDateTime &toDate) = 0;
 
     virtual ~IDatabaseWithHistory() {}
 protected:
-    virtual QMap<QString, IRecordID*> searchByDate(IParameter* parameter, const QDateTime &date) = 0;
+    virtual QMap<QString, QSharedPointer<IRecordID> > searchByDate(QSharedPointer<IParameter> parameter, const QDateTime &date) = 0;
 };
 
 Q_DECLARE_INTERFACE(IDatabaseWithHistory, "com.mksingenieria.eDoc.IDatabaseWithHistory/0.0")

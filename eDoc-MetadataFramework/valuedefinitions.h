@@ -95,11 +95,11 @@ public:
     virtual ~QTimeValue();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocBaseValue : public QObject, public Value<IDocBase*>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocBaseValue : public QObject, public Value<QSharedPointer<IDocBase>>
 {
     Q_OBJECT
 public:
-    IDocBaseValue(IDocBase * value, QObject *parent = 0);
+    IDocBaseValue(QSharedPointer<IDocBase> value, QObject *parent = 0);
     virtual void setValue(const QVariant &newValue);
     virtual QVariant asVariant();
     virtual QVariant content();
@@ -110,7 +110,7 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocumentIDValue : public QObject, publ
 {
     Q_OBJECT
 public:
-    IDocumentIDValue(IDocID *value, QObject *parent = 0);
+    IDocumentIDValue(QSharedPointer<IDocID> value, QObject *parent = 0);
     IDocumentIDValue(const QString &value, QObject *parent = 0);
     virtual ~IDocumentIDValue();
     virtual void setValue(const QVariant &newValue);
@@ -118,33 +118,33 @@ public:
     virtual QVariant asVariant();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiDocumentValue : public QObject, public Value<IMultiDocument*>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiDocumentValue : public QObject, public Value<QSharedPointer<IMultiDocument>>
 {
     Q_OBJECT
 public:
-    IMultiDocumentValue(IMultiDocument *value, QObject *parent = 0);
+    IMultiDocumentValue(QSharedPointer<IMultiDocument> value, QObject *parent = 0);
     virtual ~IMultiDocumentValue();
     virtual void setValue(const QVariant &newValue);
     virtual QVariant content();
     virtual QVariant asVariant();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT IRecordValue : public QObject, public Value<IRecord*>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IRecordValue : public QObject, public Value<QSharedPointer<IRecord>>
 {
     Q_OBJECT
 public:
-    IRecordValue(IRecord *value, QObject *parent = 0);
+    IRecordValue(QSharedPointer<IRecord> value, QObject *parent = 0);
     virtual ~IRecordValue();
     virtual void setValue(const QVariant &newValue);
     virtual QVariant content();
     virtual QVariant asVariant();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiRecordValue : public QObject, public Value<IMultiRecord*>
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiRecordValue : public QObject, public Value<QSharedPointer<IMultiRecord>>
 {
     Q_OBJECT
 public:
-    IMultiRecordValue(IMultiRecord *value, QObject *parent = 0);
+    IMultiRecordValue(QSharedPointer<IMultiRecord> value, QObject *parent = 0);
     virtual ~IMultiRecordValue();
     virtual void setValue(const QVariant &newValue);
     virtual QVariant content();

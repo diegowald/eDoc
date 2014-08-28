@@ -9,24 +9,24 @@ class HISTORICDATABASEPLUGINSHARED_EXPORT HistoricRecord : public QObject, publi
 {
     Q_OBJECT
 public:
-    explicit HistoricRecord(IRecord* realRecord, QObject *parent = 0);
+    explicit HistoricRecord(QSharedPointer<IRecord> realRecord, QObject *parent = 0);
     virtual ~HistoricRecord();
 
-    virtual void setID(IRecordID *ID);
-    virtual IRecordID *ID();
-    virtual IValue* value(IFieldDefinition* field);
-    virtual IValue* value(const QString &fieldName);
-    virtual IFieldDefinition* fieldDefinition(const QString &fieldName);
+    virtual void setID(QSharedPointer<IRecordID> ID);
+    virtual QSharedPointer<IRecordID> ID();
+    virtual QSharedPointer<IValue> value(QSharedPointer<IFieldDefinition> field);
+    virtual QSharedPointer<IValue> value(const QString &fieldName);
+    virtual QSharedPointer<IFieldDefinition> fieldDefinition(const QString &fieldName);
     virtual QList<QString> fieldNames();
 
-    IRecord *getRecord();
+    QSharedPointer<IRecord> getRecord();
 signals:
 
 public slots:
 
 private:
-    IRecord *_record;
-    IRecordID *_masterID;
+    QSharedPointer<IRecord> _record;
+    QSharedPointer<IRecordID> _masterID;
 };
 
 #endif // HISOTRICRECORD_H

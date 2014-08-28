@@ -3,6 +3,7 @@
 
 #include <QMetaType>
 #include <QStringList>
+#include <QSharedPointer>
 #include "IValue.h"
 
 struct ITag : public IValue
@@ -19,6 +20,6 @@ struct ITag : public IValue
     virtual ~ITag() {}
 };
 
-Q_DECLARE_METATYPE(ITag*)
+Q_DECLARE_METATYPE(QSharedPointer<ITag>)
 
 #endif // ITAG_H

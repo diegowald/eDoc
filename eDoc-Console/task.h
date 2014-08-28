@@ -30,8 +30,8 @@ private slots:
 private:
     EDocFactory f;
     QString m_ApplicationPath;
-    QObjectLogging logger;
-    IServer *_server;
+    QSharedPointer<QObjectLogging> logger;
+    QSharedPointer<IServer> _server;
 };
 
 #endif // TASK_H

@@ -3,7 +3,6 @@
 ProxyRecord::ProxyRecord(QObject *parent) :
     QObject(parent)
 {
-    _ID = NULL;
     _values.clear();
     _fieldDefinitions.clear();
 }
@@ -12,27 +11,27 @@ ProxyRecord::~ProxyRecord()
 {
 }
 
-void ProxyRecord::setID(IRecordID *ID)
+void ProxyRecord::setID(QSharedPointer<IRecordID> ID)
 {
     _ID = ID;
 }
 
-IRecordID *ProxyRecord::ID()
+QSharedPointer<IRecordID> ProxyRecord::ID()
 {
     return _ID;
 }
 
-IValue* ProxyRecord::value(IFieldDefinition* field)
+QSharedPointer<IValue> ProxyRecord::value(QSharedPointer<IFieldDefinition> field)
 {
     return value(field->name());
 }
 
-IValue* ProxyRecord::value(const QString &fieldName)
+QSharedPointer<IValue> ProxyRecord::value(const QString &fieldName)
 {
     return _values[fieldName];
 }
 
-IFieldDefinition* ProxyRecord::fieldDefinition(const QString &fieldName)
+QSharedPointer<IFieldDefinition> ProxyRecord::fieldDefinition(const QString &fieldName)
 {
     return _fieldDefinitions[fieldName];
 }

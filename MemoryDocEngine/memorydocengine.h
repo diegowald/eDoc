@@ -20,19 +20,20 @@ public:
     MemoryDocEngine(QObject *parent = 0);
     virtual ~MemoryDocEngine();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
-    virtual IDocID* addDocument(const QByteArray& blob);
-    virtual IDocBase* getDocument(IDocID *id);
-    virtual bool deleteDocument(IDocID *id);
-    virtual IDocID* IValueToIDocId(IValue *value);
+    virtual QSharedPointer<IDocID> addDocument(const QByteArray& blob);
+    virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id);
+    virtual bool deleteDocument(QSharedPointer<IDocID> id);
+    virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
     virtual QString name();
 private:
-    IDocEngine *createPersistentEngine(XMLCollection *confEngine,
+    QSharedPointer<IDocEngine> createPersistentEngine(XMLCollection *confEngine,
                                        const QMap<QString, QString> &docpluginStock,
                                        const QMap<QString, QString> &DBplugins,
                                        const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -40,10 +41,10 @@ private:
                                        const QMap<QString, QString> &serverPlugins);
 
 private:
-     IDocEngine *persistentEngine;
-     QMap<QString, IDocBase*> m_Cache;
+     QSharedPointer<IDocEngine> persistentEngine;
+     QMap<QString, QSharedPointer<IDocBase>> m_Cache;
      int maxCachedFiles;
-     QObjectLogging *m_Logger;
+     QSharedPointer<QObjectLogging> m_Logger;
 
 };
 

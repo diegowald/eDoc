@@ -5,12 +5,7 @@
 TcpServer::TcpServer(QObject *parent) :
     QObject(parent)
 {
-    logger = NULL;
     m_Name = "";
-    database = NULL;
-    dbh = NULL;
-    docEngine = NULL;
-    tcpServer = NULL;
     port = 0;
     clientConnections.clear();
 }
@@ -19,9 +14,11 @@ TcpServer::~TcpServer()
 {
 }
 
-void TcpServer::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void TcpServer::initialize(IXMLContent *configuration,
+                           QSharedPointer<QObjectLogging> logger,
                            const QMap<QString, QString> &docpluginStock,
-                           const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
+                           const QMap<QString, QString> &DBplugins,
+                           const QMap<QString, QString> &DBWithHistoryPlugins,
                            const QMap<QString, QString> &tagPlugins,
                            const QMap<QString, QString> &serverPlugins)
 {
@@ -39,18 +36,19 @@ void TcpServer::initialize(IXMLContent *configuration, QObjectLogging *logger,
     confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
     docEngine = createDocEnginePersistance(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 
-    tcpServer = new QTcpServer(this);
+    tcpServer = QSharedPointer<QTcpServer>(new QTcpServer(this));
     if (!tcpServer->listen(QHostAddress::Any, port))
     {
         logger->logError("Unable to start server");
     }
 
-    connect(tcpServer, SIGNAL(newConnection()), this, SLOT(onNewConnection()));
+    connect(tcpServer.data(), SIGNAL(newConnection()), this, SLOT(onNewConnection()));
 }
 
-IDatabase *TcpServer::createPersistentEngine(XMLCollection *confEngine,
+QSharedPointer<IDatabase> TcpServer::createPersistentEngine(XMLCollection *confEngine,
                                              const QMap<QString, QString> &docpluginStock,
-                                             const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
+                                             const QMap<QString, QString> &DBplugins,
+                                             const QMap<QString, QString> &DBWithHistoryPlugins,
                                              const QMap<QString, QString> &tagPlugins,
                                              const QMap<QString, QString> &serverPlugins)
 {
@@ -67,7 +65,7 @@ IDatabase *TcpServer::createPersistentEngine(XMLCollection *confEngine,
             if (plugin) {
                 IDatabase* engine = qobject_cast<IDatabase*>(plugin);
                 engine->initialize(confEngine, logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return qobject_cast<IDatabase *>(plugin);
+                return QSharedPointer<IDatabase>(qobject_cast<IDatabase *>(plugin));
             }
             else {
                 logger->logError("Plugin: " + engineClass + " cannot be created.");
@@ -78,10 +76,10 @@ IDatabase *TcpServer::createPersistentEngine(XMLCollection *confEngine,
         }
 
     }
-    return NULL;
+    return QSharedPointer<IDatabase>();
 }
 
-IDatabaseWithHistory *TcpServer::createHistoryDBPersistentEngine(XMLCollection *confEngine,
+QSharedPointer<IDatabaseWithHistory> TcpServer::createHistoryDBPersistentEngine(XMLCollection *confEngine,
                                                       const QMap<QString, QString> &docpluginStock,
                                                       const QMap<QString, QString> &DBplugins,
                                                       const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -101,7 +99,7 @@ IDatabaseWithHistory *TcpServer::createHistoryDBPersistentEngine(XMLCollection *
             if (plugin) {
                 IDatabaseWithHistory* engine = qobject_cast<IDatabaseWithHistory*>(plugin);
                 engine->initialize(confEngine, logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return qobject_cast<IDatabaseWithHistory *>(plugin);
+                return QSharedPointer<IDatabaseWithHistory>(engine);
             }
             else {
                 logger->logError("Plugin: " + engineClass + " cannot be created.");
@@ -112,10 +110,10 @@ IDatabaseWithHistory *TcpServer::createHistoryDBPersistentEngine(XMLCollection *
         }
 
     }
-    return NULL;
+    return QSharedPointer<IDatabaseWithHistory>();
 }
 
-IDocEngine *TcpServer::createDocEnginePersistance(XMLCollection *confEngine,
+QSharedPointer<IDocEngine> TcpServer::createDocEnginePersistance(XMLCollection *confEngine,
                                        const QMap<QString, QString> &docpluginStock,
                                        const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
                                        const QMap<QString, QString> &tagPlugins,
@@ -134,7 +132,7 @@ IDocEngine *TcpServer::createDocEnginePersistance(XMLCollection *confEngine,
             if (plugin) {
                 IDocEngine* engine = qobject_cast<IDocEngine*>(plugin);
                 engine->initialize(confEngine, logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return qobject_cast<IDocEngine *>(plugin);
+                return QSharedPointer<IDocEngine>(engine);
             }
             else {
                 logger->logError("Plugin: " + engineClass + " cannot be created.");
@@ -145,15 +143,15 @@ IDocEngine *TcpServer::createDocEnginePersistance(XMLCollection *confEngine,
         }
 
     }
-    return NULL;
+    return QSharedPointer<IDocEngine>();
 }
 
 
 void TcpServer::onNewConnection()
 {
     logger->logDebug("void TcpServer::onNewConnection()");
-    QTcpSocket *client = tcpServer->nextPendingConnection();
-    clientConnections[client] = new EDocTCPServerDatabasePlugin(logger, client, database, dbh, docEngine, this);
+    QSharedPointer<QTcpSocket> client = QSharedPointer<QTcpSocket>(tcpServer->nextPendingConnection());
+    clientConnections[client] = QSharedPointer<EDocTCPServerDatabasePlugin>(new EDocTCPServerDatabasePlugin(logger, client, database, dbh, docEngine, this));
 }
 
 void TcpServer::run()

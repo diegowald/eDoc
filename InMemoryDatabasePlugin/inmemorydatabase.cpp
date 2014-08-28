@@ -14,7 +14,8 @@ InMemoryDatabase::~InMemoryDatabase()
 {
 }
 
-void InMemoryDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void InMemoryDatabase::initialize(IXMLContent *configuration,
+                                  QSharedPointer<QObjectLogging> logger,
                                   const QMap<QString, QString> &docpluginStock,
                                   const QMap<QString, QString> &DBplugins,
                                   const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -41,88 +42,88 @@ void InMemoryDatabase::createFields(IXMLContent* configuration)
     {
         QString fieldName = "field" + QString::number(i);
         XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
-        IFieldDefinition *fDef = createField(field);
+        QSharedPointer<IFieldDefinition> fDef = createField(field);
         m_Fields[fDef->name()] = fDef;
     }
 }
 
-IFieldDefinition *InMemoryDatabase::createField(IXMLContent *configuration)
+QSharedPointer<IFieldDefinition> InMemoryDatabase::createField(IXMLContent *configuration)
 {
-    IFieldDefinition *field = new FieldDefinition(this);
+    QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition(this));
     QMap<QString, QString> empty;
     field->initialize(configuration, m_Logger, empty, empty, empty, empty, empty);
     return field;
 }
 
-QList<IFieldDefinition*> InMemoryDatabase::fields()
+QList<QSharedPointer<IFieldDefinition> > InMemoryDatabase::fields()
 {
     return m_Fields.values();
 }
 
-IFieldDefinition* InMemoryDatabase::field(const QString &fieldName)
+QSharedPointer<IFieldDefinition> InMemoryDatabase::field(const QString &fieldName)
 {
-    return m_Fields.contains(fieldName) ? m_Fields[fieldName] : NULL; //EXCEPTION
+    return m_Fields.contains(fieldName) ? m_Fields[fieldName] : QSharedPointer<IFieldDefinition>(); //EXCEPTION
 }
 
-QList<IRecordID*> InMemoryDatabase::search(const QList<IParameter*> &parameters)
-{
-}
-
-QList<IRecordID*> InMemoryDatabase::searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records)
+QList<QSharedPointer<IRecordID>> InMemoryDatabase::search(const QList<QSharedPointer<IParameter>> &parameters)
 {
 }
 
-QMap<QString, IRecordID *> InMemoryDatabase::search(IParameter* parameter)
+QList<QSharedPointer<IRecordID>> InMemoryDatabase::searchWithin(const QList<QSharedPointer<IParameter>> &parameters, const QList<QSharedPointer<IRecordID>> &records)
 {
 }
 
-IParameter* InMemoryDatabase::createEmptyParameter()
+QMap<QString, QSharedPointer<IRecordID>> InMemoryDatabase::search(QSharedPointer<IParameter> parameter)
 {
-    return new Parameter();
 }
 
-IRecord* InMemoryDatabase::createEmptyRecord()
+QSharedPointer<IParameter> InMemoryDatabase::createEmptyParameter()
 {
-    QList<IFieldDefinition*> flds = m_Fields.values();
-    Record *rec = new Record(flds, this);
-    rec->setID(new RecordID(this));
+    return QSharedPointer<IParameter>(new Parameter());
+}
+
+QSharedPointer<IRecord> InMemoryDatabase::createEmptyRecord()
+{
+    QList<QSharedPointer<IFieldDefinition>> flds = m_Fields.values();
+    QSharedPointer<IRecord> rec = QSharedPointer<IRecord>(new Record(flds, this));
+    rec->setID(QSharedPointer<IRecordID>(new RecordID(this)));
     return rec;
 }
 
-IRecordID* InMemoryDatabase::addRecord(IRecord *record)
+QSharedPointer<IRecordID> InMemoryDatabase::addRecord(QSharedPointer<IRecord> record)
 {
-    RecordID *ID = new RecordID(this);
+    QSharedPointer<IRecordID> ID = QSharedPointer<IRecordID>(new RecordID(this));
     record->setID(ID);
-    m_Records[ID->asString()] = (Record*)record;
+    m_Records[ID->asString()] = record;
     return ID;
 }
 
-IRecord* InMemoryDatabase::getRecord(IRecordID *id)
+QSharedPointer<IRecord> InMemoryDatabase::getRecord(QSharedPointer<IRecordID> id)
 {
     return getRecord(id->asString());
 }
 
-IRecord* InMemoryDatabase::getRecord(const QString &id)
+QSharedPointer<IRecord> InMemoryDatabase::getRecord(const QString &id)
 {
-    return (IRecord*) m_Records[id];
+    return m_Records[id];
 }
 
-void InMemoryDatabase::updateRecord(IRecord* record)
+void InMemoryDatabase::updateRecord(QSharedPointer<IRecord> record)
 {
-    m_Records[record->ID()->asString()] = (Record*)record;
+    m_Records[record->ID()->asString()] = record;
 }
 
-QList<IRecord*> InMemoryDatabase::getRecords(const QStringList &ids)
+QList<QSharedPointer<IRecord> > InMemoryDatabase::getRecords(const QStringList &ids)
 {
-    QList<IRecord*> records;
+    QList<QSharedPointer<IRecord>> records;
     foreach (QString id, ids)
     {
-        records.append((IRecord*) m_Records[id]);
+        records.append(m_Records[id]);
     }
     return records;
 }
 
-void InMemoryDatabase::deleteRecord(IRecordID *id)
+void InMemoryDatabase::deleteRecord(QSharedPointer<IRecordID> id)
 {
     m_Records.remove(id->asString());
 }

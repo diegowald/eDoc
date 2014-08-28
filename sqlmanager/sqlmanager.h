@@ -1,6 +1,7 @@
 #ifndef SQLMANAGER_H
 #define SQLMANAGER_H
 
+#include <QSharedPointer>
 #include "sqlmanager_global.h"
 #include <QObject>
 #include <QSqlDatabase>
@@ -34,7 +35,7 @@ class SQLMANAGERSHARED_EXPORT SQLManager : public QObject
 public:
     explicit SQLManager(QObject *parent = 0);
     virtual ~SQLManager();
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration, QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &tagPlugins,
@@ -63,7 +64,7 @@ private:
     QString m_Server;
     QString m_User;
     QString m_Password;
-    QObjectLogging *m_Logger;
+    QSharedPointer<QObjectLogging> m_Logger;
     DBType m_DBType;
 };
 

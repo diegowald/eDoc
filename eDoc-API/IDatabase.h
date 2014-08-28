@@ -13,25 +13,25 @@
 
 struct IDatabase : public IInitializable {
 public:
-    virtual QList<IFieldDefinition*> fields() = 0;
-    virtual IFieldDefinition* field(const QString &fieldName) = 0;
-    virtual IParameter* createEmptyParameter() = 0;
-    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters) = 0;
-    virtual QList<IRecordID*> searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records) = 0;
-    virtual IRecord* createEmptyRecord() = 0;
-    virtual IRecordID *addRecord(IRecord *record) = 0;
-    virtual IRecord* getRecord(IRecordID *id) = 0;
-    virtual IRecord* getRecord(const QString &id) = 0;
-    virtual QList<IRecord*> getRecords(const QStringList &ids) = 0;
-    virtual void updateRecord(IRecord* record) = 0;
-    virtual void deleteRecord(IRecordID *id) = 0;
+    virtual QList<QSharedPointer<IFieldDefinition> > fields() = 0;
+    virtual QSharedPointer<IFieldDefinition> field(const QString &fieldName) = 0;
+    virtual QSharedPointer<IParameter> createEmptyParameter() = 0;
+    virtual QList<QSharedPointer<IRecordID> > search(const QList<QSharedPointer<IParameter> > &parameters) = 0;
+    virtual QList<QSharedPointer<IRecordID> > searchWithin(const QList<QSharedPointer<IParameter> > &parameters, const QList<QSharedPointer<IRecordID> > &records) = 0;
+    virtual QSharedPointer<IRecord> createEmptyRecord() = 0;
+    virtual QSharedPointer<IRecordID> addRecord(QSharedPointer<IRecord> record) = 0;
+    virtual QSharedPointer<IRecord> getRecord(QSharedPointer<IRecordID> id) = 0;
+    virtual QSharedPointer<IRecord> getRecord(const QString &id) = 0;
+    virtual QList<QSharedPointer<IRecord> > getRecords(const QStringList &ids) = 0;
+    virtual void updateRecord(QSharedPointer<IRecord> record) = 0;
+    virtual void deleteRecord(QSharedPointer<IRecordID> id) = 0;
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName) = 0;
     virtual QString name() = 0;
 
     virtual ~IDatabase() {}
 
 protected:
-    virtual QMap<QString, IRecordID*> search(IParameter* parameter) = 0;
+    virtual QMap<QString, QSharedPointer<IRecordID> > search(QSharedPointer<IParameter> parameter) = 0;
 };
 
 Q_DECLARE_INTERFACE(IDatabase, "com.mksingenieria.eDoc.IDatabase/0.0")

@@ -21,7 +21,8 @@ GenericDatabase::~GenericDatabase()
 {
 }
 
-void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void GenericDatabase::initialize(IXMLContent *configuration,
+                                 QSharedPointer<QObjectLogging> logger,
                                  const QMap<QString, QString> &docpluginStock,
                                  const QMap<QString, QString> &DBplugins,
                                  const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -47,33 +48,33 @@ void GenericDatabase::createFields(IXMLContent* configuration)
     {
         QString fieldName = "field" + QString::number(i);
         XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
-        IFieldDefinition *fDef = createField(field);
+        QSharedPointer<IFieldDefinition> fDef = createField(field);
         m_Fields[fDef->name()] = fDef;
-        m_FieldsBasedOnDatabase[((FieldDefinition*)fDef)->fieldNameInDatabase()] = fDef;
+        m_FieldsBasedOnDatabase[fDef.dynamicCast<FieldDefinition>()->fieldNameInDatabase()] = fDef;
     }
 }
 
-IFieldDefinition *GenericDatabase::createField(IXMLContent *configuration)
+QSharedPointer<IFieldDefinition> GenericDatabase::createField(IXMLContent *configuration)
 {
-    IFieldDefinition *field = new FieldDefinition(this);
+    QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition(this));
     QMap<QString, QString> empty;
     field->initialize(configuration, m_Logger, empty, empty, empty, empty, empty);
     return field;
 }
 
-QList<IFieldDefinition*> GenericDatabase::fields()
+QList<QSharedPointer<IFieldDefinition> > GenericDatabase::fields()
 {
     return m_Fields.values();
 }
 
-IFieldDefinition* GenericDatabase::field(const QString &fieldName)
+QSharedPointer<IFieldDefinition> GenericDatabase::field(const QString &fieldName)
 {
-    return m_Fields.contains(fieldName) ? m_Fields[fieldName] : NULL;
+    return m_Fields.contains(fieldName) ? m_Fields[fieldName] : QSharedPointer<IFieldDefinition>();
 }
 
-QMap<QString, IRecordID*> GenericDatabase::intersect(const QMap<QString, IRecordID*> &set1, const QMap<QString, IRecordID*> &set2)
+QMap<QString, QSharedPointer<IRecordID>> GenericDatabase::intersect(const QMap<QString, QSharedPointer<IRecordID>> &set1, const QMap<QString, QSharedPointer<IRecordID>> &set2)
 {
-    QMap<QString, IRecordID*> result;
+    QMap<QString, QSharedPointer<IRecordID>> result;
 
     if ((set1.count() == 0) || (set2.count() == 0))
         return result;
@@ -86,15 +87,15 @@ QMap<QString, IRecordID*> GenericDatabase::intersect(const QMap<QString, IRecord
     return result;
 }
 
-QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters)
+QList<QSharedPointer<IRecordID> > GenericDatabase::search(const QList<QSharedPointer<IParameter>> &parameters)
 {
-    QList<IRecordID*> resultList;
-    QMap<QString, IRecordID*> result;
+    QList<QSharedPointer<IRecordID>> resultList;
+    QMap<QString, QSharedPointer<IRecordID>> result;
     bool firstParameterProcessed = false;
     // La idea es ir obteniendo sets para cada parametro y luego realizar la interseccion entre todos.
-    foreach (IParameter* p, parameters)
+    foreach (QSharedPointer<IParameter> p, parameters)
     {
-        QMap<QString, IRecordID*> partialResult = search(p);
+        QMap<QString, QSharedPointer<IRecordID>> partialResult = search(p);
 
         if (partialResult.size() == 0)
             return resultList;
@@ -110,17 +111,17 @@ QList<IRecordID*> GenericDatabase::search(const QList<IParameter*> &parameters)
     return result.values();
 }
 
-QList<IRecordID*> GenericDatabase::searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records)
+QList<QSharedPointer<IRecordID>> GenericDatabase::searchWithin(const QList<QSharedPointer<IParameter>> &parameters, const QList<QSharedPointer<IRecordID>> &records)
 {
-    QMap<QString, IRecordID*> recs;
-    foreach (IRecordID* rec, records)
+    QMap<QString, QSharedPointer<IRecordID>> recs;
+    foreach (QSharedPointer<IRecordID> rec, records)
     {
         recs[rec->asString()] = rec;
     }
 
-    QList<IRecordID*> searchResult = search(parameters);
-    QMap<QString, IRecordID*> searchRecs;
-    foreach (IRecordID* rec, searchResult)
+    QList<QSharedPointer<IRecordID>> searchResult = search(parameters);
+    QMap<QString, QSharedPointer<IRecordID>> searchRecs;
+    foreach (QSharedPointer<IRecordID> rec, searchResult)
     {
         searchRecs[rec->asString()] = rec;
     }
@@ -128,7 +129,7 @@ QList<IRecordID*> GenericDatabase::searchWithin(const QList<IParameter*> &parame
     return intersect(recs, searchRecs).values();
 }
 
-std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *parameter)
+std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(QSharedPointer<IParameter> parameter)
 {
     QString whereClause = "";
     DBRecordPtr r = boost::make_shared<DBRecord>();
@@ -188,35 +189,35 @@ std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(IParameter *para
     return std::pair<QString, DBRecordPtr>(whereClause, r);
 }
 
-QMap<QString, IRecordID*> GenericDatabase::search(IParameter* parameter)
+QMap<QString, QSharedPointer<IRecordID> > GenericDatabase::search(QSharedPointer<IParameter> parameter)
 {
     QString SQL = "SELECT record_id from %1 where %2";
     std::pair<QString, DBRecordPtr> whereClause = getWhereClause(parameter);
     QString sql = SQL.arg(m_TableName).arg(whereClause.first);
     DBRecordSet rs = m_SQLManager.getRecords(sql, whereClause.second);
 
-    QMap<QString, IRecordID*> result;
+    QMap<QString, QSharedPointer<IRecordID>> result;
     foreach (DBRecordPtr rec, *rs)
     {
-        RecordID *rID = new RecordID((*rec)["record_id"].toString(), this);
+        QSharedPointer<IRecordID> rID = QSharedPointer<IRecordID>(new RecordID((*rec)["record_id"].toString(), this));
         result[rID->asString()] = rID;
     }
     return result;
 }
 
-IParameter* GenericDatabase::createEmptyParameter()
+QSharedPointer<IParameter> GenericDatabase::createEmptyParameter()
 {
-    return new Parameter(this);
+    return QSharedPointer<IParameter>(new Parameter(this));
 }
 
-IRecord* GenericDatabase::createEmptyRecord()
+QSharedPointer<IRecord> GenericDatabase::createEmptyRecord()
 {
-    Record *rec = new Record(m_Fields.values(), this);
-    rec->setID(new RecordID(this));
+    QSharedPointer<IRecord> rec = QSharedPointer<IRecord>(new Record(m_Fields.values(), this));
+    rec->setID(QSharedPointer<IRecordID>(new RecordID(this)));
     return rec;
 }
 
-IRecordID *GenericDatabase::addRecord(IRecord *record)
+QSharedPointer<IRecordID> GenericDatabase::addRecord(QSharedPointer<IRecord> record)
 {
     QString SQLInsert = "INSERT INTO %1 (%2) VALUES (%3);";
     QString sql = SQLInsert.arg(m_TableName)
@@ -225,12 +226,12 @@ IRecordID *GenericDatabase::addRecord(IRecord *record)
     return record->ID();
 }
 
-IRecord* GenericDatabase::getRecord(IRecordID *id)
+QSharedPointer<IRecord> GenericDatabase::getRecord(QSharedPointer<IRecordID> id)
 {
     return getRecord(id->asString());
 }
 
-IRecord* GenericDatabase::getRecord(const QString &id)
+QSharedPointer<IRecord> GenericDatabase::getRecord(const QString &id)
 {
     QString SQLSelect = "SELECT %1 FROM %2 WHERE %3 = %4";
     QString sql = SQLSelect.arg(getFieldsString())
@@ -240,11 +241,11 @@ IRecord* GenericDatabase::getRecord(const QString &id)
     (*r)["record_id"] = id;
     DBRecordSet res = m_SQLManager.getRecords(sql, r);
     if (0 == res->count())
-        return NULL;
+        return QSharedPointer<IRecord>();
 
     DBRecordPtr recPtr = res->at(0);
 
-    IRecord *record = new Record(m_Fields.values(), this);
+    QSharedPointer<IRecord> record = QSharedPointer<IRecord>(new Record(m_Fields.values(), this));
 
     foreach (QString key, recPtr->keys())
     {
@@ -252,7 +253,7 @@ IRecord* GenericDatabase::getRecord(const QString &id)
 
         if ("record_id" == key)
         {
-            record->setID(new RecordID(((*recPtr)[key]).toString(), this));
+            record->setID(QSharedPointer<IRecordID>(new RecordID(((*recPtr)[key]).toString(), this)));
         }
         else
         {
@@ -267,9 +268,9 @@ IRecord* GenericDatabase::getRecord(const QString &id)
     return record;
 }
 
-QList<IRecord*> GenericDatabase::getRecords(const QStringList &ids)
+QList<QSharedPointer<IRecord> > GenericDatabase::getRecords(const QStringList &ids)
 {
-    QList<IRecord*> records;
+    QList<QSharedPointer<IRecord>> records;
     foreach (QString id, ids)
     {
         records.append(getRecord(id));
@@ -277,27 +278,27 @@ QList<IRecord*> GenericDatabase::getRecords(const QStringList &ids)
     return records;
 }
 
-void GenericDatabase::updateRecord(IRecord* record)
+void GenericDatabase::updateRecord(QSharedPointer<IRecord> record)
 {
     QString SQLUpdate = "UPDATE %1 SET %2 WHERE %3 = %4;";
     QString sql = SQLUpdate.arg(m_TableName).arg(getUpdateFieldsString()).arg("record_id").arg(":record_id");
     executeSQLCommand(sql, record);
 }
 
-void GenericDatabase::executeSQLCommand(const QString &sql, IRecord* record)
+void GenericDatabase::executeSQLCommand(const QString &sql, QSharedPointer<IRecord> record)
 {
     DBRecordPtr r = boost::make_shared<DBRecord>();
 //    (*r)["record_id"] = id->asString();
     (*r)["record_id"] = record->ID()->asString();
     foreach (QString key, m_Fields.keys())
     {
-        (*r)[((FieldDefinition*)m_Fields[key])->fieldNameInDatabase()] = record->value(key)->content();
+        (*r)[m_Fields[key].dynamicCast<FieldDefinition>()->fieldNameInDatabase()] = record->value(key)->content();
     }
 
     m_SQLManager.executeCommand(sql, r);
 }
 
-void GenericDatabase::deleteRecord(IRecordID *id)
+void GenericDatabase::deleteRecord(QSharedPointer<IRecordID> id)
 {
     QString SQLDelete = "DELETE %1 WHERE %2 = %3";
 

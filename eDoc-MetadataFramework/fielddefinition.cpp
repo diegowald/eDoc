@@ -18,9 +18,11 @@ FieldDefinition::~FieldDefinition()
 {
 }
 
-void FieldDefinition::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void FieldDefinition::initialize(IXMLContent *configuration,
+                                 QSharedPointer<QObjectLogging> logger,
                                  const QMap<QString, QString> &docpluginStock,
-                                 const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
+                                 const QMap<QString, QString> &DBplugins,
+                                 const QMap<QString, QString> &DBWithHistoryPlugins,
                                  const QMap<QString, QString> &tagPlugins,
                                  const QMap<QString, QString> &serverPlugins)
 {
@@ -126,50 +128,50 @@ QList<VALIDQUERY> FieldDefinition::validQueries()
     return QList<VALIDQUERY>();
 }
 
-IValue* FieldDefinition::createEmptyValue()
+QSharedPointer<IValue> FieldDefinition::createEmptyValue()
 {
-    IValue *value = NULL;
+    QSharedPointer<IValue> value;
     switch (m_DataType)
     {
     case INTEGER_TYPE:
-        value = new IntegerValue(this);
+        value = QSharedPointer<IValue>(new IntegerValue(this));
         break;
     case DOUBLE_TYPE:
-        value = new DoubleValue(this);
+        value = QSharedPointer<IValue>(new DoubleValue(this));
         break;
     case BOOL_TYPE:
-        value = new BoolValue(this);
+        value = QSharedPointer<IValue>(new BoolValue(this));
         break;
     case QSTRING_TYPE:
-        value = new QStringValue(this);
+        value = QSharedPointer<IValue>(new QStringValue(this));
         break;
     case QDATETIME_TYPE:
-        value = new QDateTimeValue(this);
+        value = QSharedPointer<IValue>(new QDateTimeValue(this));
         break;
     case QDATE_TYPE:
-        value = new QDateValue(this);
+        value = QSharedPointer<IValue>(new QDateValue(this));
         break;
     case QTIME_TYPE:
-        value = new QTimeValue(this);
+        value = QSharedPointer<IValue>(new QTimeValue(this));
         break;
     case IDOCBASE_TYPE:
-        value = new IDocBaseValue(NULL, this);
+        value = QSharedPointer<IValue>(new IDocBaseValue(QSharedPointer<IDocBase>(), this));
         value->setNull();
         break;
     case IDOCUMENT_TYPE:
-        value = new IDocumentIDValue(NULL, this);
+        value = QSharedPointer<IValue>(new IDocumentIDValue(NULL, this));
         value->setNull();
         break;
     case IMULTIDOCUMENT_TYPE:
-        value = new IMultiDocumentValue(NULL, this);
+        value = QSharedPointer<IValue>(new IMultiDocumentValue(QSharedPointer<IMultiDocument>(), this));
         value->setNull();
         break;
     case IRECORD_REFERENCE_TYPE:
-        value = new IRecordValue(NULL, this);
+        value = QSharedPointer<IValue>(new IRecordValue(QSharedPointer<IRecord>(), this));
         value->setNull();
         break;
     case IMULTIRECORD_REFERENCE_TYPE:
-        value = new IMultiRecordValue(NULL, this);
+        value = QSharedPointer<IValue>(new IMultiRecordValue(QSharedPointer<IMultiRecord>(), this));
         value->setNull();
         break;
     case TAG_TYPE:
@@ -177,11 +179,11 @@ IValue* FieldDefinition::createEmptyValue()
         QVariant v;
         v.setValue(new Tag());
         value->setValue(v);*/
-        value = new Tag(this);
+        value = QSharedPointer<IValue>(new Tag(this));
         value->setNull();
         break;
     case INVALID_TYPE:
-        value = NULL;
+        value = QSharedPointer<IValue>();
         break; // ACA HABRIA QUE LANZAR EXCEPTIONS
     }
     return value;

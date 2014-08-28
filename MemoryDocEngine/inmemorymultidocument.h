@@ -9,15 +9,15 @@ class InMemoryMultiDocument : public QObject, public IMultiDocument
 {
     Q_OBJECT
 public:    
-    explicit InMemoryMultiDocument(IMultiDocument* persistentDoc, QObject *parent = 0);
+    explicit InMemoryMultiDocument(QSharedPointer<IMultiDocument> persistentDoc, QObject *parent = 0);
     virtual ~InMemoryMultiDocument();
 
-    virtual IDocID* id();
-    virtual void addDocument(IDocBase *doc);
-    virtual IDocBase* getDocument(IDocID *id);
-    virtual QList<IDocBase*> getDocuments();
-    virtual void removeDocument(IDocID *id);
-    virtual bool containsDocument(IDocID *id);
+    virtual QSharedPointer<IDocID> id();
+    virtual void addDocument(QSharedPointer<IDocBase> doc);
+    virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id);
+    virtual QList<QSharedPointer<IDocBase>> getDocuments();
+    virtual void removeDocument(QSharedPointer<IDocID> id);
+    virtual bool containsDocument(QSharedPointer<IDocID> id);
 signals:
     
 public slots:
@@ -25,8 +25,8 @@ public slots:
 private:
     QByteArray cachedData;
     bool cached;
-    IMultiDocument *m_PersistentDocument;
-    QMap<QString, IDocBase*> m_Collection;
+    QSharedPointer<IMultiDocument> m_PersistentDocument;
+    QMap<QString, QSharedPointer<IDocBase>> m_Collection;
 };
 
 #endif // INMEMORYMULTIDOCUMENT_H

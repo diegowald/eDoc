@@ -12,7 +12,8 @@ public:
     explicit ProxyFieldDefinition(QObject *parent = 0);
     virtual ~ProxyFieldDefinition();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -24,7 +25,7 @@ public:
     virtual bool isVisible() const;
     virtual bool isQueryable() const;
     virtual QList<VALIDQUERY> validQueries();
-    virtual IValue* createEmptyValue();
+    virtual QSharedPointer<IValue> createEmptyValue();
 
     virtual void setName(const QString &newName);
     virtual void setType(const QString &newType);

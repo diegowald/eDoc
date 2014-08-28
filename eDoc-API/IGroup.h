@@ -5,7 +5,7 @@
 
 struct IGroup
 {
-    virtual IGroupID *groupID() = 0;
+    virtual QSharedPointer<IGroupID> groupID() = 0;
     virtual ~IGroup() {}
 };
 

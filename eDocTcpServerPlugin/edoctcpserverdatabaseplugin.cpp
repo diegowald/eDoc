@@ -8,10 +8,14 @@
 #include "../eDocTCPMessages/messagecodes.h"
 #include "../eDocTCPMessages/streamhelpers.h"
 
-EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLogging *Logger, QTcpSocket *socket, IDatabase *persistance, IDatabaseWithHistory *histPersistance, IDocEngine* docEngine, QObject *parent) :
+EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QSharedPointer<QObjectLogging> Logger,
+                                                         QSharedPointer<QTcpSocket> socket,
+                                                         QSharedPointer<IDatabase> persistance,
+                                                         QSharedPointer<IDatabaseWithHistory> histPersistance,
+                                                         QSharedPointer<IDocEngine> docEngine,
+                                                         QObject *parent) :
     QThread(parent)
 {
-    _persistance = NULL;
     _socket = socket;
     _persistance = persistance;
     _persistanceHist = histPersistance;
@@ -22,8 +26,8 @@ EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLogging *Logger,
     out = NULL;
     logger = Logger;
 
-    connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
-    connect(_socket, SIGNAL(connected()), this, SLOT(connected()));
+    connect(_socket.data(), SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
+    connect(_socket.data(), SIGNAL(connected()), this, SLOT(connected()));
     start();
 
     functionMap[MessageCodes::CodeNumber::REQ_fields] = &EDocTCPServerDatabasePlugin::processREQFields;
@@ -51,17 +55,6 @@ EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLogging *Logger,
 EDocTCPServerDatabasePlugin::~EDocTCPServerDatabasePlugin()
 {
     logger->logDebug("EDocTCPServerDatabasePlugin::~EDocTCPServerDatabasePlugin()");
-    if (_socket)
-        delete _socket;
-
-    if (_persistance)
-        delete _persistance;
-
-    if (_persistanceHist)
-        delete _persistanceHist;
-
-    if (_docEngine)
-        delete _docEngine;
 }
 
 void EDocTCPServerDatabasePlugin::run()
@@ -85,7 +78,7 @@ void EDocTCPServerDatabasePlugin::run()
 void EDocTCPServerDatabasePlugin::onReadyRead()
 {
     logger->logDebug("void EDocTCPServerDatabasePlugin::onReadyRead()");
-    QDataStream in(_socket);
+    QDataStream in(_socket.data());
     in.setVersion(QDataStream::Qt_5_3);
 
     if (blockSize == 0)
@@ -136,9 +129,9 @@ void EDocTCPServerDatabasePlugin::connected()
 void EDocTCPServerDatabasePlugin::processREQFields(QDataStream &in)
 {
     prepareToSend(MessageCodes::CodeNumber::RSP_fields);
-    QList<IFieldDefinition*> rsp = _persistanceHist ? _persistanceHist->fields() : _persistance->fields();
+    QList<QSharedPointer<IFieldDefinition>> rsp = _persistanceHist ? _persistanceHist->fields() : _persistance->fields();
     (*out) << rsp.count();
-    foreach (IFieldDefinition* field, rsp)
+    foreach (QSharedPointer<IFieldDefinition> field, rsp)
     {
         (*out) << *field;
     }
@@ -149,14 +142,14 @@ void EDocTCPServerDatabasePlugin::processREQField(QDataStream &in)
     prepareToSend(MessageCodes::CodeNumber::RSP_field);
     QString fieldName("");
     in >> fieldName;
-    IFieldDefinition *fieldDef = _persistanceHist ? _persistanceHist->field(fieldName) : _persistance->field(fieldName);
+    QSharedPointer<IFieldDefinition> fieldDef = _persistanceHist ? _persistanceHist->field(fieldName) : _persistance->field(fieldName);
     (*out) << *fieldDef;
 }
 
 void EDocTCPServerDatabasePlugin::processREQcreateEmptyParameter(QDataStream &in)
 {
     prepareToSend(MessageCodes::CodeNumber::RSP_createEmptyParameter);
-    IParameter *parameter = _persistanceHist ? _persistanceHist->createEmptyParameter() : _persistance->createEmptyParameter();
+    QSharedPointer<IParameter> parameter = _persistanceHist ? _persistanceHist->createEmptyParameter() : _persistance->createEmptyParameter();
     (*out) << *parameter;
 }
 
@@ -164,17 +157,17 @@ void EDocTCPServerDatabasePlugin::processREQSearch(QDataStream &in)
 {
     int count = 0;
     in >> count;
-    QList<IParameter*> parameters;
+    QList<QSharedPointer<IParameter>> parameters;
     for (int i = 0; i < count; ++i)
     {
-        ProxyParameter *param = new ProxyParameter(this);
+        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter(this));
         in >> *param;
         parameters.push_back(param);
     }
-    QList<IRecordID*> rsp = _persistanceHist ? _persistanceHist->search(parameters) : _persistance->search(parameters);
+    QList<QSharedPointer<IRecordID>> rsp = _persistanceHist ? _persistanceHist->search(parameters) : _persistance->search(parameters);
     prepareToSend(MessageCodes::CodeNumber::RSP_search);
     (*out) << rsp.count();
-    foreach (IRecordID *record, rsp)
+    foreach (QSharedPointer<IRecordID> record, rsp)
     {
         (*out) << *record;
     }
@@ -184,27 +177,27 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithin(QDataStream &in)
 {
     int count = 0;
     in >> count;
-    QList<IParameter*> parameters;
+    QList<QSharedPointer<IParameter> > parameters;
     for (int i = 0; i < count; ++i)
     {
-        ProxyParameter *param = new ProxyParameter(this);
+        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter(this));
         in >> *param;
         parameters.push_back(param);
     }
 
     in >> count;
-    QList<IRecordID*> records;
+    QList<QSharedPointer<IRecordID> > records;
     for (int i = 0; i < count; ++i)
     {
-        ProxyRecordID *rec = new ProxyRecordID(this);
+        QSharedPointer<ProxyRecordID> rec = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
         in >> *rec;
         records.push_back(rec);
     }
 
-    QList<IRecordID*> rsp = _persistanceHist ? _persistanceHist->searchWithin(parameters, records) : _persistance->searchWithin(parameters, records);
+    QList<QSharedPointer<IRecordID>> rsp = _persistanceHist ? _persistanceHist->searchWithin(parameters, records) : _persistance->searchWithin(parameters, records);
     prepareToSend(MessageCodes::CodeNumber::RSP_searchWithin);
     (*out) << rsp.count();
-    foreach (IRecordID *record, rsp)
+    foreach (QSharedPointer<IRecordID> record, rsp)
     {
         (*out) << *record;
     }
@@ -212,25 +205,26 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithin(QDataStream &in)
 
 void EDocTCPServerDatabasePlugin::processREQCreateEnptyRecord(QDataStream &in)
 {
+    (void) in;
     prepareToSend(MessageCodes::CodeNumber::RSP_createEnptyRecord);
-    IRecord *record = _persistanceHist ? _persistanceHist->createEmptyRecord() : _persistance->createEmptyRecord();
+    QSharedPointer<IRecord> record = _persistanceHist ? _persistanceHist->createEmptyRecord() : _persistance->createEmptyRecord();
     (*out) << *record;
 }
 
 void EDocTCPServerDatabasePlugin::processREQAddRecord(QDataStream &in)
 {
-    ProxyRecord record;
-    in >> record;
-    IRecordID *recordId = _persistanceHist ? _persistanceHist->addRecord(&record) : _persistance->addRecord(&record);
+    QSharedPointer<ProxyRecord> record = QSharedPointer<ProxyRecord>(new ProxyRecord());
+    in >> *record;
+    QSharedPointer<IRecordID> recordId = _persistanceHist ? _persistanceHist->addRecord(record) : _persistance->addRecord(record);
     prepareToSend(MessageCodes::CodeNumber::RSP_addRecord);
     (*out) << *recordId;
 }
 
 void EDocTCPServerDatabasePlugin::processREQGetRecord(QDataStream &in)
 {
-    ProxyRecordID *proxyRecordID = new ProxyRecordID(this);
+    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
     in >> *proxyRecordID;
-    IRecord *record = _persistanceHist ? _persistanceHist->getRecord(proxyRecordID) : _persistance->getRecord(proxyRecordID);
+    QSharedPointer<IRecord> record = _persistanceHist ? _persistanceHist->getRecord(proxyRecordID) : _persistance->getRecord(proxyRecordID);
     prepareToSend(MessageCodes::CodeNumber::RSP_getRecord);
     (*out) << *record;
 }
@@ -239,10 +233,10 @@ void EDocTCPServerDatabasePlugin::processREQGetRecords(QDataStream &in)
 {
     QStringList ids;
     in >> ids;
-    QList<IRecord*> records = _persistanceHist ? _persistanceHist->getRecords(ids) : _persistance->getRecords(ids);
+    QList<QSharedPointer<IRecord> > records = _persistanceHist ? _persistanceHist->getRecords(ids) : _persistance->getRecords(ids);
     prepareToSend(MessageCodes::CodeNumber::RSP_getRecords);
     (*out) << records.count();
-    foreach (IRecord* record, records)
+    foreach (QSharedPointer<IRecord> record, records)
     {
         (*out) << *record;
     }
@@ -284,7 +278,7 @@ void EDocTCPServerDatabasePlugin::processREQAddDocument(QDataStream &in)
 {
     QByteArray blob;
     in >> blob;
-    IDocID *docId = _docEngine->addDocument(blob);
+    QSharedPointer<IDocID> docId = _docEngine->addDocument(blob);
     prepareToSend(MessageCodes::CodeNumber::RSP_addDocument);
     (*out) << *docId;
 }
@@ -293,19 +287,19 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithHistory(QDataStream &in)
 {
     int count = 0;
     in >> count;
-    QList<IParameter*> parameters;
+    QList<QSharedPointer<IParameter> > parameters;
     for (int i = 0; i < count; ++i)
     {
-        ProxyParameter *param = new ProxyParameter(this);
+        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter(this));
         in >> *param;
         parameters.push_back(param);
     }
     QDateTime date;
     in >> date;
-    QList<IRecordID*> rsp = _persistanceHist->searchByDate(parameters, date);
+    QList<QSharedPointer<IRecordID>> rsp = _persistanceHist->searchByDate(parameters, date);
     prepareToSend(MessageCodes::CodeNumber::RSP_searchWithHistory);
     (*out) << rsp.count();
-    foreach (IRecordID *record, rsp)
+    foreach (QSharedPointer<IRecordID> record, rsp)
     {
         (*out) << *record;
     }
@@ -313,11 +307,11 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithHistory(QDataStream &in)
 
 void EDocTCPServerDatabasePlugin::processREQGetRecordWithHistory(QDataStream &in)
 {
-    ProxyRecordID *proxyRecordID = new ProxyRecordID(this);
+    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
     in >> *proxyRecordID;
     QDateTime date;
     in >> date;
-    IRecord *record = _persistanceHist->getRecordByDate(proxyRecordID, date);
+    QSharedPointer<IRecord> record = _persistanceHist->getRecordByDate(proxyRecordID, date);
     prepareToSend(MessageCodes::CodeNumber::RSP_getRecordWithHistory);
     (*out) << *record;
 }
@@ -328,10 +322,10 @@ void EDocTCPServerDatabasePlugin::processREQGetRecordsWithHistory(QDataStream &i
     in >> ids;
     QDateTime date;
     in >> date;
-    QList<IRecord*> records = _persistanceHist->getRecordsByDate(ids, date);
+    QList<QSharedPointer<IRecord>> records = _persistanceHist->getRecordsByDate(ids, date);
     prepareToSend(MessageCodes::CodeNumber::RSP_getRecordsWithHistory);
     (*out) << records.count();
-    foreach (IRecord* record, records)
+    foreach (QSharedPointer<IRecord> record, records)
     {
         (*out) << *record;
     }
@@ -361,14 +355,14 @@ void EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValuesWithHistory(Q
 
 void EDocTCPServerDatabasePlugin::processREQGetHistory(QDataStream &in)
 {
-    ProxyRecordID *proxyRecordID = new ProxyRecordID(this);
+    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
     in >> *proxyRecordID;
     QDateTime date;
     in >> date;
-    QList<IRecord *> records = _persistanceHist->getHistory(proxyRecordID);
+    QList<QSharedPointer<IRecord> > records = _persistanceHist->getHistory(proxyRecordID);
     prepareToSend(MessageCodes::CodeNumber::RSP_getRecordWithHistory);
     (*out) << records.count();
-    foreach (IRecord* record, records)
+    foreach (QSharedPointer<IRecord> record, records)
     {
         (*out) << *record;
     }
@@ -379,10 +373,10 @@ void EDocTCPServerDatabasePlugin::processREQGetHistoryChanges(QDataStream &in)
     QDateTime from;
     QDateTime to;
     in >> from >> to;
-    QList<IRecordID*> lst = _persistanceHist->getChanges(from, to);
+    QList<QSharedPointer<IRecordID> > lst = _persistanceHist->getChanges(from, to);
     prepareToSend(MessageCodes::CodeNumber::RSP_getHistoryChanges);
     (*out) << lst.count();
-    foreach (IRecordID *rec, lst)
+    foreach (QSharedPointer<IRecordID> rec, lst)
     {
         (*out) << *rec;
     }

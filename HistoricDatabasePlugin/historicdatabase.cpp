@@ -16,11 +16,13 @@ HistoricDatabase::~HistoricDatabase()
 }
 
 // IInitializable
-void HistoricDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger,
-                        const QMap<QString, QString> &docpluginStock,
-                        const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
-                        const QMap<QString, QString> &tagPlugins,
-                        const QMap<QString, QString> &serverPlugins)
+void HistoricDatabase::initialize(IXMLContent *configuration,
+                                  QSharedPointer<QObjectLogging> logger,
+                                  const QMap<QString, QString> &docpluginStock,
+                                  const QMap<QString, QString> &DBplugins,
+                                  const QMap<QString, QString> &DBWithHistoryPlugins,
+                                  const QMap<QString, QString> &tagPlugins,
+                                  const QMap<QString, QString> &serverPlugins)
 {
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "HistoricDatabasePlugin", "void HistoricDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
@@ -37,38 +39,38 @@ void HistoricDatabase::initialize(IXMLContent *configuration, QObjectLogging *lo
 }
 
 // IDatabase
-QList<IFieldDefinition*> HistoricDatabase::fields()
+QList<QSharedPointer<IFieldDefinition> > HistoricDatabase::fields()
 {
     return databaseEngine->fields();
 }
 
-IFieldDefinition* HistoricDatabase::field(const QString &fieldName)
+QSharedPointer<IFieldDefinition> HistoricDatabase::field(const QString &fieldName)
 {
     return databaseEngine->field(fieldName);
 }
 
-IParameter* HistoricDatabase::createEmptyParameter()
+QSharedPointer<IParameter> HistoricDatabase::createEmptyParameter()
 {
     return databaseEngine->createEmptyParameter();
 }
 
-QList<IRecordID*> HistoricDatabase::search(const QList<IParameter*> &parameters)
+QList<QSharedPointer<IRecordID> > HistoricDatabase::search(const QList<QSharedPointer<IParameter> > &parameters)
 {
     return searchByDate(parameters, now());
 }
 
-QList<IRecordID*> HistoricDatabase::searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records)
+QList<QSharedPointer<IRecordID> > HistoricDatabase::searchWithin(const QList<QSharedPointer<IParameter> > &parameters, const QList<QSharedPointer<IRecordID> > &records)
 {
-    QList<IRecordID*> result;
+    QList<QSharedPointer<IRecordID>> result;
     QStringList recIds;
-    QList<IRecordID*> partialResult = search(parameters);
+    QList<QSharedPointer<IRecordID>> partialResult = search(parameters);
     QStringList partialResultIds;
-    QMap<QString, IRecordID*> map;
-    foreach (IRecordID* rec, partialResult)
+    QMap<QString, QSharedPointer<IRecordID>> map;
+    foreach (QSharedPointer<IRecordID> rec, partialResult)
     {
         partialResultIds.append(rec->asString());
     }
-    foreach (IRecordID* rec, records)
+    foreach (QSharedPointer<IRecordID> rec, records)
     {
         recIds.append(rec->asString());
         map[rec->asString()] = rec;
@@ -82,20 +84,20 @@ QList<IRecordID*> HistoricDatabase::searchWithin(const QList<IParameter*> &param
 }
 
 
-IRecord* HistoricDatabase::createEmptyRecord()
+QSharedPointer<IRecord> HistoricDatabase::createEmptyRecord()
 {
-    HistoricRecord* record = new HistoricRecord(databaseEngine->createEmptyRecord(), this);
-    record->setID(new RecordID(record));
+    QSharedPointer<HistoricRecord> record = QSharedPointer<HistoricRecord>(new HistoricRecord(databaseEngine->createEmptyRecord(), this));
+    record->setID(QSharedPointer<IRecordID>(new RecordID(record.data())));
     return record;
 }
 
-IRecordID *HistoricDatabase::addRecord(IRecord *record)
+QSharedPointer<IRecordID> HistoricDatabase::addRecord(QSharedPointer<IRecord> record)
 {
-    HistoricRecord *rec = dynamic_cast<HistoricRecord*>(record);
-    if (rec == NULL)
+    QSharedPointer<HistoricRecord> rec = record.dynamicCast<HistoricRecord>();
+    if (rec.isNull())
     {
-        rec = new HistoricRecord(record, this);
-        rec->setID(new RecordID(rec));
+        rec = QSharedPointer<HistoricRecord>(new HistoricRecord(record, this));
+        rec->setID(QSharedPointer<RecordID>(new RecordID(rec.data())));
     }
 
     databaseEngine->addRecord(rec->getRecord());
@@ -118,28 +120,28 @@ IRecordID *HistoricDatabase::addRecord(IRecord *record)
     return rec->ID();
 }
 
-IRecord* HistoricDatabase::getRecord(IRecordID *id)
+QSharedPointer<IRecord> HistoricDatabase::getRecord(QSharedPointer<IRecordID> id)
 {
     return getRecordByDate(id, now());
 }
 
-IRecord* HistoricDatabase::getRecord(const QString &id)
+QSharedPointer<IRecord> HistoricDatabase::getRecord(const QString &id)
 {
     return getRecordByDate(id, now());
 }
 
-QList<IRecord*> HistoricDatabase::getRecords(const QStringList &ids)
+QList<QSharedPointer<IRecord> > HistoricDatabase::getRecords(const QStringList &ids)
 {
     return getRecordsByDate(ids, now());
 }
 
-void HistoricDatabase::updateRecord(IRecord* record)
+void HistoricDatabase::updateRecord(QSharedPointer<IRecord> record)
 {
-    IRecordID *newId = new RecordID(this);
-    HistoricRecord *histRec = dynamic_cast<HistoricRecord*>(record);
-    if (histRec == NULL)
+    QSharedPointer<IRecordID> newId = QSharedPointer<IRecordID>(new RecordID(this));
+    QSharedPointer<HistoricRecord> histRec =record.dynamicCast<HistoricRecord>();
+    if (histRec.isNull())
     {
-        histRec = dynamic_cast<HistoricRecord*>(getRecord(record->ID()));
+        histRec = getRecord(record->ID()).dynamicCast<HistoricRecord>();
     }
     histRec->getRecord()->setID(newId);
 
@@ -161,7 +163,7 @@ void HistoricDatabase::updateRecord(IRecord* record)
     m_SQLManager.executeCommand(sql, r);
 }
 
-void HistoricDatabase::deleteRecord(IRecordID *id)
+void HistoricDatabase::deleteRecord(QSharedPointer<IRecordID> id)
 {
     QString sqlQuery = "UPDATE %1 SET DeletedDate = :DeletedDate WHERE IDMaster = :MasterID";
     QString sql = sqlQuery.arg(m_MasterTableName);
@@ -181,19 +183,19 @@ QString HistoricDatabase::name()
     return "HistoricDatabase";
 }
 
-QMap<QString, IRecordID*> HistoricDatabase::search(IParameter* parameter)
+QMap<QString, QSharedPointer<IRecordID> > HistoricDatabase::search(QSharedPointer<IParameter> parameter)
 {
     return searchByDate(parameter, now());
 }
 
 // IDatabaseWithHistory
-QList<IRecordID*> HistoricDatabase::searchByDate(const QList<IParameter*> &parameters, const QDateTime &date)
+QList<QSharedPointer<IRecordID> > HistoricDatabase::searchByDate(const QList<QSharedPointer<IParameter> > &parameters, const QDateTime &date)
 {
-    QMap<QString, IRecordID*> validRecords = getValidRecords(NULL, date);
-    QList<IRecordID*> lst = databaseEngine->search(parameters);
+    QMap<QString, QSharedPointer<IRecordID>> validRecords = getValidRecords(QSharedPointer<IRecordID>(), date);
+    QList<QSharedPointer<IRecordID>> lst = databaseEngine->search(parameters);
     QStringList ids;
     QStringList keys = validRecords.keys();
-    foreach (IRecordID* rec, lst)
+    foreach (QSharedPointer<IRecordID> rec, lst)
     {
         ids.append(rec->asString());
     }
@@ -209,25 +211,25 @@ QList<IRecordID*> HistoricDatabase::searchByDate(const QList<IParameter*> &param
     return lst;
 }
 
-IRecord* HistoricDatabase::getRecordByDate(IRecordID *id, const QDateTime &date)
+QSharedPointer<IRecord> HistoricDatabase::getRecordByDate(QSharedPointer<IRecordID> id, const QDateTime &date)
 {
-    QMap<QString, IRecordID*> validRecord = getValidRecords(id, date);
+    QMap<QString, QSharedPointer<IRecordID>> validRecord = getValidRecords(id, date);
 
-    IRecord *record = databaseEngine->getRecord(validRecord.keys().at(0));
-    HistoricRecord *rec = new HistoricRecord(record, this);
+    QSharedPointer<IRecord> record = databaseEngine->getRecord(validRecord.keys().at(0));
+    QSharedPointer<HistoricRecord> rec = QSharedPointer<HistoricRecord>(new HistoricRecord(record, this));
     rec->setID(id);
     return rec;
 }
 
-IRecord* HistoricDatabase::getRecordByDate(const QString &id, const QDateTime &date)
+QSharedPointer<IRecord> HistoricDatabase::getRecordByDate(const QString &id, const QDateTime &date)
 {
-    RecordID *recId = new RecordID(id, this);
+    QSharedPointer<RecordID> recId = QSharedPointer<RecordID>(new RecordID(id, this));
     return getRecordByDate(recId, date);
 }
 
-QList<IRecord*> HistoricDatabase::getRecordsByDate(const QStringList &ids, const QDateTime& date)
+QList<QSharedPointer<IRecord> > HistoricDatabase::getRecordsByDate(const QStringList &ids, const QDateTime& date)
 {
-    QList<IRecord*> result;
+    QList<QSharedPointer<IRecord>> result;
 
     foreach (QString id, ids)
     {
@@ -240,17 +242,17 @@ QStringList HistoricDatabase::getDistinctColumnValuesByDate(const QList<QPair<QS
 {
 }
 
-QList<IRecord*> HistoricDatabase::getHistory(IRecordID *recordID)
+QList<QSharedPointer<IRecord> > HistoricDatabase::getHistory(QSharedPointer<IRecordID> recordID)
 {
 }
 
-QList<IRecordID*> HistoricDatabase::getChanges(const QDateTime &fromDate, const QDateTime &toDate)
+QList<QSharedPointer<IRecordID> > HistoricDatabase::getChanges(const QDateTime &fromDate, const QDateTime &toDate)
 {
 }
 
-QMap<QString, IRecordID*> HistoricDatabase::searchByDate(IParameter* parameter, const QDateTime &date)
+QMap<QString, QSharedPointer<IRecordID> > HistoricDatabase::searchByDate(QSharedPointer<IParameter> parameter, const QDateTime &date)
 {
-    return QMap<QString, IRecordID*>();
+    return QMap<QString, QSharedPointer<IRecordID>>();
 }
 
 QDateTime HistoricDatabase::now() const
@@ -258,7 +260,7 @@ QDateTime HistoricDatabase::now() const
     return QDateTime::currentDateTimeUtc();
 }
 
-IDatabase *HistoricDatabase::createDatabaseEngine(XMLCollection *confEngine,
+QSharedPointer<IDatabase> HistoricDatabase::createDatabaseEngine(XMLCollection *confEngine,
                                                   const QMap<QString, QString> &docpluginStock,
                                                   const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
                                                   const QMap<QString, QString> &tagPlugins,
@@ -278,7 +280,7 @@ IDatabase *HistoricDatabase::createDatabaseEngine(XMLCollection *confEngine,
             {
                 IDatabase *engine = qobject_cast<IDatabase*>(plugin);
                 engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return qobject_cast<IDatabase *>(plugin);
+                return QSharedPointer<IDatabase>(engine);
             }
             else {
                 m_Logger->logError("Plugin: " + engineClass + " cannot be created.");
@@ -289,12 +291,12 @@ IDatabase *HistoricDatabase::createDatabaseEngine(XMLCollection *confEngine,
         }
 
     }
-    return NULL;
+    return QSharedPointer<IDatabase>();
 }
 
-QMap<QString, IRecordID*> HistoricDatabase::getValidRecords(IRecordID* master_id, const QDateTime &date)
+QMap<QString, QSharedPointer<IRecordID> > HistoricDatabase::getValidRecords(QSharedPointer<IRecordID> master_id, const QDateTime &date)
 {
-    QMap<QString, IRecordID*> result;
+    QMap<QString, QSharedPointer<IRecordID>> result;
 
     QString sqlQuery;
     if (master_id)
@@ -319,7 +321,7 @@ QMap<QString, IRecordID*> HistoricDatabase::getValidRecords(IRecordID* master_id
 
     foreach (DBRecordPtr rec, *rs)
     {
-        RecordID *mID = new RecordID((*rec)["MasterID"].toString(), this);
+        QSharedPointer<IRecordID> mID = QSharedPointer<IRecordID>(new RecordID((*rec)["MasterID"].toString(), this));
 
         result[(*rec)["record_id"].toString()] = mID;
     }

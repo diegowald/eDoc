@@ -19,7 +19,7 @@ QString RecordID::asString() const
     return m_ID.toString();
 }
 
-IMetadata* RecordID::metadata()
+QSharedPointer<IMetadata> RecordID::metadata()
 {
-    return NULL;
+    return QSharedPointer<IMetadata>();
 }

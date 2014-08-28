@@ -14,7 +14,8 @@ public:
     explicit QueryEngine(QObject *parent = 0);\
     virtual ~QueryEngine();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,

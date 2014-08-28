@@ -9,9 +9,9 @@ class Document : public QObject, public IDocument
 {
     Q_OBJECT
 public:
-    explicit Document(DocID* id, QObject *parent = 0);
+    explicit Document(QSharedPointer<DocID> id, QObject *parent = 0);
 
-    virtual IDocID* id();
+    virtual QSharedPointer<IDocID> id();
     virtual QByteArray blob();
 
 signals:
@@ -19,7 +19,7 @@ signals:
 public slots:
     
 private:
-    DocID *iid;
+    QSharedPointer<DocID> iid;
 };
 
 #endif // DOCUMENT_H

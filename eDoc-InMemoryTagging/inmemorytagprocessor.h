@@ -23,22 +23,23 @@ public:
     explicit InMemoryTagProcessor(QObject *parent = 0);
     virtual ~InMemoryTagProcessor();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
-    virtual void addTagRecord(IRecordID *recordID, ITag* tag);
-    virtual void processKeywordString(IRecordID *recordID, const QString &keywords);
-    virtual void processKeywordString(IRecordID *recordID, const QStringList &keywords);
+    virtual void addTagRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag);
+    virtual void processKeywordString(QSharedPointer<IRecordID> recordID, const QString &keywords);
+    virtual void processKeywordString(QSharedPointer<IRecordID> recordID, const QStringList &keywords);
     virtual QSet<QString> findByTags(const QStringList &tags);
-    virtual void removeRecord(IRecordID* recordID, ITag* tag);
+    virtual void removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag);
     virtual QString name();
 
 private:
     void loadIntoMemory();
-    void saveKeyword(IRecordID *recordID, const QString &keyword);
+    void saveKeyword(QSharedPointer<IRecordID> recordID, const QString &keyword);
 
 signals:
     
@@ -54,7 +55,7 @@ private:
 
     QMap<QString, TAGElement> m_Tag;
 
-    QObjectLogging *m_Logger;
+    QSharedPointer<QObjectLogging> m_Logger;
 
     QString m_Name;
     QString m_keywordsTableName;

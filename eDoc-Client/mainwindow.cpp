@@ -18,15 +18,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     QLOG_TRACE() << "MainWindow::MainWindow(QWidget *parent)";
 
-    connect(&logger, SIGNAL(LogDebug(QString)), this, SLOT(on_LogDebug(QString)));
-    connect(&logger, SIGNAL(LogError(QString)), this, SLOT(on_LogError(QString)));
-    connect(&logger, SIGNAL(LogFatal(QString)), this, SLOT(on_LogFatal(QString)));
-    connect(&logger, SIGNAL(LogInfo(QString)), this, SLOT(on_LogInfo(QString)));
-    connect(&logger, SIGNAL(LogTrace(QString)), this, SLOT(on_LogTrace(QString)));
-    connect(&logger, SIGNAL(LogWarning(QString)), this, SLOT(on_LogWarning(QString)));
+    logger = QSharedPointer<QObjectLogging>(new QObjectLogging());
+
+    connect(logger.data(), SIGNAL(LogDebug(QString)), this, SLOT(on_LogDebug(QString)));
+    connect(logger.data(), SIGNAL(LogError(QString)), this, SLOT(on_LogError(QString)));
+    connect(logger.data(), SIGNAL(LogFatal(QString)), this, SLOT(on_LogFatal(QString)));
+    connect(logger.data(), SIGNAL(LogInfo(QString)), this, SLOT(on_LogInfo(QString)));
+    connect(logger.data(), SIGNAL(LogTrace(QString)), this, SLOT(on_LogTrace(QString)));
+    connect(logger.data(), SIGNAL(LogWarning(QString)), this, SLOT(on_LogWarning(QString)));
 
     ui->setupUi(this);
-    f.initialize(QApplication::applicationDirPath(), "./client.conf.xml", &logger);
+    f.initialize(QApplication::applicationDirPath(), "./client.conf.xml", logger);
 
     fillFieldsCombo();
     fillOperatorsCombo();
@@ -38,23 +40,23 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-IDocID *MainWindow::addDocument(const QByteArray &blob)
+QSharedPointer<IDocID> MainWindow::addDocument(const QByteArray &blob)
 {
-    IDocEngine *e = f.docEngine();
+    QSharedPointer<IDocEngine> e = f.docEngine();
     return  e->addDocument(blob);
 }
 
 void MainWindow::on_pushButton_pressed()
 {
-    IDocEngine *e = f.docEngine();
+    QSharedPointer<IDocEngine> e = f.docEngine();
     QString text = ui->textEdit->toHtml();
     QByteArray x = text.toUtf8();
-    IDocID *id = addDocument(x);
-    IDocBase *doc = e->getDocument(id);
+    QSharedPointer<IDocID> id = addDocument(x);
+    QSharedPointer<IDocBase> doc = e->getDocument(id);
     QByteArray y;
     if (!doc->isComplex())
     {
-        IDocument *d = (IDocument*)(doc);
+        QSharedPointer<IDocument> d = doc.dynamicCast<IDocument>();
         y = d->blob();
     }
     QString textRetrieved(y);
@@ -67,9 +69,9 @@ void MainWindow::on_pushButton_pressed()
 
 void MainWindow::on_pushButton_2_pressed()
 {
-    IDatabase* db = f.databaseEngine();
-    IDocEngine *e = f.docEngine();
-    IRecord *rec = db->createEmptyRecord();
+    QSharedPointer<IDatabase> db = f.databaseEngine();
+    QSharedPointer<IDocEngine> e = f.docEngine();
+    QSharedPointer<IRecord> rec = db->createEmptyRecord();
 
     rec->value("campo1")->setValue("Hola Mundo");
     rec->value("campo2")->setValue("Valor del campo2");
@@ -85,10 +87,11 @@ void MainWindow::on_pushButton_2_pressed()
     QString text = ui->textEdit->toHtml();
     QByteArray x = text.toUtf8();
 
-    IDocID *docId = addDocument(x);
+    QSharedPointer<IDocID> docId = addDocument(x);
     QVariant doc;
-    IDocument * iDoc = (IDocument*)e->getDocument(docId);
+    QSharedPointer<IDocument> iDoc = e->getDocument(docId).dynamicCast<IDocument>();
     doc.setValue(iDoc);
+
     rec->value("archivo")->setValue(doc);
 
     QLOG_TRACE() << rec->value("campo1")->asVariant();
@@ -101,7 +104,7 @@ void MainWindow::on_pushButton_2_pressed()
     //rec->value("campo1")->setNull();
     QLOG_TRACE() << rec->value("campo1")->asVariant();
 
-    IRecordID *id = db->addRecord(rec);
+    QSharedPointer<IRecordID> id = db->addRecord(rec);
     QLOG_TRACE() << id->asString();
 }
 
@@ -145,9 +148,9 @@ void MainWindow::on_actionAdd_Document_triggered()
                                                     ".");
     if (filename.length() >= 0)
     {
-        IDatabase* db = f.databaseEngine();
-        IDocEngine *e = f.docEngine();
-        IRecord *rec = db->createEmptyRecord();
+        QSharedPointer<IDatabase> db = f.databaseEngine();
+        QSharedPointer<IDocEngine> e = f.docEngine();
+        QSharedPointer<IRecord> rec = db->createEmptyRecord();
 
         DlgAddDocument dlg(this);
         dlg.setData(filename, rec);
@@ -158,9 +161,9 @@ void MainWindow::on_actionAdd_Document_triggered()
             file.open(QIODevice::ReadOnly);
             QByteArray blob = file.readAll();
 
-            IDocID *docId = addDocument(blob);
+            QSharedPointer<IDocID> docId = addDocument(blob);
             QVariant doc;
-            IDocument * iDoc = (IDocument*)e->getDocument(docId);
+            QSharedPointer<IDocument> iDoc = e->getDocument(docId).dynamicCast<IDocument>();
             doc.setValue(iDoc);
             rec->value("archivo")->setValue(doc);
 
@@ -174,7 +177,7 @@ void MainWindow::fillFieldsCombo()
 {
     ui->cboField->clear();
 
-    foreach (IFieldDefinition* fDef, f.databaseEngine()->fields())
+    foreach (QSharedPointer<IFieldDefinition> fDef, f.databaseEngine()->fields())
     {
         if (fDef->isVisible())
             ui->cboField->addItem(fDef->name());
@@ -208,15 +211,15 @@ void MainWindow::on_cboOperator_currentIndexChanged(int index)
 
 void MainWindow::on_btnSearch_released()
 {
-    IParameter *param = f.databaseEngine()->createEmptyParameter();
-    IFieldDefinition* fDef = f.databaseEngine()->field(ui->cboField->currentText());
+    QSharedPointer<IParameter> param = f.databaseEngine()->createEmptyParameter();
+    QSharedPointer<IFieldDefinition> fDef = f.databaseEngine()->field(ui->cboField->currentText());
 
-    IValue* value1 = fDef->createEmptyValue();
+    QSharedPointer<IValue> value1 = fDef->createEmptyValue();
     value1->setValue(QVariant(ui->searchValue1->text()));
 
     VALIDQUERY queryType = (VALIDQUERY) ui->cboOperator->itemData(ui->cboOperator->currentIndex()).toInt();
 
-    IValue *value2 = NULL;
+    QSharedPointer<IValue> value2;
     if (queryType == BETWEEN)
     {
         value2 = fDef->createEmptyValue();
@@ -232,13 +235,13 @@ void MainWindow::on_btnSearch_released()
 
     ui->searchResult->clear();
 
-    QList<IParameter *> query;
+    QList<QSharedPointer<IParameter>> query;
     query.append(param);
-    QList<IRecordID*> result = f.databaseEngine()->search(query);
+    QList<QSharedPointer<IRecordID>> result = f.databaseEngine()->search(query);
 
-    foreach (IRecordID *id, result)
+    foreach (QSharedPointer<IRecordID> id, result)
     {
-        IRecord *rec = f.databaseEngine()->getRecord(id);
+        QSharedPointer<IRecord> rec = f.databaseEngine()->getRecord(id);
         ui->searchResult->addItem(rec->value("campo1")->asVariant().toString());
     }
 }

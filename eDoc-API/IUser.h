@@ -4,10 +4,11 @@
 #include <QList>
 #include "IGroup.h"
 #include "IUserID.h"
+
 struct IUser
 {
-    virtual IUserID *userID() = 0;
-    virtual QList<IGroup*> groups() = 0;
+    virtual QSharedPointer<IUserID> userID() = 0;
+    virtual QList<QSharedPointer<IGroup> > groups() = 0;
     virtual ~IUser() {}
 };
 

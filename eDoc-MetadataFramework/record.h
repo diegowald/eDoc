@@ -11,23 +11,23 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT Record : public QObject, public IRecord
 {
     Q_OBJECT
 public:
-    explicit Record(const QList<IFieldDefinition*> &fieldDefs, QObject *parent = 0);
+    explicit Record(const QList<QSharedPointer<IFieldDefinition>> &fieldDefs, QObject *parent = 0);
     virtual ~Record();
 
-    virtual void setID(IRecordID *ID);
-    virtual IRecordID *ID();
-    virtual IValue* value(IFieldDefinition* field);
-    virtual IValue* value(const QString &fieldName);
-    virtual IFieldDefinition* fieldDefinition(const QString &fieldName);
+    virtual void setID(QSharedPointer<IRecordID> ID);
+    virtual QSharedPointer<IRecordID> ID();
+    virtual QSharedPointer<IValue> value(QSharedPointer<IFieldDefinition> field);
+    virtual QSharedPointer<IValue> value(const QString &fieldName);
+    virtual QSharedPointer<IFieldDefinition> fieldDefinition(const QString &fieldName);
     virtual QList<QString> fieldNames();
 signals:
     
 public slots:
 
 private:
-    IRecordID *m_ID;
-    QMap<QString, IValue*> m_Values;
-    QMap<QString, IFieldDefinition*> m_Fields;
+    QSharedPointer<IRecordID> m_ID;
+    QMap<QString, QSharedPointer<IValue>> m_Values;
+    QMap<QString, QSharedPointer<IFieldDefinition>> m_Fields;
 };
 
 #endif // RECORD_H

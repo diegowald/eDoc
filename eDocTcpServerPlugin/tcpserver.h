@@ -25,7 +25,8 @@ public:
     explicit TcpServer(QObject *parent = 0);
     virtual ~TcpServer();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -36,20 +37,20 @@ public:
     virtual QString name() const;
 
 private:
-    IDatabase *createPersistentEngine(XMLCollection *confEngine,
+    QSharedPointer<IDatabase> createPersistentEngine(XMLCollection *confEngine,
                                       const QMap<QString, QString> &docpluginStock,
                                       const QMap<QString, QString> &DBplugins,
                                       const QMap<QString, QString> &DBWithHistoryPlugins,
                                       const QMap<QString, QString> &tagPlugins,
                                       const QMap<QString, QString> &serverPlugins);
 
-    IDatabaseWithHistory *createHistoryDBPersistentEngine(XMLCollection *confEngine,
+    QSharedPointer<IDatabaseWithHistory> createHistoryDBPersistentEngine(XMLCollection *confEngine,
                                                           const QMap<QString, QString> &docpluginStock,
                                                           const QMap<QString, QString> &DBplugins,
                                                           const QMap<QString, QString> &DBWithHistoryPlugins,
                                                           const QMap<QString, QString> &tagPlugins,
                                                           const QMap<QString, QString> &serverPlugins);
-    IDocEngine *createDocEnginePersistance(XMLCollection *confEngine,
+    QSharedPointer<IDocEngine> createDocEnginePersistance(XMLCollection *confEngine,
                                            const QMap<QString, QString> &docpluginStock,
                                            const QMap<QString, QString> &DBplugins,
                                            const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -62,14 +63,14 @@ private slots:
     void onNewConnection();
 
 private:
-    QObjectLogging *logger;
+    QSharedPointer<QObjectLogging> logger;
     QString m_Name;
-    IDatabase *database;
-    IDatabaseWithHistory *dbh;
-    IDocEngine *docEngine;
-    QTcpServer *tcpServer;
+    QSharedPointer<IDatabase> database;
+    QSharedPointer<IDatabaseWithHistory> dbh;
+    QSharedPointer<IDocEngine> docEngine;
+    QSharedPointer<QTcpServer> tcpServer;
     int port;
-    QMap<QTcpSocket*, EDocTCPServerDatabasePlugin*> clientConnections;
+    QMap<QSharedPointer<QTcpSocket>, QSharedPointer<EDocTCPServerDatabasePlugin>> clientConnections;
 };
 
 #endif // TCPSERVER_H

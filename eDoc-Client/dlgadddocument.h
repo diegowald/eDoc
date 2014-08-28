@@ -17,9 +17,9 @@ public:
     explicit DlgAddDocument(QWidget *parent = 0);
     ~DlgAddDocument();
 
-    void setData(const QString &filename, IRecord* record);
-    void applyData(IRecord *record);
-    IRecord* record();
+    void setData(const QString &filename, QSharedPointer<IRecord> record);
+    void applyData(QSharedPointer<IRecord> record);
+    QSharedPointer<IRecord> record();
     QString filename();
 
 
@@ -27,7 +27,7 @@ private:
     Ui::DlgAddDocument *ui;
 
     QString m_FileName;
-    IRecord *m_Record;
+    QSharedPointer<IRecord> m_Record;
     RecordEditor *recEditor;
 };
 

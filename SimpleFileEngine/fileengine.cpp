@@ -13,7 +13,8 @@ FileEngine::~FileEngine()
 {
 }
 
-void FileEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void FileEngine::initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -27,35 +28,35 @@ void FileEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
     (void)serverPlugins;
     folder = ((XMLElement*)((XMLCollection*) configuration)->get("folder"))->value();
     m_Logger = logger;
-    fileManager = new FileManagement(folder, this);
+    fileManager = QSharedPointer<FileManagement>(new FileManagement(folder, this));
 }
 
-IDocID* FileEngine::addDocument(const QByteArray& blob)
+QSharedPointer<IDocID> FileEngine::addDocument(const QByteArray& blob)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "IDocID* FileEngine::addDocument(const QByteArray& blob)");
-    SimpleFileID *id = new SimpleFileID();
+    QSharedPointer<SimpleFileID> id = QSharedPointer<SimpleFileID>(new SimpleFileID());
 
     fileManager->createFile(id->asString(), blob);
 
     return id;
 }
 
-IDocBase *FileEngine::getDocument(IDocID *id)
+QSharedPointer<IDocBase> FileEngine::getDocument(QSharedPointer<IDocID> id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "IDocBase* FileEngine::getDocument(IDocID *id) const");
-    SimpleFileDocument *doc = new SimpleFileDocument(fileManager, id->asString(), this);
+    QSharedPointer<SimpleFileDocument> doc = QSharedPointer<SimpleFileDocument>(new SimpleFileDocument(fileManager, id->asString(), this));
     return doc;
 }
 
-bool FileEngine::deleteDocument(IDocID *id)
+bool FileEngine::deleteDocument(QSharedPointer<IDocID> id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "bool FileEngine::deleteDocument(IDocID *id)");
     return false;
 }
 
-IDocID* FileEngine::IValueToIDocId(IValue *value)
+QSharedPointer<IDocID> FileEngine::IValueToIDocId(QSharedPointer<IValue> value)
 {
-    return new SimpleFileID(value->content().toString());
+    return QSharedPointer<IDocID>(new SimpleFileID(value->content().toString()));
 }
 
 QString FileEngine::name()

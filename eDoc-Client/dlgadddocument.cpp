@@ -14,7 +14,7 @@ DlgAddDocument::~DlgAddDocument()
     delete ui;
 }
 
-void DlgAddDocument::setData(const QString & filename, IRecord* record)
+void DlgAddDocument::setData(const QString & filename, QSharedPointer<IRecord> record)
 {
     m_FileName = filename;
     m_Record = record;
@@ -28,12 +28,12 @@ void DlgAddDocument::setData(const QString & filename, IRecord* record)
     ui->lblFilename->setText(filename);
 }
 
-void DlgAddDocument::applyData(IRecord *record)
+void DlgAddDocument::applyData(QSharedPointer<IRecord> record)
 {
     recEditor->applyValuesToRecord(record);
 }
 
-IRecord* DlgAddDocument::record()
+QSharedPointer<IRecord> DlgAddDocument::record()
 {
     return m_Record;
 }

@@ -15,7 +15,7 @@ QString ProxyRecordID::asString() const
     return _id;
 }
 
-IMetadata *ProxyRecordID::metadata()
+QSharedPointer<IMetadata> ProxyRecordID::metadata()
 {
 }
 

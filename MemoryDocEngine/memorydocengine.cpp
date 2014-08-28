@@ -12,7 +12,8 @@ MemoryDocEngine::~MemoryDocEngine()
 {
 }
 
-void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void MemoryDocEngine::initialize(IXMLContent *configuration,
+                                 QSharedPointer<QObjectLogging> logger,
                                  const QMap<QString, QString> &docpluginStock,
                                  const QMap<QString, QString> &DBplugins,
                                  const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -26,23 +27,23 @@ void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLogging *log
     persistentEngine = createPersistentEngine(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 }
 
-IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)
+QSharedPointer<IDocID> MemoryDocEngine::addDocument(const QByteArray& blob)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)");
     return persistentEngine->addDocument(blob);
 }
 
-IDocBase *MemoryDocEngine::getDocument(IDocID *id)
+QSharedPointer<IDocBase> MemoryDocEngine::getDocument(QSharedPointer<IDocID> id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocument *MemoryDocEngine::getDocument(IDocID *id)");
     if (!m_Cache.contains(id->asString()))
     {
-        IDocBase *persistentDoc = persistentEngine->getDocument(id);
-        IDocBase *doc = NULL;
+        QSharedPointer<IDocBase> persistentDoc = persistentEngine->getDocument(id);
+        QSharedPointer<IDocBase> doc;
         if (persistentDoc->isComplex())
-            doc = new InMemoryMultiDocument((IMultiDocument*) persistentDoc, this);
+            doc = QSharedPointer<IDocBase>(new InMemoryMultiDocument(persistentDoc.dynamicCast<IMultiDocument>(), this));
         else
-            doc = new InMemoryDocument((IDocument*)persistentDoc, this);
+            doc = QSharedPointer<IDocBase>(new InMemoryDocument(persistentDoc.dynamicCast<IDocument>(), this));
         QString idString = id->asString();
         m_Cache.insert(idString, doc);
         //m_Cache[idString] = doc;
@@ -50,7 +51,7 @@ IDocBase *MemoryDocEngine::getDocument(IDocID *id)
     return m_Cache[id->asString()];
 }
 
-bool MemoryDocEngine::deleteDocument(IDocID *id)
+bool MemoryDocEngine::deleteDocument(QSharedPointer<IDocID> id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "bool MemoryDocEngine::deleteDocument(IDocID *id)");
 }
@@ -62,11 +63,12 @@ QString MemoryDocEngine::name()
 }
 
 
-IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine,
-                                                    const QMap<QString, QString> &docpluginStock,
-                                                    const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
-                                                    const QMap<QString, QString> &tagPlugins,
-                                                    const QMap<QString, QString> &serverPlugins)
+QSharedPointer<IDocEngine> MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine,
+                                                                    const QMap<QString, QString> &docpluginStock,
+                                                                    const QMap<QString, QString> &DBplugins,
+                                                                    const QMap<QString, QString> &DBWithHistoryPlugins,
+                                                                    const QMap<QString, QString> &tagPlugins,
+                                                                    const QMap<QString, QString> &serverPlugins)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)");
 
@@ -81,7 +83,7 @@ IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine,
             if (plugin) {
                 IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
                 engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return qobject_cast<IDocEngine *>(plugin);
+                return QSharedPointer<IDocEngine>(qobject_cast<IDocEngine *>(plugin));
             }
             else {
                 m_Logger->logError("Plugin: " + engineClass + " cannot be created.");
@@ -92,10 +94,10 @@ IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine,
         }
 
     }
-    return NULL;
+    return QSharedPointer<IDocEngine>();
 }
 
-IDocID* MemoryDocEngine::IValueToIDocId(IValue *value)
+QSharedPointer<IDocID> MemoryDocEngine::IValueToIDocId(QSharedPointer<IValue> value)
 {
     return persistentEngine->IValueToIDocId(value);
 }

@@ -21,7 +21,12 @@ class EDOCTCPSERVERPLUGIN_EXPORT EDocTCPServerDatabasePlugin : public QThread
     typedef void (EDocTCPServerDatabasePlugin::*Executor) (QDataStream&);
 
 public:
-    EDocTCPServerDatabasePlugin(QObjectLogging *Logger, QTcpSocket *socket, IDatabase *persistance, IDatabaseWithHistory *histPersistance, IDocEngine* docEngine, QObject *parent = 0);
+    EDocTCPServerDatabasePlugin(QSharedPointer<QObjectLogging> Logger,
+                                QSharedPointer<QTcpSocket> socket,
+                                QSharedPointer<IDatabase> persistance,
+                                QSharedPointer<IDatabaseWithHistory> histPersistance,
+                                QSharedPointer<IDocEngine> docEngine,
+                                QObject *parent = 0);
     virtual ~EDocTCPServerDatabasePlugin();
 
     void run();
@@ -58,12 +63,12 @@ private:
     void processREQGetHistoryChanges(QDataStream &in);
 
 private:
-    QObjectLogging *logger;
+    QSharedPointer<QObjectLogging> logger;
     QString m_Name;
-    QTcpSocket *_socket;
-    IDatabase *_persistance;
-    IDatabaseWithHistory *_persistanceHist;
-    IDocEngine *_docEngine;
+    QSharedPointer<QTcpSocket> _socket;
+    QSharedPointer<IDatabase> _persistance;
+    QSharedPointer<IDatabaseWithHistory> _persistanceHist;
+    QSharedPointer<IDocEngine> _docEngine;
     int blockSize;
 
     QByteArray blob;

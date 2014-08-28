@@ -18,27 +18,27 @@ public:
     explicit RecordEditor(QWidget *parent = 0);
     virtual ~RecordEditor();
 
-    virtual void setRecord(IRecord * record);
-    virtual void applyValuesToRecord(IRecord *record);
+    virtual void setRecord(QSharedPointer<IRecord> record);
+    virtual void applyValuesToRecord(QSharedPointer<IRecord> record);
     virtual void setEnabledEdition(bool enabled);
 
 private:
     void setEnabledStatus();
-    QFieldWidget *createWidget(IRecord *record, const QString &fieldName, QWidget* parent);
+    QFieldWidget *createWidget(QSharedPointer<IRecord> record, const QString &fieldName, QWidget* parent);
 
 signals:
-    void downloadFile(IRecord* record, const IValue* value);
-    void uploadFile(IRecord* record, const IValue* value);
+    void downloadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value);
+    void uploadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value);
 
 private slots:
-    void download(const IValue* value);
-    void upload(const IValue* value);
+    void download(const QSharedPointer<IValue> value);
+    void upload(const QSharedPointer<IValue> value);
 
 private:
     Ui::RecordEditor *ui;
     QMap<QString, QFieldWidget*> collection;
     bool enabledEdition;
-    IRecord* m_Record;
+    QSharedPointer<IRecord> m_Record;
 };
 
 #endif // RECORDEDITOR_H

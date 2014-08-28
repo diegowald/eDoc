@@ -8,7 +8,7 @@ QDataStream& operator<<(QDataStream& os, IParameter &obj)
         os << *obj.field();
     }
     os << obj.values().count();
-    foreach (IValue* value, obj.values())
+    foreach (QSharedPointer<IValue> value, obj.values())
     {
         os << *value;
     }
@@ -21,19 +21,20 @@ QDataStream& operator>>(QDataStream& is, ProxyParameter &obj)
     int isFieldNull = 0;
     is >> isFieldNull;
     if (isFieldNull == 1)
-    {    ProxyFieldDefinition *fieldDef = new ProxyFieldDefinition(&obj);
+    {
+        QSharedPointer<ProxyFieldDefinition> fieldDef = QSharedPointer<ProxyFieldDefinition>(new ProxyFieldDefinition(&obj));
         is >> *fieldDef;
         obj.setField(fieldDef);
     }
     else
     {
-        obj.setField(NULL);
+        obj.setField(QSharedPointer<IFieldDefinition>());
     }
     int count = 0;
     is >> count;
     for (int i = 0; i < count; ++i)
     {
-        ProxyValue *value = new ProxyValue();
+        QSharedPointer<ProxyValue> value = QSharedPointer<ProxyValue>(new ProxyValue());
         is >> *value;
         obj._values.push_back(value);
     }
@@ -58,7 +59,7 @@ QDataStream& operator<<(QDataStream& os, IRecord &obj)
 
 QDataStream& operator>>(QDataStream& is, ProxyRecord &obj)
 {
-    ProxyRecordID *id = new ProxyRecordID();
+    QSharedPointer<ProxyRecordID> id = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
     is >> *id;
     obj.setID(id);
 
@@ -67,9 +68,9 @@ QDataStream& operator>>(QDataStream& is, ProxyRecord &obj)
 
     for (int i = 0; i < fieldCount; ++i)
     {
-        ProxyFieldDefinition *fieldDef = new ProxyFieldDefinition();
+        QSharedPointer<ProxyFieldDefinition> fieldDef = QSharedPointer<ProxyFieldDefinition>(new ProxyFieldDefinition());
         is >> *fieldDef;
-        ProxyValue *value = new ProxyValue();
+        QSharedPointer<ProxyValue> value = QSharedPointer<ProxyValue>(new ProxyValue());
         is >> *value;
         obj._fieldDefinitions[fieldDef->name()] = fieldDef;
         obj._values[fieldDef->name()] = value;

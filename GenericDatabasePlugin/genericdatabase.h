@@ -19,48 +19,49 @@ public:
     explicit GenericDatabase(QObject *parent = 0);
     virtual ~GenericDatabase();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
-    virtual QList<IFieldDefinition*> fields();
-    virtual IFieldDefinition* field(const QString &fieldName);
-    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters);
-    virtual QList<IRecordID*> searchWithin(const QList<IParameter*> &parameters, const QList<IRecordID*> &records);
-    virtual IParameter* createEmptyParameter();
-    virtual IRecord* createEmptyRecord();
-    virtual IRecordID *addRecord(IRecord *record);
-    virtual IRecord* getRecord(IRecordID *id);
-    virtual IRecord* getRecord(const QString &id);
-    virtual QList<IRecord*> getRecords(const QStringList &ids);
-    virtual void updateRecord(IRecord* record);
-    virtual void deleteRecord(IRecordID *id);
+    virtual QList<QSharedPointer<IFieldDefinition>> fields();
+    virtual QSharedPointer<IFieldDefinition> field(const QString &fieldName);
+    virtual QList<QSharedPointer<IRecordID>> search(const QList<QSharedPointer<IParameter>> &parameters);
+    virtual QList<QSharedPointer<IRecordID>> searchWithin(const QList<QSharedPointer<IParameter>> &parameters, const QList<QSharedPointer<IRecordID>> &records);
+    virtual QSharedPointer<IParameter> createEmptyParameter();
+    virtual QSharedPointer<IRecord> createEmptyRecord();
+    virtual QSharedPointer<IRecordID> addRecord(QSharedPointer<IRecord> record);
+    virtual QSharedPointer<IRecord> getRecord(QSharedPointer<IRecordID> id);
+    virtual QSharedPointer<IRecord> getRecord(const QString &id);
+    virtual QList<QSharedPointer<IRecord>> getRecords(const QStringList &ids);
+    virtual void updateRecord(QSharedPointer<IRecord> record);
+    virtual void deleteRecord(QSharedPointer<IRecordID> id);
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName);
     virtual QString name();
 
 protected:
-    virtual QMap<QString, IRecordID*> search(IParameter* parameter);
-    virtual QMap<QString, IRecordID*> intersect(const QMap<QString, IRecordID*> &set1, const QMap<QString, IRecordID*> &set2);
+    virtual QMap<QString, QSharedPointer<IRecordID>> search(QSharedPointer<IParameter> parameter);
+    virtual QMap<QString, QSharedPointer<IRecordID>> intersect(const QMap<QString, QSharedPointer<IRecordID>> &set1, const QMap<QString, QSharedPointer<IRecordID>> &set2);
 private:
     void createFields(IXMLContent* configuration);
-    IFieldDefinition *createField(IXMLContent *configuration);
+    QSharedPointer<IFieldDefinition> createField(IXMLContent *configuration);
     QString getFieldsString();
     QString getUpdateFieldsString();
     QString getParametersString();
-    void executeSQLCommand(const QString &sql, IRecord* record);
-    std::pair<QString, DBRecordPtr> getWhereClause(IParameter *parameter);
+    void executeSQLCommand(const QString &sql, QSharedPointer<IRecord> record);
+    std::pair<QString, DBRecordPtr> getWhereClause(QSharedPointer<IParameter> parameter);
 
 signals:
     
 public slots:
 
 private:
-    QObjectLogging *m_Logger;
+    QSharedPointer<QObjectLogging> m_Logger;
     QString m_Name;
-    QMap<QString, IFieldDefinition*> m_Fields;
-    QMap<QString, IFieldDefinition*> m_FieldsBasedOnDatabase;
+    QMap<QString, QSharedPointer<IFieldDefinition>> m_Fields;
+    QMap<QString, QSharedPointer<IFieldDefinition>> m_FieldsBasedOnDatabase;
     QString m_TableName;
     SQLManager m_SQLManager;
 };

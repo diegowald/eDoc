@@ -1,12 +1,12 @@
 #include "document.h"
 
-Document::Document(DocID* id, QObject *parent) :
+Document::Document(QSharedPointer<DocID> id, QObject *parent) :
     QObject(parent)
 {
     iid = id;
 }
 
-IDocID *Document::id()
+QSharedPointer<IDocID> Document::id()
 {
     return iid;
 }

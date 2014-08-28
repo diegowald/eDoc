@@ -1,6 +1,7 @@
 #ifndef SIMPLEFILEDOCUMENT_H
 #define SIMPLEFILEDOCUMENT_H
 
+#include <memory>
 #include <QObject>
 #include "../eDoc-API/IDocument.h"
 #include "simplefileid.h"
@@ -10,10 +11,10 @@ class SimpleFileDocument : public QObject, public IDocument
 {
     Q_OBJECT
 public:
-    explicit SimpleFileDocument(FileManagement *FileManager, QObject *parent = 0);
-    SimpleFileDocument(FileManagement *FileManager, QString stringID, QObject *parent = 0);
+    explicit SimpleFileDocument(QSharedPointer<FileManagement> FileManager, QObject *parent = 0);
+    SimpleFileDocument(QSharedPointer<FileManagement> FileManager, QString stringID, QObject *parent = 0);
     virtual ~SimpleFileDocument();
-    virtual IDocID* id();
+    virtual QSharedPointer<IDocID> id();
     virtual QByteArray blob();
 
 signals:
@@ -21,8 +22,8 @@ signals:
 public slots:
     
 private:
-    SimpleFileID *idDocument;
-    FileManagement *fileManager;
+    QSharedPointer<SimpleFileID> idDocument;
+    QSharedPointer<FileManagement> fileManager;
 };
 
 #endif // SIMPLEFILEDOCUMENT_H

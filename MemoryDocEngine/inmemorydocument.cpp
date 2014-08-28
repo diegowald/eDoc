@@ -1,6 +1,6 @@
 #include "inmemorydocument.h"
 
-InMemoryDocument::InMemoryDocument(IDocument* persistentDoc, QObject *parent) :
+InMemoryDocument::InMemoryDocument(QSharedPointer<IDocument> persistentDoc, QObject *parent) :
     QObject(parent)
 {
     cached = false;
@@ -9,10 +9,9 @@ InMemoryDocument::InMemoryDocument(IDocument* persistentDoc, QObject *parent) :
 
 InMemoryDocument::~InMemoryDocument()
 {
-    delete m_PersistentDocument;
 }
 
-IDocID* InMemoryDocument::id()
+QSharedPointer<IDocID> InMemoryDocument::id()
 {
     return m_PersistentDocument->id();
 }

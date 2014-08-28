@@ -12,7 +12,8 @@ EDocTcpHistoricClient::~EDocTcpHistoricClient()
 {
 }
 
-void EDocTcpHistoricClient::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void EDocTcpHistoricClient::initialize(IXMLContent *configuration,
+                                       QSharedPointer<QObjectLogging> logger,
                                        const QMap<QString, QString> &docpluginStock,
                                        const QMap<QString, QString> &DBplugins,
                                        const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -38,9 +39,9 @@ void EDocTcpHistoricClient::initialize(IXMLContent *configuration, QObjectLoggin
 }
 
 //IDatabase
-QList<IFieldDefinition*> EDocTcpHistoricClient::fields()
+QList<QSharedPointer<IFieldDefinition> > EDocTcpHistoricClient::fields()
 {
-    QList<IFieldDefinition*> lst;
+    QList<QSharedPointer<IFieldDefinition>> lst;
     prepareToSend(MessageCodes::CodeNumber::REQ_fields);
     QByteArray response = send();
 
@@ -55,7 +56,7 @@ QList<IFieldDefinition*> EDocTcpHistoricClient::fields()
         in >> count;
         for (int i = 0; i < count; ++i)
         {
-            ProxyFieldDefinition *field = new ProxyFieldDefinition(this);
+            QSharedPointer<ProxyFieldDefinition> field = QSharedPointer<ProxyFieldDefinition>(new ProxyFieldDefinition(this));
             in >> *field;
             lst.push_back(field);
         }
@@ -63,7 +64,7 @@ QList<IFieldDefinition*> EDocTcpHistoricClient::fields()
     return lst;
 }
 
-IFieldDefinition* EDocTcpHistoricClient::field(const QString &fieldName)
+QSharedPointer<IFieldDefinition> EDocTcpHistoricClient::field(const QString &fieldName)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_field);
     (*out) << fieldName;
@@ -74,16 +75,16 @@ IFieldDefinition* EDocTcpHistoricClient::field(const QString &fieldName)
 
     Header header;
     in >> header;
-    ProxyFieldDefinition *field = NULL;
+    QSharedPointer<ProxyFieldDefinition> field;
     if (header.command() == MessageCodes::CodeNumber::RSP_field)
     {
-        field = new ProxyFieldDefinition(this);
+        field = QSharedPointer<ProxyFieldDefinition>(new ProxyFieldDefinition(this));
         in >> *field;
     }
     return field;
 }
 
-IParameter* EDocTcpHistoricClient::createEmptyParameter()
+QSharedPointer<IParameter> EDocTcpHistoricClient::createEmptyParameter()
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_createEmptyParameter);
     QByteArray response = send();
@@ -93,7 +94,7 @@ IParameter* EDocTcpHistoricClient::createEmptyParameter()
 
     Header header;
     in >> header;
-    ProxyParameter *parameter = new ProxyParameter(this);
+    QSharedPointer<ProxyParameter> parameter = QSharedPointer<ProxyParameter>(new ProxyParameter(this));
     if (header.command() == MessageCodes::CodeNumber::RSP_createEmptyParameter)
     {
         in >> *parameter;
@@ -101,11 +102,11 @@ IParameter* EDocTcpHistoricClient::createEmptyParameter()
     return parameter;
 }
 
-QList<IRecordID*> EDocTcpHistoricClient::search(const QList<IParameter*> &parameters)
+QList<QSharedPointer<IRecordID>> EDocTcpHistoricClient::search(const QList<QSharedPointer<IParameter> > &parameters)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_search);
     (*out) << parameters.count();
-    foreach (IParameter *parameter, parameters)
+    foreach (QSharedPointer<IParameter> parameter, parameters)
     {
         (*out) << *parameter;
     }
@@ -116,14 +117,14 @@ QList<IRecordID*> EDocTcpHistoricClient::search(const QList<IParameter*> &parame
 
     Header header;
     in >> header;
-    QList<IRecordID*> lst;
+    QList<QSharedPointer<IRecordID> > lst;
     if (header.command() == MessageCodes::CodeNumber::RSP_search)
     {
         int count = 0;
         in >> count;
         for (int i = 0; i < count; ++i)
         {
-            ProxyRecordID* record = new ProxyRecordID(this);
+            QSharedPointer<ProxyRecordID> record = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
             in >> *record;
             lst.push_back(record);
         }
@@ -131,16 +132,16 @@ QList<IRecordID*> EDocTcpHistoricClient::search(const QList<IParameter*> &parame
     return lst;
 }
 
-QList<IRecordID*> EDocTcpHistoricClient::searchWithin(const QList<IParameter *> &parameters, const QList<IRecordID *> &records)
+QList<QSharedPointer<IRecordID> > EDocTcpHistoricClient::searchWithin(const QList<QSharedPointer<IParameter> > &parameters, const QList<QSharedPointer<IRecordID> > &records)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_searchWithin);
     (*out) << parameters.count();
-    foreach (IParameter *parameter, parameters)
+    foreach (QSharedPointer<IParameter> parameter, parameters)
     {
         (*out) << *parameter;
     }
     (*out) << records.count();
-    foreach (IRecordID* rec, records)
+    foreach (QSharedPointer<IRecordID> rec, records)
     {
         (*out) << *rec;
     }
@@ -151,14 +152,14 @@ QList<IRecordID*> EDocTcpHistoricClient::searchWithin(const QList<IParameter *> 
 
     Header header;
     in >> header;
-    QList<IRecordID*> lst;
+    QList<QSharedPointer<IRecordID> > lst;
     if (header.command() == MessageCodes::CodeNumber::RSP_searchWithin)
     {
         int count = 0;
         in >> count;
         for (int i = 0; i < count; ++i)
         {
-            ProxyRecordID* record = new ProxyRecordID(this);
+            QSharedPointer<ProxyRecordID> record = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
             in >> *record;
             lst.push_back(record);
         }
@@ -166,7 +167,7 @@ QList<IRecordID*> EDocTcpHistoricClient::searchWithin(const QList<IParameter *> 
     return lst;
 }
 
-IRecord* EDocTcpHistoricClient::createEmptyRecord()
+QSharedPointer<IRecord> EDocTcpHistoricClient::createEmptyRecord()
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_createEnptyRecord);
     QByteArray response = send();
@@ -176,16 +177,16 @@ IRecord* EDocTcpHistoricClient::createEmptyRecord()
 
     Header header;
     in >> header;
-    ProxyRecord *record  = NULL;
+    QSharedPointer<ProxyRecord> record;
     if (header.command() == MessageCodes::CodeNumber::RSP_createEnptyRecord)
     {
-        record = new ProxyRecord(this);
+        record = QSharedPointer<ProxyRecord>(new ProxyRecord(this));
         in >> *record;
     }
     return record;
 }
 
-IRecordID *EDocTcpHistoricClient::addRecord(IRecord *record)
+QSharedPointer<IRecordID> EDocTcpHistoricClient::addRecord(QSharedPointer<IRecord> record)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_addRecord);
     (*out) << *record;
@@ -196,38 +197,38 @@ IRecordID *EDocTcpHistoricClient::addRecord(IRecord *record)
 
     Header header;
     in >> header;
-    ProxyRecordID *recordId  = NULL;
+    QSharedPointer<ProxyRecordID> recordId;
     if (header.command() == MessageCodes::CodeNumber::RSP_addRecord)
     {
-        recordId = new ProxyRecordID(this);
+        recordId = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
         in >> *recordId;
     }
     return recordId;
 }
 
-IRecord* EDocTcpHistoricClient::getRecord(IRecordID *id)
+QSharedPointer<IRecord> EDocTcpHistoricClient::getRecord(QSharedPointer<IRecordID> id)
 {
     return getRecord(id->asString());
 }
 
-IRecord* EDocTcpHistoricClient::getRecord(const QString &id)
+QSharedPointer<IRecord> EDocTcpHistoricClient::getRecord(const QString &id)
 {
     return getRecordByDate(id, QDateTime::currentDateTimeUtc());
 }
 
-QList<IRecord*> EDocTcpHistoricClient::getRecords(const QStringList &ids)
+QList<QSharedPointer<IRecord> > EDocTcpHistoricClient::getRecords(const QStringList &ids)
 {
     return getRecordsByDate(ids, QDateTime::currentDateTimeUtc());
 }
 
-void EDocTcpHistoricClient::updateRecord(IRecord* record)
+void EDocTcpHistoricClient::updateRecord(QSharedPointer<IRecord> record)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_updateRecord);
     (*out) << *record;
     QByteArray response = send();
 }
 
-void EDocTcpHistoricClient::deleteRecord(IRecordID *id)
+void EDocTcpHistoricClient::deleteRecord(QSharedPointer<IRecordID> id)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_deleteRecord);
     (*out) << *id;
@@ -264,14 +265,14 @@ QString EDocTcpHistoricClient::name()
     return "EDocTcpHistoricClient";
 }
 
-QMap<QString, IRecordID*> EDocTcpHistoricClient::search(IParameter* parameter)
+QMap<QString, QSharedPointer<IRecordID> > EDocTcpHistoricClient::search(QSharedPointer<IParameter> parameter)
 {
-    QList<IParameter*> params;
+    QList<QSharedPointer<IParameter>> params;
     params.push_back(parameter);
-    QList<IRecordID*> response = search(params);
+    QList<QSharedPointer<IRecordID>> response = search(params);
 
-    QMap<QString, IRecordID*> rsp;
-    foreach (IRecordID* rec, response)
+    QMap<QString, QSharedPointer<IRecordID>> rsp;
+    foreach (QSharedPointer<IRecordID> rec, response)
     {
         rsp[rec->asString()] = rec;
     }
@@ -279,11 +280,11 @@ QMap<QString, IRecordID*> EDocTcpHistoricClient::search(IParameter* parameter)
 }
 
 //IDatabaseWithHistory
-QList<IRecordID*> EDocTcpHistoricClient::searchByDate(const QList<IParameter*> &parameters, const QDateTime &date)
+QList<QSharedPointer<IRecordID>> EDocTcpHistoricClient::searchByDate(const QList<QSharedPointer<IParameter>> &parameters, const QDateTime &date)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_searchWithHistory);
     (*out) << parameters.count();
-    foreach (IParameter *parameter, parameters)
+    foreach (QSharedPointer<IParameter> parameter, parameters)
     {
         (*out) << *parameter;
     }
@@ -295,14 +296,14 @@ QList<IRecordID*> EDocTcpHistoricClient::searchByDate(const QList<IParameter*> &
 
     Header header;
     in >> header;
-    QList<IRecordID*> lst;
+    QList<QSharedPointer<IRecordID>> lst;
     if (header.command() == MessageCodes::CodeNumber::RSP_searchWithHistory)
     {
         int count = 0;
         in >> count;
         for (int i = 0; i < count; ++i)
         {
-            ProxyRecordID* record = new ProxyRecordID(this);
+            QSharedPointer<ProxyRecordID> record = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
             in >> *record;
             lst.push_back(record);
         }
@@ -310,12 +311,12 @@ QList<IRecordID*> EDocTcpHistoricClient::searchByDate(const QList<IParameter*> &
     return lst;
 }
 
-IRecord* EDocTcpHistoricClient::getRecordByDate(IRecordID *id, const QDateTime &date)
+QSharedPointer<IRecord> EDocTcpHistoricClient::getRecordByDate(QSharedPointer<IRecordID> id, const QDateTime &date)
 {
     return getRecordByDate(id->asString(), date);
 }
 
-IRecord* EDocTcpHistoricClient::getRecordByDate(const QString &id, const QDateTime &date)
+QSharedPointer<IRecord> EDocTcpHistoricClient::getRecordByDate(const QString &id, const QDateTime &date)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_getRecordWithHistory);
     (*out) << id;
@@ -327,16 +328,16 @@ IRecord* EDocTcpHistoricClient::getRecordByDate(const QString &id, const QDateTi
 
     Header header;
     in >> header;
-    ProxyRecord *record = NULL;
+    QSharedPointer<ProxyRecord> record;
     if (header.command() == MessageCodes::CodeNumber::RSP_getRecordWithHistory)
     {
-        record = new ProxyRecord(this);
+        record = QSharedPointer<ProxyRecord>(new ProxyRecord(this));
         in >> *record;
     }
     return record;
 }
 
-QList<IRecord*> EDocTcpHistoricClient::getRecordsByDate(const QStringList &ids, const QDateTime& date)
+QList<QSharedPointer<IRecord>> EDocTcpHistoricClient::getRecordsByDate(const QStringList &ids, const QDateTime& date)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_getRecordsWithHistory);
     (*out) << ids;
@@ -347,14 +348,14 @@ QList<IRecord*> EDocTcpHistoricClient::getRecordsByDate(const QStringList &ids, 
 
     Header header;
     in >> header;
-    QList<IRecord*> records;
+    QList<QSharedPointer<IRecord>> records;
     if (header.command() == MessageCodes::CodeNumber::RSP_getRecordsWithHistory)
     {
         int count = 0;
         in >> count;
         for (int i = 0; i < count; ++i)
         {
-            ProxyRecord *record = new ProxyRecord(this);
+            QSharedPointer<ProxyRecord> record = QSharedPointer<ProxyRecord>(new ProxyRecord(this));
             in >> *record;
             records.append(record);
         }
@@ -388,7 +389,7 @@ QStringList EDocTcpHistoricClient::getDistinctColumnValuesByDate(const QList<QPa
     return rsp;
 }
 
-QList<IRecord*> EDocTcpHistoricClient::getHistory(IRecordID *recordID)
+QList<QSharedPointer<IRecord>> EDocTcpHistoricClient::getHistory(QSharedPointer<IRecordID> recordID)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_getHistory);
     (*out) << recordID;
@@ -399,14 +400,14 @@ QList<IRecord*> EDocTcpHistoricClient::getHistory(IRecordID *recordID)
 
     Header header;
     in >> header;
-    QList<IRecord*> lst;
+    QList<QSharedPointer<IRecord>> lst;
     if (header.command() == MessageCodes::CodeNumber::RSP_getHistory)
     {
         int count  = 0;
         in >> count;
         for (int i = 0; i < count; ++i)
         {
-            ProxyRecord *rec = new ProxyRecord(this);
+            QSharedPointer<ProxyRecord> rec = QSharedPointer<ProxyRecord>(new ProxyRecord(this));
             in >> *rec;
             lst.append(rec);
         }
@@ -414,7 +415,7 @@ QList<IRecord*> EDocTcpHistoricClient::getHistory(IRecordID *recordID)
     return lst;
 }
 
-QList<IRecordID*> EDocTcpHistoricClient::getChanges(const QDateTime &fromDate, const QDateTime &toDate)
+QList<QSharedPointer<IRecordID>> EDocTcpHistoricClient::getChanges(const QDateTime &fromDate, const QDateTime &toDate)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_getHistoryChanges);
     (*out) << fromDate;
@@ -426,14 +427,14 @@ QList<IRecordID*> EDocTcpHistoricClient::getChanges(const QDateTime &fromDate, c
 
     Header header;
     in >> header;
-    QList<IRecordID*> lst;
+    QList<QSharedPointer<IRecordID>> lst;
     if (header.command() == MessageCodes::CodeNumber::RSP_getHistoryChanges)
     {
         int count  = 0;
         in >> count;
         for (int i = 0; i < count; ++i)
         {
-            ProxyRecordID *rec = new ProxyRecordID(this);
+            QSharedPointer<ProxyRecordID> rec = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
             in >> *rec;
             lst.append(rec);
         }
@@ -441,9 +442,9 @@ QList<IRecordID*> EDocTcpHistoricClient::getChanges(const QDateTime &fromDate, c
     return lst;
 }
 
-QMap<QString, IRecordID*> EDocTcpHistoricClient::searchByDate(IParameter* parameter, const QDateTime &date)
+QMap<QString, QSharedPointer<IRecordID>> EDocTcpHistoricClient::searchByDate(QSharedPointer<IParameter> parameter, const QDateTime &date)
 {
     (void) parameter;
     (void) date;
-    return QMap<QString, IRecordID*>();
+    return QMap<QString, QSharedPointer<IRecordID>>();
 }

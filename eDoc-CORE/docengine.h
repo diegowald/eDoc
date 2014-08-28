@@ -20,16 +20,17 @@ public:
     explicit DocEngine(QObject *parent = 0);
     virtual ~DocEngine();
 
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
-    virtual IDocID* addDocument(const QByteArray& blob);
-    virtual IDocument* getDocument(IDocID *id);
-    virtual bool deleteDocument(IDocID *id);
-    virtual IDocID* IValueToIDocId(IValue* value);
+    virtual QSharedPointer<IDocID> addDocument(const QByteArray& blob);
+    virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id);
+    virtual bool deleteDocument(QSharedPointer<IDocID> id);
+    virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
     virtual QString name();
 
     
@@ -38,7 +39,7 @@ signals:
 public slots:
 
 private:
-    QMap<DocID, Document *> collection;
+    QMap<DocID, QSharedPointer<Document>> collection;
 };
 
 #endif // DOCENGINE_H

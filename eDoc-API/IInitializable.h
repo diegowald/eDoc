@@ -1,13 +1,15 @@
 #ifndef IINITIALIZABLE_H
 #define IINITIALIZABLE_H
 
+#include <QSharedPointer>
 #include <QMap>
 #include "../eDoc-Configuration/IXMLContent.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 
 struct IInitializable {
 public:
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent* configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBPlugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,

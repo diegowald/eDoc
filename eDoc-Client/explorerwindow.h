@@ -27,8 +27,8 @@ private:
     void fillTreeCombo();
     void fillSubTree(QTreeWidgetItem *parent);
     QList<QPair<QString, QString> > getTreeFilter(QTreeWidgetItem *parent);
-    void doSearch(QList<IParameter *> &filter);
-    IParameter *createSearchParameter(const QString &fieldName, VALIDQUERY queryType, QVariant value1, QVariant value2);
+    void doSearch(QList<QSharedPointer<IParameter>> &filter);
+    QSharedPointer<IParameter> createSearchParameter(const QString &fieldName, VALIDQUERY queryType, QVariant value1, QVariant value2);
     void updateTreeFilter(QTreeWidgetItem *node);
 
 private slots:
@@ -51,8 +51,8 @@ private slots:
 
     void on_actionAdd_Document_triggered();
 
-    void downloadFile(IRecord* record, const IValue *value);
-    void uploadFile(IRecord* record, const IValue* value);
+    void downloadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value);
+    void uploadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value);
     void on_cboTree_currentIndexChanged(const QString &arg1);
 
     void on_treeStructure_itemSelectionChanged();
@@ -64,9 +64,9 @@ private slots:
 private:
     Ui::ExplorerWindow *ui;
     EDocFactory f;
-    QObjectLogging logger;
-    QList<IParameter *> searchFilter;
-    QList<IParameter *> treefilter;
+    QSharedPointer<QObjectLogging> logger;
+    QList<QSharedPointer<IParameter>> searchFilter;
+    QList<QSharedPointer<IParameter>> treefilter;
 };
 
 #endif // EXPLORERWINDOW_H

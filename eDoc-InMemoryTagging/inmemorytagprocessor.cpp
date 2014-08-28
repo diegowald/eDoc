@@ -15,7 +15,8 @@ InMemoryTagProcessor::~InMemoryTagProcessor()
 {
 }
 
-void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger,
+void InMemoryTagProcessor::initialize(IXMLContent *configuration,
+                                      QSharedPointer<QObjectLogging> logger,
                                       const QMap<QString, QString> &docpluginStock,
                                       const QMap<QString, QString> &DBplugins,
                                       const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -32,14 +33,14 @@ void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging
     loadIntoMemory();
 }
 
-void InMemoryTagProcessor::addTagRecord(IRecordID *recordID, ITag* tag)
+void InMemoryTagProcessor::addTagRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::addTagRecord(IRecordID *recordID, ITag* tag)");
     QStringList tags = tag->keys();
     processKeywordString(recordID, tags);
 }
 
-void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QString &keywords)
+void InMemoryTagProcessor::processKeywordString(QSharedPointer<IRecordID> recordID, const QString &keywords)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QString &keywords)");
     QString s = keywords;
@@ -48,7 +49,7 @@ void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStri
     processKeywordString(recordID, tags);
 }
 
-void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStringList &keywords)
+void InMemoryTagProcessor::processKeywordString(QSharedPointer<IRecordID> recordID, const QStringList &keywords)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStringList &keywords)");
     foreach (QString tagString, keywords)
@@ -94,7 +95,7 @@ QSet<QString> InMemoryTagProcessor::findByTags(const QStringList &tags)
     return result;
 }
 
-void InMemoryTagProcessor::removeRecord(IRecordID* recordID, ITag* tag)
+void InMemoryTagProcessor::removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::removeRecord(IRecordID* recordID, ITag* tag)");
     foreach (QString tagLabel, tag->keys())
@@ -146,7 +147,7 @@ void InMemoryTagProcessor::loadIntoMemory()
     }
 }
 
-void InMemoryTagProcessor::saveKeyword(IRecordID *recordID, const QString &keyword)
+void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const QString &keyword)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::saveKeyword(const int keyword_id)");
 

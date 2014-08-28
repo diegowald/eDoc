@@ -12,10 +12,10 @@
 struct IDocEngine : public IInitializable
 {
 public:
-    virtual IDocID* addDocument(const QByteArray& blob) = 0;
-    virtual IDocBase* getDocument(IDocID *id) = 0;
-    virtual bool deleteDocument(IDocID *id) = 0;
-    virtual IDocID* IValueToIDocId(IValue* value) = 0;
+    virtual QSharedPointer<IDocID> addDocument(const QByteArray& blob) = 0;
+    virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id) = 0;
+    virtual bool deleteDocument(QSharedPointer<IDocID> id) = 0;
+    virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value) = 0;
     virtual QString name() = 0;
     virtual ~IDocEngine() {}
 };

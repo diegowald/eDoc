@@ -8,10 +8,10 @@
 struct IParameter
 {
 public:
-    virtual void setField(IFieldDefinition *field) = 0;
-    virtual IFieldDefinition* field() = 0;
-    virtual void addValue(IValue *value) = 0;
-    virtual QList<IValue*> values() = 0;
+    virtual void setField(QSharedPointer<IFieldDefinition> field) = 0;
+    virtual QSharedPointer<IFieldDefinition> field() = 0;
+    virtual void addValue(QSharedPointer<IValue> value) = 0;
+    virtual QList<QSharedPointer<IValue> > values() = 0;
     virtual void setQueryType(VALIDQUERY queryType) = 0;
     virtual VALIDQUERY queryType() = 0;
     virtual ~IParameter() {}

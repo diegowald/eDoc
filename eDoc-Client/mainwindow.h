@@ -19,7 +19,7 @@ public:
     ~MainWindow();
 
 protected:
-    IDocID *addDocument(const QByteArray &blob);
+    QSharedPointer<IDocID> addDocument(const QByteArray &blob);
     void fillFieldsCombo();
     void fillOperatorsCombo();
 private slots:
@@ -41,7 +41,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     EDocFactory f;
-    QObjectLogging logger;
+    QSharedPointer<QObjectLogging> logger;
 };
 
 #endif // MAINWINDOW_H

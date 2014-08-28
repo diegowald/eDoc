@@ -18,7 +18,7 @@ public:
     explicit StringWidget(QWidget *parent = 0);
     ~StringWidget();
 
-    virtual void setField(IFieldDefinition* fieldDefinition, IValue* value);
+    virtual void setField(QSharedPointer<IFieldDefinition> fieldDefinition, QSharedPointer<IValue> value);
     virtual QVariant value();
 private:
     Ui::StringWidget *ui;

@@ -13,7 +13,7 @@ public:
     virtual ~ProxyRecordID();
 
     virtual QString asString() const;
-    virtual IMetadata *metadata();
+    virtual QSharedPointer<IMetadata> metadata();
 
     void setValue(const QString &value);
 

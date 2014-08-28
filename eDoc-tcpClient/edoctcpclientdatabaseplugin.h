@@ -29,48 +29,49 @@ public:
     ~eDocTcpClientDatabasePlugin();
 
     // IDatabase
-    virtual void initialize(IXMLContent *configuration, QObjectLogging *logger,
+    virtual void initialize(IXMLContent *configuration,
+                            QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
-    virtual QList<IFieldDefinition*> fields();
-    virtual IFieldDefinition* field(const QString &fieldName);
-    virtual IParameter* createEmptyParameter();
-    virtual QList<IRecordID*> search(const QList<IParameter*> &parameters);
-    virtual QList<IRecordID*> searchWithin(const QList<IParameter *> &parameters, const QList<IRecordID *> &records);
-    virtual IRecord* createEmptyRecord();
-    virtual IRecordID *addRecord(IRecord *record);
-    virtual IRecord* getRecord(IRecordID *id);
-    virtual IRecord* getRecord(const QString &id);
-    virtual QList<IRecord*> getRecords(const QStringList &ids);
-    virtual void updateRecord(IRecord* record);
-    virtual void deleteRecord(IRecordID *id);
+    virtual QList<QSharedPointer<IFieldDefinition>> fields();
+    virtual QSharedPointer<IFieldDefinition> field(const QString &fieldName);
+    virtual QSharedPointer<IParameter> createEmptyParameter();
+    virtual QList<QSharedPointer<IRecordID>> search(const QList<QSharedPointer<IParameter>> &parameters);
+    virtual QList<QSharedPointer<IRecordID>> searchWithin(const QList<QSharedPointer<IParameter>> &parameters, const QList<QSharedPointer<IRecordID>> &records);
+    virtual QSharedPointer<IRecord> createEmptyRecord();
+    virtual QSharedPointer<IRecordID> addRecord(QSharedPointer<IRecord> record);
+    virtual QSharedPointer<IRecord> getRecord(QSharedPointer<IRecordID> id);
+    virtual QSharedPointer<IRecord> getRecord(const QString &id);
+    virtual QList<QSharedPointer<IRecord>> getRecords(const QStringList &ids);
+    virtual void updateRecord(QSharedPointer<IRecord> record);
+    virtual void deleteRecord(QSharedPointer<IRecordID> id);
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName);
     virtual QString name();
 
 protected:
-    virtual QMap<QString, IRecordID*> search(IParameter* parameter);
+    virtual QMap<QString, QSharedPointer<IRecordID>> search(QSharedPointer<IParameter> parameter);
 
 public:
     // IDocEngine
-    virtual IDocID* addDocument(const QByteArray& blob);
-    virtual IDocBase* getDocument(IDocID *id);
-    virtual bool deleteDocument(IDocID *id);
-    virtual IDocID* IValueToIDocId(IValue* value);
+    virtual QSharedPointer<IDocID> addDocument(const QByteArray& blob);
+    virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id);
+    virtual bool deleteDocument(QSharedPointer<IDocID> id);
+    virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
 
 public:
     // ITagProcessor
-    virtual void addTagRecord(IRecordID *recordID, ITag* tag);
+    virtual void addTagRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag);
     virtual QSet<QString> findByTags(const QStringList &tags);
-    virtual void removeRecord(IRecordID* recordID, ITag* tag);
-    virtual void processKeywordString(IRecordID *recordID, const QString &keywords);
+    virtual void removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag);
+    virtual void processKeywordString(QSharedPointer<IRecordID> recordID, const QString &keywords);
 
 private slots:
 
 private:
-    QObjectLogging *logger;
+    QSharedPointer<QObjectLogging> logger;
     QString m_Name;
 };
 

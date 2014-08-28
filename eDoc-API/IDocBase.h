@@ -8,11 +8,11 @@
 struct IDocBase
 {
 public:
-    virtual IDocID* id() = 0;
+    virtual QSharedPointer<IDocID> id() = 0;
     virtual bool isComplex() const = 0;
     virtual ~IDocBase() {}
 };
 
-Q_DECLARE_METATYPE(IDocBase*)
+Q_DECLARE_METATYPE(QSharedPointer<IDocBase>)
 
 #endif // IDOCBASE_H

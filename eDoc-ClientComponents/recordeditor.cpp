@@ -9,7 +9,6 @@ RecordEditor::RecordEditor(QWidget *parent) :
 {
     ui->setupUi(this);
     enabledEdition = true;
-    m_Record = NULL;
 }
 
 RecordEditor::~RecordEditor()
@@ -17,13 +16,13 @@ RecordEditor::~RecordEditor()
     delete ui;
 }
 
-void RecordEditor::setRecord(IRecord * record)
+void RecordEditor::setRecord(QSharedPointer<IRecord> record)
 {
     m_Record = record;
     ui->lstFields->clear();
     foreach (QString fieldName, record->fieldNames())
     {
-        IFieldDefinition *fieldDef = record->fieldDefinition(fieldName);
+        QSharedPointer<IFieldDefinition> fieldDef = record->fieldDefinition(fieldName);
         if (fieldDef->isVisible())
         {
             QFieldWidget *w = createWidget(record, fieldName, ui->lstFields);
@@ -40,7 +39,7 @@ void RecordEditor::setRecord(IRecord * record)
     setEnabledStatus();
 }
 
-QFieldWidget *RecordEditor::createWidget(IRecord *record, const QString &fieldName, QWidget* parent)
+QFieldWidget *RecordEditor::createWidget(QSharedPointer<IRecord> record, const QString &fieldName, QWidget* parent)
 {
     QFieldWidget *w = NULL;
     QString fieldType = record->fieldDefinition(fieldName)->type();
@@ -68,12 +67,12 @@ QFieldWidget *RecordEditor::createWidget(IRecord *record, const QString &fieldNa
     return w;
 }
 
-void RecordEditor::applyValuesToRecord(IRecord *record)
+void RecordEditor::applyValuesToRecord(QSharedPointer<IRecord> record)
 {
     QStringList fields = collection.keys();
     foreach (QString fieldName, fields)
     {
-        IFieldDefinition* fieldDef = record->fieldDefinition(fieldName);
+        QSharedPointer<IFieldDefinition> fieldDef = record->fieldDefinition(fieldName);
         if (fieldDef && (fieldDef->isVisible() && fieldDef->isQueryable()))
         {
             QVariant v = collection[fieldName]->value();
@@ -99,12 +98,12 @@ void RecordEditor::setEnabledStatus()
     }
 }
 
-void RecordEditor::download(const IValue* value)
+void RecordEditor::download(const QSharedPointer<IValue> value)
 {
     emit downloadFile(m_Record, value);
 }
 
-void RecordEditor::upload(const IValue* value)
+void RecordEditor::upload(const QSharedPointer<IValue> value)
 {
     emit uploadFile(m_Record, value);
 }

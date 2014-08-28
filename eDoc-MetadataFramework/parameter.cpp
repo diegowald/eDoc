@@ -2,29 +2,28 @@
 
 Parameter::Parameter(QObject *parent) : QObject(parent)
 {
-    m_Field = NULL;
 }
 
 Parameter::~Parameter()
 {
 }
 
-void Parameter::setField(IFieldDefinition *field)
+void Parameter::setField(QSharedPointer<IFieldDefinition> field)
 {
     m_Field = field;
 }
 
-IFieldDefinition* Parameter::field()
+QSharedPointer<IFieldDefinition> Parameter::field()
 {
     return m_Field;
 }
 
-void Parameter::addValue(IValue *value)
+void Parameter::addValue(QSharedPointer<IValue> value)
 {
     m_Values.append(value);
 }
 
-QList<IValue*> Parameter::values()
+QList<QSharedPointer<IValue> > Parameter::values()
 {
     return m_Values;
 }

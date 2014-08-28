@@ -8,9 +8,9 @@ class InMemoryDocument : public QObject, public IDocument
 {
     Q_OBJECT
 public:
-    explicit InMemoryDocument(IDocument* persistentDoc, QObject *parent = 0);
+    explicit InMemoryDocument(QSharedPointer<IDocument> persistentDoc, QObject *parent = 0);
     virtual ~InMemoryDocument();
-    virtual IDocID* id();
+    virtual QSharedPointer<IDocID> id();
     virtual QByteArray blob();
 signals:
     
@@ -19,7 +19,7 @@ public slots:
 private:
     QByteArray cachedData;
     bool cached;
-    IDocument *m_PersistentDocument;
+    QSharedPointer<IDocument> m_PersistentDocument;
 };
 
 #endif // INMEMORYDOCUMENT_H

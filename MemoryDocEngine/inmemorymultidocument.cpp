@@ -2,15 +2,15 @@
 #include "inmemorydocument.h"
 
 
-InMemoryMultiDocument::InMemoryMultiDocument(IMultiDocument* persistentDoc, QObject *parent) :
+InMemoryMultiDocument::InMemoryMultiDocument(QSharedPointer<IMultiDocument> persistentDoc, QObject *parent) :
     QObject(parent)
 {
     m_PersistentDocument = persistentDoc;
-    foreach (IDocBase* docB, persistentDoc->getDocuments()) {
+    foreach (QSharedPointer<IDocBase> docB, persistentDoc->getDocuments()) {
         if (docB->isComplex())
-            m_Collection[docB->id()->asString()] = new InMemoryMultiDocument((IMultiDocument*)docB, this);
+            m_Collection[docB->id()->asString()] = QSharedPointer<IDocBase>(new InMemoryMultiDocument(docB.dynamicCast<IMultiDocument>(), this));
         else
-            m_Collection[docB->id()->asString()] = new InMemoryDocument((IDocument*)docB, this);
+            m_Collection[docB->id()->asString()] = QSharedPointer<IDocBase>(new InMemoryDocument(docB.dynamicCast<IDocument>(), this));
     }
 }
 
@@ -18,41 +18,41 @@ InMemoryMultiDocument::~InMemoryMultiDocument()
 {
 }
 
-IDocID *InMemoryMultiDocument::id()
+QSharedPointer<IDocID> InMemoryMultiDocument::id()
 {
     return m_PersistentDocument->id();
 }
 
-void InMemoryMultiDocument::addDocument(IDocBase *doc)
+void InMemoryMultiDocument::addDocument(QSharedPointer<IDocBase> doc)
 {
     m_Collection[doc->id()->asString()] = doc;
 }
 
-IDocBase* InMemoryMultiDocument::getDocument(IDocID *id)
+QSharedPointer<IDocBase> InMemoryMultiDocument::getDocument(QSharedPointer<IDocID> id)
 {
     if (!m_Collection.contains(id->asString()))
     {
         if (m_PersistentDocument->containsDocument(id))
         {
-            IDocBase *doc = m_PersistentDocument->getDocument(id);
+            QSharedPointer<IDocBase> doc = m_PersistentDocument->getDocument(id);
             if (doc->isComplex())
-                m_Collection[id->asString()] = new InMemoryMultiDocument((IMultiDocument*)doc, this);
+                m_Collection[id->asString()] = QSharedPointer<IDocBase>(new InMemoryMultiDocument(doc.dynamicCast<IMultiDocument>(), this));
             else
-                m_Collection[id->asString()] = new InMemoryDocument((IDocument*)doc, this);
+                m_Collection[id->asString()] = QSharedPointer<IDocBase>(new InMemoryDocument(doc.dynamicCast<IDocument>(), this));
         }
     }
     if (m_Collection.contains(id->asString()))
         return m_Collection[id->asString()];
     else
-        return NULL; // throw exception???
+        return QSharedPointer<IDocBase>(); // throw exception???
 }
 
-QList<IDocBase*> InMemoryMultiDocument::getDocuments()
+QList<QSharedPointer<IDocBase> > InMemoryMultiDocument::getDocuments()
 {
     return m_Collection.values();
 }
 
-void InMemoryMultiDocument::removeDocument(IDocID *id)
+void InMemoryMultiDocument::removeDocument(QSharedPointer<IDocID> id)
 {
     if (m_Collection.contains(id->asString()))
     {
@@ -61,7 +61,7 @@ void InMemoryMultiDocument::removeDocument(IDocID *id)
     }
 }
 
-bool InMemoryMultiDocument::containsDocument(IDocID *id)
+bool InMemoryMultiDocument::containsDocument(QSharedPointer<IDocID> id)
 {
     return m_Collection.contains(id->asString());
 }

@@ -13,7 +13,7 @@ StringWidget::~StringWidget()
     delete ui;
 }
 
-void StringWidget::setField(IFieldDefinition* fieldDefinition, IValue* value)
+void StringWidget::setField(QSharedPointer<IFieldDefinition> fieldDefinition, QSharedPointer<IValue> value)
 {
     ui->label->setText(fieldDefinition->name());
     ui->ReadOnlyValue->setVisible(fieldDefinition->isReadOnly());

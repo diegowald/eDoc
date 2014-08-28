@@ -6,8 +6,6 @@ DocumentWidget::DocumentWidget(QWidget *parent) :
     ui(new Ui::DocumentWidget)
 {
     ui->setupUi(this);
-    m_FieldDefinition = NULL;
-    m_Value = NULL;
 }
 
 DocumentWidget::~DocumentWidget()
@@ -15,7 +13,7 @@ DocumentWidget::~DocumentWidget()
     delete ui;
 }
 
-void DocumentWidget::setField(IFieldDefinition* fieldDefinition, IValue* value)
+void DocumentWidget::setField(QSharedPointer<IFieldDefinition> fieldDefinition, QSharedPointer<IValue> value)
 {
 //    ui->label->setText(fieldDefinition->name());
 //    ui->ReadOnlyValue->setVisible(fieldDefinition->isReadOnly());
@@ -33,7 +31,7 @@ QVariant DocumentWidget::value()
 
 void DocumentWidget::on_btnDownload_clicked()
 {
-    if (m_Value != NULL)
+    if (!m_Value.isNull())
     {
         emit download(m_Value);
     }
