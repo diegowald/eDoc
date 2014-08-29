@@ -61,6 +61,7 @@ public slots:
 
 private slots:
     void onNewConnection();
+    void onClientConnectionFinished();
 
 private:
     QSharedPointer<QObjectLogging> logger;

@@ -232,8 +232,8 @@ void ExplorerWindow::on_searchResult_itemSelectionChanged()
     QSharedPointer<IRecord>rec = ui->searchResult->item(selection.at(0)->row(), 0)->data(Qt::UserRole).value<QSharedPointer<IRecord>>();
 
     RecordEditor *r = new RecordEditor(this);
-    connect(r, SIGNAL(downloadFile(IRecord*,const IValue*)), this, SLOT(downloadFile(IRecord*,const IValue*)));
-    connect(r, SIGNAL(uploadFile(IRecord*,const IValue*)), this, SLOT(uploadFile(IRecord*,const IValue*)));
+    connect(r, SIGNAL(downloadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)), this, SLOT(downloadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)));
+    connect(r, SIGNAL(uploadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)), this, SLOT(uploadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)));
 
     //r->setEnabledEdition(false);
     r->setRecord(rec);

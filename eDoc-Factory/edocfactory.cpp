@@ -296,6 +296,7 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
 
     if (!record->value("keywords")->isNull())
     {
-        tagEngine()->processKeywordString(record_id, record->value("keywords")->content().toString());
+        if (!tagEngine().isNull())
+            tagEngine()->processKeywordString(record_id, record->value("keywords")->content().toString());
     }
 }

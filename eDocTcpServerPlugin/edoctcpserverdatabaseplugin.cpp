@@ -68,9 +68,9 @@ void EDocTCPServerDatabasePlugin::run()
             onReadyRead();
         }
     }
-    if ((_socket->state() == QAbstractSocket::ClosingState) || (_socket->state() == QAbstractSocket::UnconnectedState))
+    if ((_socket->state() == QAbstractSocket::ClosingState) || (_socket->state() == QAbstractSocket::UnconnectedState) || (_socket->state() == QAbstractSocket::ClosingState) || (_socket->state() == QAbstractSocket::UnconnectedState))
     {
-        deleteLater();
+        quit();
     }
 
 }

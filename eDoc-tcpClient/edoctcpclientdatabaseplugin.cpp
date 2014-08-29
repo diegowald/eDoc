@@ -304,6 +304,10 @@ QStringList eDocTcpClientDatabasePlugin::getDistinctColumnValues(const QList<QPa
     return rsp;
 }
 
+QList<QPair<QString, QString>> eDocTcpClientDatabasePlugin::getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName)
+{
+}
+
 QString eDocTcpClientDatabasePlugin::name()
 {
     return "EDocTcpClient";

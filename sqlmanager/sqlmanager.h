@@ -48,6 +48,7 @@ public:
     virtual int executeCommandAndReturnId(const QString &sql, DBRecordPtr record);
 
     virtual QStringList getDistintValues(const QString &sql, const QList<QPair<QString, QString> >& filter);
+    virtual QList<QPair<QString, QString> > getColumnValues(const QString &sql, const QList<QPair<QString, QString> >& filter);
 
 private:
     bool tryReconnect();

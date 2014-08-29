@@ -261,6 +261,46 @@ QStringList SQLManager::getDistintValues(const QString &sql, const QList<QPair<Q
     return response;
 }
 
+QList<QPair<QString, QString> > SQLManager::getColumnValues(const QString &sql, const QList<QPair<QString, QString> >& filter)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "QList<QPair<QString, QString> > SQLManager::getColumnValues(const QString &sql, const QList<QPair<QString, QString> >& filter)");
+
+    QList<QPair<QString, QString> > response;
+
+    if (!tryReconnect())
+    {
+        m_Logger->logError(QString("Can't open Database."
+                           " Reason: ") +
+                           db.lastError().text());
+        // Error
+        return response;
+    }
+
+    QSqlQuery q;
+    q.prepare(sql);
+    addParameters(q, sql, filter);
+    q.exec();
+
+    while (q.next())
+    {
+        QSqlRecord rec = q.record();
+        for (int i = 0; i < rec.count(); i++)
+        {
+            QPair<QString, QString> pair;
+            pair.first = rec.field(0).value().toString();
+            pair.second = rec.field(1).value().toString();
+            response.push_back(pair);
+        }
+    }
+
+    if (q.lastError().type() != QSqlError::NoError)
+    {
+        m_Logger->logError(QString("SQL Error: %1").arg(q.lastError().text()));
+    }
+    db.close();
+    return response;
+}
+
 bool SQLManager::tryReconnect()
 {
 //    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "bool SQLManager::tryReconnect()");

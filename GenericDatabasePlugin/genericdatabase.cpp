@@ -370,6 +370,29 @@ QStringList GenericDatabase::getDistinctColumnValues(const QList<QPair<QString, 
     return result;
 }
 
+QList<QPair<QString, QString>> GenericDatabase::getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName)
+{
+    QString sql = "SELECT record_id, %1 FROM %2 WHERE %1 <> '' AND %1 IS NOT NULL %3";
+    QString whereClause = "";
+    if (filter.count() > 0)
+    {
+        QString field;
+        QPair<QString, QString> column;
+        foreach (column, filter)
+        {
+            field = "%1 = :%2";
+            whereClause += whereClause.length() > 0 ? " AND " : "";
+            whereClause += field.arg(column.first, column.first);
+        }
+        whereClause = " AND " + whereClause;
+    }
+    QString sqlToExecute = sql.arg(columnName).arg(m_TableName).arg(whereClause);
+
+    QList<QPair<QString, QString>> result = m_SQLManager.getColumnValues(sqlToExecute, filter);
+
+    return result;
+}
+
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(GenericDatabasePlugin, GenericDatabase)
 #endif // QT_VERSION < 0x050000

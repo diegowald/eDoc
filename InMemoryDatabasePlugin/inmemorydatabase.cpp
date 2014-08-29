@@ -134,6 +134,11 @@ QStringList InMemoryDatabase::getDistinctColumnValues(const QList<QPair<QString,
     return QStringList();
 }
 
+QList<QPair<QString, QString>> InMemoryDatabase::getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName)
+{
+    return QList<QPair<QString, QString>>();
+}
+
 QString InMemoryDatabase::name()
 {
     return "InMemoryDatabase";

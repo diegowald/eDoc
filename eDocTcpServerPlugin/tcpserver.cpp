@@ -1,5 +1,6 @@
 #include "tcpserver.h"
 #include <QPluginLoader>
+#include <QtNetwork/QTcpSocket>
 #include <QtWidgets/QApplication>
 
 TcpServer::TcpServer(QObject *parent) :
@@ -152,6 +153,23 @@ void TcpServer::onNewConnection()
     logger->logDebug("void TcpServer::onNewConnection()");
     QSharedPointer<QTcpSocket> client = QSharedPointer<QTcpSocket>(tcpServer->nextPendingConnection());
     clientConnections[client] = QSharedPointer<EDocTCPServerDatabasePlugin>(new EDocTCPServerDatabasePlugin(logger, client, database, dbh, docEngine, this));
+    connect(clientConnections[client].data(), SIGNAL(finished()), this, SLOT(onClientConnectionFinished()));
+}
+
+void TcpServer::onClientConnectionFinished()
+{
+    QList<QSharedPointer<QTcpSocket>> deadSockets;
+    foreach (QSharedPointer<QTcpSocket> socket, clientConnections.keys())
+    {
+        if (socket->state() == QAbstractSocket::UnconnectedState)
+        {
+            deadSockets.append(socket);
+        }
+    }
+    foreach (QSharedPointer<QTcpSocket> socket, deadSockets)
+    {
+        clientConnections.remove(socket);
+    }
 }
 
 void TcpServer::run()

@@ -26,6 +26,7 @@ public:
     virtual void updateRecord(QSharedPointer<IRecord> record) = 0;
     virtual void deleteRecord(QSharedPointer<IRecordID> id) = 0;
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName) = 0;
+    virtual QList<QPair<QString, QString> > getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName) = 0;
     virtual QString name() = 0;
 
     virtual ~IDatabase() {}

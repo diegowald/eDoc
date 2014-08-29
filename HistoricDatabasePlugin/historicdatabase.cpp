@@ -86,7 +86,7 @@ QList<QSharedPointer<IRecordID> > HistoricDatabase::searchWithin(const QList<QSh
 
 QSharedPointer<IRecord> HistoricDatabase::createEmptyRecord()
 {
-    QSharedPointer<HistoricRecord> record = QSharedPointer<HistoricRecord>(new HistoricRecord(databaseEngine->createEmptyRecord(), this));
+    QSharedPointer<HistoricRecord> record = QSharedPointer<HistoricRecord>(new HistoricRecord(databaseEngine->createEmptyRecord()));
     record->setID(QSharedPointer<IRecordID>(new RecordID(record.data())));
     return record;
 }
@@ -96,10 +96,10 @@ QSharedPointer<IRecordID> HistoricDatabase::addRecord(QSharedPointer<IRecord> re
     QSharedPointer<HistoricRecord> rec = record.dynamicCast<HistoricRecord>();
     if (rec.isNull())
     {
-        rec = QSharedPointer<HistoricRecord>(new HistoricRecord(record, this));
-        rec->setID(QSharedPointer<RecordID>(new RecordID(rec.data())));
+        rec = QSharedPointer<HistoricRecord>(new HistoricRecord(record));
+        rec->setID(QSharedPointer<RecordID>(new RecordID(record->ID()->asString())));
     }
-
+    rec->getRecord()->setID(QSharedPointer<RecordID>(new RecordID()));
     databaseEngine->addRecord(rec->getRecord());
 
     QString SQLhistory = "INSERT INTO %1 (MasterID, record_id, fromDate) VALUES (:MasterID, :record_id, :fromDate)";
@@ -137,7 +137,7 @@ QList<QSharedPointer<IRecord> > HistoricDatabase::getRecords(const QStringList &
 
 void HistoricDatabase::updateRecord(QSharedPointer<IRecord> record)
 {
-    QSharedPointer<IRecordID> newId = QSharedPointer<IRecordID>(new RecordID(this));
+    QSharedPointer<IRecordID> newId = QSharedPointer<IRecordID>(new RecordID());
     QSharedPointer<HistoricRecord> histRec =record.dynamicCast<HistoricRecord>();
     if (histRec.isNull())
     {
@@ -175,7 +175,12 @@ void HistoricDatabase::deleteRecord(QSharedPointer<IRecordID> id)
 
 QStringList HistoricDatabase::getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName)
 {
-    return databaseEngine->getDistinctColumnValues(filter, columnName);
+    return getDistinctColumnValuesByDate(filter, columnName, now());
+}
+
+QList<QPair<QString, QString> > HistoricDatabase::getColumnValue(const QList<QPair<QString, QString> > &filter, const QString &columnName)
+{
+    return databaseEngine->getColumnValue(filter, columnName);
 }
 
 QString HistoricDatabase::name()
@@ -216,14 +221,14 @@ QSharedPointer<IRecord> HistoricDatabase::getRecordByDate(QSharedPointer<IRecord
     QMap<QString, QSharedPointer<IRecordID>> validRecord = getValidRecords(id, date);
 
     QSharedPointer<IRecord> record = databaseEngine->getRecord(validRecord.keys().at(0));
-    QSharedPointer<HistoricRecord> rec = QSharedPointer<HistoricRecord>(new HistoricRecord(record, this));
+    QSharedPointer<HistoricRecord> rec = QSharedPointer<HistoricRecord>(new HistoricRecord(record));
     rec->setID(id);
     return rec;
 }
 
 QSharedPointer<IRecord> HistoricDatabase::getRecordByDate(const QString &id, const QDateTime &date)
 {
-    QSharedPointer<RecordID> recId = QSharedPointer<RecordID>(new RecordID(id, this));
+    QSharedPointer<RecordID> recId = QSharedPointer<RecordID>(new RecordID(id));
     return getRecordByDate(recId, date);
 }
 
@@ -240,6 +245,18 @@ QList<QSharedPointer<IRecord> > HistoricDatabase::getRecordsByDate(const QString
 
 QStringList HistoricDatabase::getDistinctColumnValuesByDate(const QList<QPair<QString, QString> >& filter, const QString & columnName, const QDateTime &date)
 {
+    QList<QPair<QString, QString>> result = databaseEngine->getColumnValue(filter, columnName);
+    QMap<QString, QSharedPointer<IRecordID> > validRecords = getValidRecords(QSharedPointer<IRecordID>(), date);
+
+    QSet<QString> distinctValues;
+    QPair<QString, QString> pair;
+    foreach (pair, result)
+    {
+        if (validRecords.contains(pair.first))
+            distinctValues.insert(pair.second);
+    }
+
+    return distinctValues.toList();
 }
 
 QList<QSharedPointer<IRecord> > HistoricDatabase::getHistory(QSharedPointer<IRecordID> recordID)
@@ -321,7 +338,7 @@ QMap<QString, QSharedPointer<IRecordID> > HistoricDatabase::getValidRecords(QSha
 
     foreach (DBRecordPtr rec, *rs)
     {
-        QSharedPointer<IRecordID> mID = QSharedPointer<IRecordID>(new RecordID((*rec)["MasterID"].toString(), this));
+        QSharedPointer<IRecordID> mID = QSharedPointer<IRecordID>(new RecordID((*rec)["MasterID"].toString()));
 
         result[(*rec)["record_id"].toString()] = mID;
     }

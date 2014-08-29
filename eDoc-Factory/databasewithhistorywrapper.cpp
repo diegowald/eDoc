@@ -95,6 +95,11 @@ QStringList DatabaseWithHistoryWrapper::getDistinctColumnValues(const QList<QPai
     return database->getDistinctColumnValues(filter, columnName);
 }
 
+QList<QPair<QString, QString>> DatabaseWithHistoryWrapper::getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName)
+{
+    return database->getColumnValue(filter, columnName);
+}
+
 QString DatabaseWithHistoryWrapper::name()
 {
     return "DatabaseWithHistoryWrapper";
