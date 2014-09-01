@@ -13,7 +13,7 @@ FileEngine::~FileEngine()
 {
 }
 
-void FileEngine::initialize(IXMLContent *configuration,
+void FileEngine::initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
@@ -26,7 +26,8 @@ void FileEngine::initialize(IXMLContent *configuration,
     (void)DBWithHistoryPlugins;
     (void)tagPlugins;
     (void)serverPlugins;
-    folder = ((XMLElement*)((XMLCollection*) configuration)->get("folder"))->value();
+    //folder = ((XMLElement*)((XMLCollection*) configuration)->get("folder"))->value();
+    folder = configuration.dynamicCast<XMLCollection>()->get("folder").dynamicCast<XMLElement>()->value();
     m_Logger = logger;
     fileManager = QSharedPointer<FileManagement>(new FileManagement(folder, this));
 }

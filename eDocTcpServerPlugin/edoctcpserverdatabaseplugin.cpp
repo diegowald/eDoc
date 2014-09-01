@@ -8,11 +8,12 @@
 #include "../eDocTCPMessages/messagecodes.h"
 #include "../eDocTCPMessages/streamhelpers.h"
 
-EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QSharedPointer<QObjectLogging> Logger,
+EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLoggingPtr Logger,
                                                          QSharedPointer<QTcpSocket> socket,
-                                                         QSharedPointer<IDatabase> persistance,
-                                                         QSharedPointer<IDatabaseWithHistory> histPersistance,
-                                                         QSharedPointer<IDocEngine> docEngine,
+                                                         IDatabasePtr persistance,
+                                                         IDatabaseWithHistoryPtr histPersistance,
+                                                         IDocEnginePtr docEngine,
+                                                         ITagProcessorPtr tagProcessor,
                                                          QObject *parent) :
     QThread(parent)
 {
@@ -20,6 +21,7 @@ EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QSharedPointer<QObjectL
     _persistance = persistance;
     _persistanceHist = histPersistance;
     _docEngine = docEngine;
+    _tagProcessor = tagProcessor;
     blockSize = 0;
     blob.clear();
     buildingBlob.clear();
@@ -49,7 +51,10 @@ EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QSharedPointer<QObjectL
     functionMap[MessageCodes::CodeNumber::REQ_getDistinctColumnValuesWithHistory] = &EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValuesWithHistory;
     functionMap[MessageCodes::CodeNumber::REQ_getHistory] = &EDocTCPServerDatabasePlugin::processREQGetHistory;
     functionMap[MessageCodes::CodeNumber::RSP_getHistoryChanges] = &EDocTCPServerDatabasePlugin::processREQGetHistoryChanges;
-
+    functionMap[MessageCodes::CodeNumber::REQ_addTagRecord] = &EDocTCPServerDatabasePlugin::processREQAddTagRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_findByTags] = &EDocTCPServerDatabasePlugin::processREQFindByTags;
+    functionMap[MessageCodes::CodeNumber::REQ_removeRecord] = &EDocTCPServerDatabasePlugin::processREQRemoveRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_processKeywordString] = &EDocTCPServerDatabasePlugin::processREQprocessKeywordString;
 }
 
 EDocTCPServerDatabasePlugin::~EDocTCPServerDatabasePlugin()
@@ -245,6 +250,18 @@ void EDocTCPServerDatabasePlugin::processREQGetRecords(QDataStream &in)
 void EDocTCPServerDatabasePlugin::processREQUpdateRecord(QDataStream &in)
 {
     Q_ASSERT(false);
+
+    QSharedPointer<IRecord> record = QSharedPointer<IRecord>(new ProxyRecord());
+    in >> *(record.dynamicCast<ProxyRecord>());
+
+    if (_persistanceHist.isNull())
+    {
+        _persistance->updateRecord(record);
+    }
+    else
+    {
+        _persistanceHist->updateRecord(record);
+    }
 }
 
 void EDocTCPServerDatabasePlugin::processREQDeleteRecord(QDataStream &in)
@@ -380,6 +397,52 @@ void EDocTCPServerDatabasePlugin::processREQGetHistoryChanges(QDataStream &in)
     {
         (*out) << *rec;
     }
+}
+
+void EDocTCPServerDatabasePlugin::processREQAddTagRecord(QDataStream &in)
+{
+    Q_ASSERT(false);
+}
+
+void EDocTCPServerDatabasePlugin::processREQFindByTags(QDataStream &in)
+{
+    int count = 0;
+    in >> count;
+    QStringList tags;
+    QString tag;
+    for (int i = 0; i < count; ++i)
+    {
+        in >> tag;
+        tags.append(tag);
+    }
+
+    QSet<QString> result = _tagProcessor->findByTags(tags);
+
+    prepareToSend(MessageCodes::CodeNumber::RSP_findByTags);
+
+    (*out) << result.count();
+    foreach (QString res, result.toList())
+    {
+        (*out) << res;
+    }
+}
+
+void EDocTCPServerDatabasePlugin::processREQRemoveRecord(QDataStream &in)
+{
+    Q_ASSERT(false);
+
+//    _tagProcessor->removeRecord(ProxyRecord, tag);
+}
+
+void EDocTCPServerDatabasePlugin::processREQprocessKeywordString(QDataStream &in)
+{
+    ProxyRecordIDPtr proxyRecordID = ProxyRecordIDPtr(new ProxyRecordID());
+    in >> *proxyRecordID;
+    QString keywords;
+    in >> keywords;
+    _tagProcessor->processKeywordString(proxyRecordID, keywords);
+    prepareToSend(MessageCodes::CodeNumber::RSP_processKeywordString);
+    (*out) << true;
 }
 
 void EDocTCPServerDatabasePlugin::send()

@@ -7,9 +7,10 @@
 
 struct IUser
 {
-    virtual QSharedPointer<IUserID> userID() = 0;
-    virtual QList<QSharedPointer<IGroup> > groups() = 0;
+    virtual IUserIDPtr userID() = 0;
+    virtual QList<IGroupPtr> groups() = 0;
     virtual ~IUser() {}
 };
 
+typedef QSharedPointer<IUser> IUserPtr;
 #endif // IUSER_H

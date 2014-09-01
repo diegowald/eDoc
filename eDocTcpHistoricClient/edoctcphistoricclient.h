@@ -6,7 +6,7 @@
 #include "../eDoc-API/IDatabaseWithHistory.h"
 #include "../eDocTCPMessages/tcpclient.h"
 
-class EDOCTCPHISTORICCLIENTSHARED_EXPORT EDocTcpHistoricClient : public TcpClient, public IDatabaseWithHistory
+class EDOCTCPHISTORICCLIENTSHARED_EXPORT EDocTcpHistoricClient : virtual public TcpClient, virtual public IDatabaseWithHistory
 {
     Q_OBJECT
 
@@ -21,7 +21,7 @@ public:
 
     //IInitializable
 public:
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,

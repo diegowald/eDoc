@@ -11,7 +11,7 @@ QueryEngine::~QueryEngine()
 {
 }
 
-void QueryEngine::initialize(IXMLContent *configuration,
+void QueryEngine::initialize(QSharedPointer<IXMLContent> configuration,
                              QSharedPointer<QObjectLogging> logger,
                              const QMap<QString, QString> &docpluginStock,
                              const QMap<QString, QString> &DBplugins,
@@ -26,31 +26,38 @@ void QueryEngine::initialize(IXMLContent *configuration,
     (void)tagPlugins;
     (void)serverPlugins;
 
-    QString countStr = ((XMLElement*)((XMLCollection*)configuration)->get("count"))->value();
+    //QString countStr = ((XMLElement*)((XMLCollection*)configuration)->get("count"))->value();
+    QString countStr = configuration.dynamicCast<XMLCollection>()->get("count").dynamicCast<XMLElement>()->value();
     int count = countStr.toInt();
 
     for (int i = 1; i <= count; ++i)
     {
         QString queryName = "query%1";
-        XMLCollection *queryConf = (XMLCollection*)((XMLCollection*)configuration)->get(queryName.arg(i));
+        //QSharedPointer<XMLCollection> queryConf = (XMLCollection*)((XMLCollection*)configuration)->get(queryName.arg(i));
+        QSharedPointer<XMLCollection> queryConf = configuration.dynamicCast<XMLCollection>()->get(queryName.arg(i)).dynamicCast<XMLCollection>();
         createQueryFromConf(queryConf);
     }
 }
 
-void QueryEngine::createQueryFromConf(XMLCollection *configuration)
+void QueryEngine::createQueryFromConf(QSharedPointer<XMLCollection> configuration)
 {
-    QString queryName = ((XMLElement*)configuration->get("name"))->value();
-    XMLCollection *fieldsConf = (XMLCollection*)configuration->get("fields");
-    QString countStr = ((XMLElement*)fieldsConf->get("count"))->value();
+    //QString queryName = ((XMLElement*)configuration->get("name"))->value();
+    QString queryName = configuration->get("name").dynamicCast<XMLElement>()->value();
+    //XMLCollection *fieldsConf = (XMLCollection*)configuration->get("fields");
+    QSharedPointer<XMLCollection> fieldsConf = configuration->get("fields").dynamicCast<XMLCollection>();
+    //QString countStr = ((XMLElement*)fieldsConf->get("count"))->value();
+    QString countStr = fieldsConf->get("count").dynamicCast<XMLElement>()->value();
     int count = countStr.toInt();
 
     QStringList fieldNames;
     for (int i = 1; i <= count; ++i)
     {
         QString field = "field%1";
-        XMLCollection *fieldDefinition = (XMLCollection*)fieldsConf->get(field.arg(i));
+        //XMLCollection *fieldDefinition = (XMLCollection*)fieldsConf->get(field.arg(i));
+        QSharedPointer<XMLCollection> fieldDefinition = fieldsConf->get(field.arg(i)).dynamicCast<XMLCollection>();
 
-        QString fieldName = ((XMLElement*)fieldDefinition->get("name"))->value();
+        //QString fieldName = ((XMLElement*)fieldDefinition->get("name"))->value();
+        QString fieldName = fieldDefinition->get("name").dynamicCast<XMLElement>()->value();
         fieldNames.push_back(fieldName);
     }
     queries[queryName] = fieldNames;

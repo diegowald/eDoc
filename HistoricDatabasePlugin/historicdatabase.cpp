@@ -4,7 +4,6 @@
 #include <QSet>
 #include "../GenericDatabasePlugin/recordid.h"
 #include "historicrecord.h"
-#include <boost/make_shared.hpp>
 
 
 HistoricDatabase::HistoricDatabase()
@@ -16,7 +15,7 @@ HistoricDatabase::~HistoricDatabase()
 }
 
 // IInitializable
-void HistoricDatabase::initialize(IXMLContent *configuration,
+void HistoricDatabase::initialize(QSharedPointer<IXMLContent> configuration,
                                   QSharedPointer<QObjectLogging> logger,
                                   const QMap<QString, QString> &docpluginStock,
                                   const QMap<QString, QString> &DBplugins,
@@ -27,14 +26,18 @@ void HistoricDatabase::initialize(IXMLContent *configuration,
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "HistoricDatabasePlugin", "void HistoricDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
-    m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
 
-    m_MasterTableName = ((XMLElement*)((XMLCollection*)configuration)->get("mastertablename"))->value();
-    m_HistoryTableName = ((XMLElement*)((XMLCollection*)configuration)->get("historytablename"))->value();
+    //m_MasterTableName = ((XMLElement*)((XMLCollection*)configuration)->get("mastertablename"))->value();
+    m_MasterTableName = configuration.dynamicCast<XMLCollection>()->get("mastertablename").dynamicCast<XMLElement>()->value();
+    //m_HistoryTableName = ((XMLElement*)((XMLCollection*)configuration)->get("historytablename"))->value();
+    m_HistoryTableName = configuration.dynamicCast<XMLCollection>()->get("historytablename").dynamicCast<XMLElement>()->value();
 
     m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
 
-    XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("database");
+    //XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("database");
+    QSharedPointer<XMLCollection> confEngine = configuration.dynamicCast<XMLCollection>()->get("database").dynamicCast<XMLCollection>();
     databaseEngine = createDatabaseEngine(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 }
 
@@ -104,7 +107,7 @@ QSharedPointer<IRecordID> HistoricDatabase::addRecord(QSharedPointer<IRecord> re
 
     QString SQLhistory = "INSERT INTO %1 (MasterID, record_id, fromDate) VALUES (:MasterID, :record_id, :fromDate)";
     QString sql = SQLhistory.arg(this->m_HistoryTableName);
-    DBRecordPtr r = boost::make_shared<DBRecord>();
+    DBRecordPtr r = DBRecordPtr(new DBRecord());
     (*r)["MasterID"] = rec->ID()->asString();
     (*r)["record_id"] = rec->getRecord()->ID()->asString();
     (*r)["fromDate"] = now().toMSecsSinceEpoch();
@@ -149,7 +152,7 @@ void HistoricDatabase::updateRecord(QSharedPointer<IRecord> record)
 
     QString SQLhistory = "INSERT INTO %1 (MasterID, record_id, fromDate) VALUES (:MasterID, :record_id, :fromDate)";
     QString sql = SQLhistory.arg(this->m_HistoryTableName);
-    DBRecordPtr r = boost::make_shared<DBRecord>();
+    DBRecordPtr r = DBRecordPtr(new DBRecord());
     (*r)["MasterID"] = histRec->ID()->asString();
     (*r)["record_id"] = histRec->getRecord()->ID()->asString();
     (*r)["fromDate"] = now().toMSecsSinceEpoch();
@@ -167,7 +170,7 @@ void HistoricDatabase::deleteRecord(QSharedPointer<IRecordID> id)
 {
     QString sqlQuery = "UPDATE %1 SET DeletedDate = :DeletedDate WHERE IDMaster = :MasterID";
     QString sql = sqlQuery.arg(m_MasterTableName);
-    DBRecordPtr r = boost::make_shared<DBRecord>();
+    DBRecordPtr r = DBRecordPtr(new DBRecord());
     (*r)["MasterID"] = id->asString();
     (*r)["DeletedDate"] = now().toMSecsSinceEpoch();
     m_SQLManager.executeCommand(sql, r);
@@ -277,7 +280,7 @@ QDateTime HistoricDatabase::now() const
     return QDateTime::currentDateTimeUtc();
 }
 
-QSharedPointer<IDatabase> HistoricDatabase::createDatabaseEngine(XMLCollection *confEngine,
+QSharedPointer<IDatabase> HistoricDatabase::createDatabaseEngine(QSharedPointer<XMLCollection> confEngine,
                                                   const QMap<QString, QString> &docpluginStock,
                                                   const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
                                                   const QMap<QString, QString> &tagPlugins,
@@ -287,10 +290,11 @@ QSharedPointer<IDatabase> HistoricDatabase::createDatabaseEngine(XMLCollection *
 
     if (confEngine->key() == "database")
     {
-        XMLCollection *conf = (XMLCollection*) confEngine;
-        QString engineClass = ((XMLElement*)conf->get("class"))->value();
+        QSharedPointer<XMLCollection> conf = confEngine.dynamicCast<XMLCollection>();
+        QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
 
-        if (DBplugins.contains(engineClass)) {
+        if (DBplugins.contains(engineClass))
+        {
             QPluginLoader pluginLoader(DBplugins[engineClass]);
             QObject *plugin = pluginLoader.instance();
             if (plugin)
@@ -299,14 +303,15 @@ QSharedPointer<IDatabase> HistoricDatabase::createDatabaseEngine(XMLCollection *
                 engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
                 return QSharedPointer<IDatabase>(engine);
             }
-            else {
+            else
+            {
                 m_Logger->logError("Plugin: " + engineClass + " cannot be created.");
             }
         }
-        else {
+        else
+        {
             m_Logger->logError("Plugin: " + engineClass + " does not exist.");
         }
-
     }
     return QSharedPointer<IDatabase>();
 }
@@ -328,7 +333,7 @@ QMap<QString, QSharedPointer<IRecordID> > HistoricDatabase::getValidRecords(QSha
 
     QString sql = sqlQuery.arg(m_HistoryTableName);
 
-    DBRecordPtr record = boost::make_shared<DBRecord>();
+    DBRecordPtr record = DBRecordPtr(new DBRecord());
     (*record)["fromDate"] = date.toMSecsSinceEpoch();
     if (master_id)
     {

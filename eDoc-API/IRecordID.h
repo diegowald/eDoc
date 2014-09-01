@@ -9,10 +9,11 @@ struct IRecordID
 {
 public:
     virtual QString asString() const = 0;
-    virtual QSharedPointer<IMetadata> metadata() = 0;
+    virtual IMetadataPtr metadata() = 0;
     virtual ~IRecordID() {}
 };
 
-Q_DECLARE_METATYPE(QSharedPointer<IRecordID>)
+typedef QSharedPointer<IRecordID> IRecordIDPtr;
+Q_DECLARE_METATYPE(IRecordIDPtr)
 
 #endif // IRECORDID_H

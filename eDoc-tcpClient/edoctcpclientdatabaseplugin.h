@@ -23,13 +23,14 @@ class EDOCTCPCLIENTSHARED_EXPORT eDocTcpClientDatabasePlugin : public TcpClient,
 #endif // QT_VERSION >= 0x050000
     Q_INTERFACES(IDatabase)
     Q_INTERFACES(IDocEngine)
+    Q_INTERFACES(ITagProcessor)
 
 public:
     explicit eDocTcpClientDatabasePlugin(QObject *parent = 0);
     ~eDocTcpClientDatabasePlugin();
 
     // IDatabase
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,

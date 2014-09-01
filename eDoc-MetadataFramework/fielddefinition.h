@@ -29,7 +29,7 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT FieldDefinition : public QObject, publi
 public:
     explicit FieldDefinition(QObject *parent = 0);
     virtual ~FieldDefinition();
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,

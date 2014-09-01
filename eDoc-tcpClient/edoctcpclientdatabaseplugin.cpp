@@ -15,7 +15,7 @@ eDocTcpClientDatabasePlugin::~eDocTcpClientDatabasePlugin()
 {
 }
 
-void eDocTcpClientDatabasePlugin::initialize(IXMLContent *configuration,
+void eDocTcpClientDatabasePlugin::initialize(QSharedPointer<IXMLContent> configuration,
                                              QSharedPointer<QObjectLogging> logger,
                                              const QMap<QString, QString> &docpluginStock,
                                              const QMap<QString, QString> &DBplugins,
@@ -25,10 +25,13 @@ void eDocTcpClientDatabasePlugin::initialize(IXMLContent *configuration,
 {
     this->logger = logger;
     this->logger->logTrace(__FILE__, __LINE__, "InMemoryTagProcessor", "void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
-    m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
 
-    ipAddress = ((XMLElement*)((XMLCollection*) configuration)->get("url"))->value();
-    port = ((XMLElement*)((XMLCollection*) configuration)->get("port"))->value().toInt();
+    //ipAddress = ((XMLElement*)((XMLCollection*) configuration)->get("url"))->value();
+    ipAddress = configuration.dynamicCast<XMLCollection>()->get("url").dynamicCast<XMLElement>()->value();
+    //port = ((XMLElement*)((XMLCollection*) configuration)->get("port"))->value().toInt();
+    port = configuration.dynamicCast<XMLCollection>()->get("port").dynamicCast<XMLElement>()->value().toInt();
 }
 
 
@@ -367,6 +370,33 @@ void eDocTcpClientDatabasePlugin::addTagRecord(QSharedPointer<IRecordID> recordI
 
 QSet<QString> eDocTcpClientDatabasePlugin::findByTags(const QStringList &tags)
 {
+    prepareToSend(MessageCodes::CodeNumber::REQ_findByTags);
+    (*out) << tags.count();
+    foreach (QString tag, tags)
+    {
+        (*out) << tag;
+    }
+
+    QByteArray response = send();
+
+    QDataStream in(&response, QIODevice::ReadOnly);
+    in.setVersion(QDataStream::Qt_5_3);
+
+    Header header;
+    in >> header;
+    QSet<QString> responseSet;
+    if (header.command() == MessageCodes::CodeNumber::RSP_findByTags)
+    {
+        int count = 0;
+        in >> count;
+        QString tag;
+        for (int i = 0; i < count; ++i)
+        {
+            in >> tag;
+            responseSet.insert(tag);
+        }
+    }
+    return responseSet;
 }
 
 void eDocTcpClientDatabasePlugin::removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag)
@@ -375,6 +405,21 @@ void eDocTcpClientDatabasePlugin::removeRecord(QSharedPointer<IRecordID> recordI
 
 void eDocTcpClientDatabasePlugin::processKeywordString(QSharedPointer<IRecordID> recordID, const QString &keywords)
 {
+    prepareToSend(MessageCodes::CodeNumber::REQ_processKeywordString);
+    (*out) << *recordID;
+    (*out) << keywords;
+    QByteArray response = send();
+
+    QDataStream in(&response, QIODevice::ReadOnly);
+    in.setVersion(QDataStream::Qt_5_3);
+
+    Header header;
+    in >> header;
+    if (header.command() == MessageCodes::CodeNumber::RSP_processKeywordString)
+    {
+        bool ok = false;
+        in >> ok;
+    }
 }
 
 #if QT_VERSION < 0x050000

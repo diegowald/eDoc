@@ -1,17 +1,20 @@
 #ifndef IMETADATA_H
 #define IMETADATA_H
 
+#include <QSharedPointer>
 #include "IUser.h"
 
 struct IMetadata
 {
-    virtual QSharedPointer<IUser> ownerUser() = 0;
-    virtual QSharedPointer<IGroup> ownerGroup() = 0;
-    virtual bool canReadByUser(QSharedPointer<IUser> user) = 0;
-    virtual bool canModifyByUser(QSharedPointer<IUser> user) = 0;
-    virtual void changeUser(QSharedPointer<IUser> newUser) = 0;
-    virtual void changeGroup(QSharedPointer<IGroup> newGroup) = 0;
+    virtual IUserPtr ownerUser() = 0;
+    virtual IGroupPtr ownerGroup() = 0;
+    virtual bool canReadByUser(IUserPtr user) = 0;
+    virtual bool canModifyByUser(IUserPtr user) = 0;
+    virtual void changeUser(IUserPtr newUser) = 0;
+    virtual void changeGroup(IGroupPtr newGroup) = 0;
     virtual ~IMetadata() {}
 };
+
+typedef QSharedPointer<IMetadata> IMetadataPtr;
 
 #endif // IMETADATA_H

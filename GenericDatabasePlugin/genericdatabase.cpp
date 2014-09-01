@@ -5,7 +5,6 @@
 #include "../eDoc-MetadataFramework/record.h"
 #include "recordid.h"
 #include <QStringList>
-#include <boost/make_shared.hpp>
 #include "../eDoc-InMemoryTagging/inmemorytagprocessor.h"
 #include <QSet>
 #include "../eDoc-MetadataFramework/parameter.h"
@@ -21,7 +20,7 @@ GenericDatabase::~GenericDatabase()
 {
 }
 
-void GenericDatabase::initialize(IXMLContent *configuration,
+void GenericDatabase::initialize(QSharedPointer<IXMLContent> configuration,
                                  QSharedPointer<QObjectLogging> logger,
                                  const QMap<QString, QString> &docpluginStock,
                                  const QMap<QString, QString> &DBplugins,
@@ -31,30 +30,34 @@ void GenericDatabase::initialize(IXMLContent *configuration,
 {
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
-    m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
-    XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
-    createFields(confFields);
+    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
+    //XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
+    createFields(configuration.dynamicCast<XMLCollection>()->get("fields"));
 
-    m_TableName = ((XMLElement*)((XMLCollection*)configuration)->get("tablename"))->value();
+    //m_TableName = ((XMLElement*)((XMLCollection*)configuration)->get("tablename"))->value();
+    m_TableName = configuration.dynamicCast<XMLCollection>()->get("tablename").dynamicCast<XMLElement>()->value();
     m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
 }
 
-void GenericDatabase::createFields(IXMLContent* configuration)
+void GenericDatabase::createFields(QSharedPointer<IXMLContent> configuration)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::createFields(IXMLContent* configuration)");
-    XMLCollection *confFields = (XMLCollection*)configuration;
-    int count = ((XMLElement*)confFields->get("count"))->value().toInt();
+    //XMLCollection *confFields = (XMLCollection*)configuration;
+    QSharedPointer<XMLCollection> confFields = configuration.dynamicCast<XMLCollection>();
+    //int count = ((XMLElement*)confFields->get("count"))->value().toInt();
+    int count = confFields->get("count").dynamicCast<XMLElement>()->value().toInt();
     for (int i = 1; i <= count; ++i)
     {
         QString fieldName = "field" + QString::number(i);
-        XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
-        QSharedPointer<IFieldDefinition> fDef = createField(field);
+        //XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
+        QSharedPointer<IFieldDefinition> fDef = createField(confFields->get(fieldName));
         m_Fields[fDef->name()] = fDef;
         m_FieldsBasedOnDatabase[fDef.dynamicCast<FieldDefinition>()->fieldNameInDatabase()] = fDef;
     }
 }
 
-QSharedPointer<IFieldDefinition> GenericDatabase::createField(IXMLContent *configuration)
+QSharedPointer<IFieldDefinition> GenericDatabase::createField(QSharedPointer<IXMLContent> configuration)
 {
     QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition(this));
     QMap<QString, QString> empty;
@@ -132,7 +135,7 @@ QList<QSharedPointer<IRecordID>> GenericDatabase::searchWithin(const QList<QShar
 std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(QSharedPointer<IParameter> parameter)
 {
     QString whereClause = "";
-    DBRecordPtr r = boost::make_shared<DBRecord>();
+    DBRecordPtr r = DBRecordPtr(new DBRecord());
 
     switch (parameter->queryType())
     {
@@ -237,7 +240,7 @@ QSharedPointer<IRecord> GenericDatabase::getRecord(const QString &id)
     QString sql = SQLSelect.arg(getFieldsString())
             .arg(m_TableName).arg("record_id").arg(":record_id");
 
-    DBRecordPtr r = boost::make_shared<DBRecord>();
+    DBRecordPtr r = DBRecordPtr(new DBRecord());
     (*r)["record_id"] = id;
     DBRecordSet res = m_SQLManager.getRecords(sql, r);
     if (0 == res->count())
@@ -287,7 +290,7 @@ void GenericDatabase::updateRecord(QSharedPointer<IRecord> record)
 
 void GenericDatabase::executeSQLCommand(const QString &sql, QSharedPointer<IRecord> record)
 {
-    DBRecordPtr r = boost::make_shared<DBRecord>();
+    DBRecordPtr r = DBRecordPtr(new DBRecord());
 //    (*r)["record_id"] = id->asString();
     (*r)["record_id"] = record->ID()->asString();
     foreach (QString key, m_Fields.keys())
@@ -304,7 +307,7 @@ void GenericDatabase::deleteRecord(QSharedPointer<IRecordID> id)
 
     QString sql = SQLDelete.arg(m_TableName).arg("record_id").arg(":record_id");
 
-    DBRecordPtr r = boost::make_shared<DBRecord>();
+    DBRecordPtr r = DBRecordPtr(new DBRecord());
     (*r)["record_id"] = id->asString();
     m_SQLManager.executeCommand(sql, r);
 }

@@ -8,8 +8,8 @@
 
 struct IInitializable {
 public:
-    virtual void initialize(IXMLContent* configuration,
-                            QSharedPointer<QObjectLogging> logger,
+    virtual void initialize(IXMLContentPtr configuration,
+                            QObjectLoggingPtr logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBPlugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,

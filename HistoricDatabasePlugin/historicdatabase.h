@@ -23,7 +23,7 @@ public:
 
     // IInitializable
 public:
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
@@ -67,7 +67,7 @@ protected:
     // Internal functions
 private:
     QDateTime now() const;
-    QSharedPointer<IDatabase> createDatabaseEngine(XMLCollection *confEngine,
+    QSharedPointer<IDatabase> createDatabaseEngine(QSharedPointer<XMLCollection> confEngine,
                                     const QMap<QString, QString> &docpluginStock,
                                     const QMap<QString, QString> &DBplugins,
                                     const QMap<QString, QString> &DBWithHistoryPlugins,

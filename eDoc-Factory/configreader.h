@@ -4,17 +4,18 @@
 #include <QObject>
 #include "IXMLContent.h"
 #include <QXmlStreamReader>
+#include <QSharedPointer>
 
 class ConfigReader : public QObject
 {
     Q_OBJECT
 public:
     explicit ConfigReader(const QString &XMLFile, QObject *parent = 0);
-    IXMLContent *getConfiguration();
+    QSharedPointer<IXMLContent> getConfiguration();
 
 private:
     void parseXML();
-    IXMLContent *parseElements(QXmlStreamReader &xml);
+    QSharedPointer<IXMLContent> parseElements(QXmlStreamReader &xml);
 signals:
     
 public slots:
@@ -22,7 +23,7 @@ public slots:
 
 private:
     QString xmlFile;
-    IXMLContent *xmlConfig;
+    QSharedPointer<IXMLContent> xmlConfig;
 };
 
 #endif // CONFIGREADER_H

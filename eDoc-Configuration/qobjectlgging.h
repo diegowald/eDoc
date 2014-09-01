@@ -31,4 +31,6 @@ public slots:
     
 };
 
+typedef QSharedPointer<QObjectLogging> QObjectLoggingPtr;
+
 #endif // QOBJECTLGGING_H

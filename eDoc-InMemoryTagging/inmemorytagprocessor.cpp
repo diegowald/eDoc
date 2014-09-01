@@ -3,7 +3,6 @@
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
-#include "boost/make_shared.hpp"
 
 InMemoryTagProcessor::InMemoryTagProcessor(QObject *parent) :
     QObject(parent), m_SQLManager(this)
@@ -15,7 +14,7 @@ InMemoryTagProcessor::~InMemoryTagProcessor()
 {
 }
 
-void InMemoryTagProcessor::initialize(IXMLContent *configuration,
+void InMemoryTagProcessor::initialize(QSharedPointer<IXMLContent> configuration,
                                       QSharedPointer<QObjectLogging> logger,
                                       const QMap<QString, QString> &docpluginStock,
                                       const QMap<QString, QString> &DBplugins,
@@ -25,10 +24,13 @@ void InMemoryTagProcessor::initialize(IXMLContent *configuration,
 {
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "InMemoryTagProcessor", "void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
-    m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
 
-    m_keywordsTableName = ((XMLElement*)((XMLCollection*)configuration)->get("keywordtablename"))->value();
-    m_indexTableName = ((XMLElement*)((XMLCollection*)configuration)->get("indextablename"))->value();
+    //m_keywordsTableName = ((XMLElement*)((XMLCollection*)configuration)->get("keywordtablename"))->value();
+    m_keywordsTableName = configuration.dynamicCast<XMLCollection>()->get("keywordtablename").dynamicCast<XMLElement>()->value();
+    //m_indexTableName = ((XMLElement*)((XMLCollection*)configuration)->get("indextablename"))->value();
+    m_indexTableName = configuration.dynamicCast<XMLCollection>()->get("indextablename").dynamicCast<XMLElement>()->value();
     m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
     loadIntoMemory();
 }
@@ -151,7 +153,7 @@ void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::saveKeyword(const int keyword_id)");
 
-    DBRecordPtr keywordRecord = boost::make_shared<DBRecord>();
+    DBRecordPtr keywordRecord = DBRecordPtr(new DBRecord());
     // Borro el keyword y sus occurrences
     QString SQL = "DELETE from %1 WHERE keyword_id = :keyword_id AND record_id = :record_id";
     (*keywordRecord)["keyword_id"] = m_Tag[keyword].id;
@@ -164,14 +166,14 @@ void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const
         SQL = "INSERT into %1 (keyword_id, word) VALUES (:keyword_id, :word);";
         sql = SQL.arg(m_keywordsTableName);
 
-        DBRecordPtr record = boost::make_shared<DBRecord>();
+        DBRecordPtr record = DBRecordPtr(new DBRecord());
         (*record)["keyword_id"] = m_Tag[keyword].id;
         (*record)["word"] = keyword;
         m_SQLManager.executeCommand(sql, record);
         m_Tag[keyword].saved = true;
     }
 
-    DBRecordPtr recordOccurrence = boost::make_shared<DBRecord>();
+    DBRecordPtr recordOccurrence = DBRecordPtr(new DBRecord());
     QString SQLOccurrence = "INSERT INTO %1 (keyword_id, record_id) VALUES (:keyword_id, :record_id);";
     QString sql2 = SQLOccurrence.arg(m_indexTableName);
 

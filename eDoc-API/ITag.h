@@ -20,6 +20,7 @@ struct ITag : public IValue
     virtual ~ITag() {}
 };
 
-Q_DECLARE_METATYPE(QSharedPointer<ITag>)
+typedef QSharedPointer<ITag> ITagPtr;
+Q_DECLARE_METATYPE(ITagPtr)
 
 #endif // ITAG_H

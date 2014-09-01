@@ -12,7 +12,7 @@ DatabaseWithHistoryWrapper::~DatabaseWithHistoryWrapper()
 }
 
 // IInitializable
-void DatabaseWithHistoryWrapper::initialize(IXMLContent *configuration,
+void DatabaseWithHistoryWrapper::initialize(QSharedPointer<IXMLContent> configuration,
                                             QSharedPointer<QObjectLogging> logger,
                                             const QMap<QString, QString> &docpluginStock,
                                             const QMap<QString, QString> &DBPlugins,

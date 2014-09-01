@@ -10,7 +10,7 @@ DocEngine::~DocEngine()
 {
 }
 
-void DocEngine::initialize(IXMLContent *configuration,
+void DocEngine::initialize(QSharedPointer<IXMLContent> configuration,
                            QSharedPointer<QObjectLogging> logger,
                            const QMap<QString, QString> &docpluginStock,
                            const QMap<QString, QString> &DBplugins,

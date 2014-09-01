@@ -23,7 +23,7 @@ public:
     explicit InMemoryTagProcessor(QObject *parent = 0);
     virtual ~InMemoryTagProcessor();
 
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,

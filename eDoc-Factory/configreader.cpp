@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QXmlStreamReader>
 #include <QXmlStreamAttributes>
+#include <QSharedPointer>
 #include "xmlcollection.h"
 #include "xmlelement.h"
 
@@ -9,17 +10,17 @@ ConfigReader::ConfigReader(const QString &XMLFile, QObject *parent) :
     QObject(parent)
 {
     xmlFile = XMLFile;
-    xmlConfig = NULL;
+    xmlConfig = QSharedPointer<IXMLContent>();
     parseXML();
 }
 
 void ConfigReader::parseXML()
 {
     /* We'll parse the example.xml */
-    QFile* file = new QFile(xmlFile);
+    QFile file(xmlFile);
 
     /* If we can't open it, let's show an error message. */
-    if (!file->open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         /*QMessageBox::critical(this,
                               "QXSRExample::parseXML",
                               "Couldn't open example.xml",
@@ -27,7 +28,7 @@ void ConfigReader::parseXML()
         return;
     }
     /* QXmlStreamReader takes any QIODevice. */
-    QXmlStreamReader xml(file);
+    QXmlStreamReader xml(&file);
     /* We'll parse the XML until we reach end of it.*/
     while(!xml.atEnd() &&
           !xml.hasError()) {
@@ -55,14 +56,14 @@ void ConfigReader::parseXML()
     //this->addPersonsToUI(persons);
 }
 
-IXMLContent *ConfigReader::parseElements(QXmlStreamReader &xml)
+QSharedPointer<IXMLContent> ConfigReader::parseElements(QXmlStreamReader &xml)
 {
-    XMLCollection *config = new XMLCollection();
+    QSharedPointer<XMLCollection> config = QSharedPointer<XMLCollection>(new XMLCollection());
     config->key(xml.name().toString());
 
     QXmlStreamAttributes attributes = xml.attributes();
     foreach (QXmlStreamAttribute attr, attributes) {
-        config->addXML(new XMLElement(attr.name().toString(), attr.value().toString(), config));
+        config->addXML(QSharedPointer<IXMLContent>(new XMLElement(attr.name().toString(), attr.value().toString())));
     }
 
     /* Next element... */
@@ -80,7 +81,7 @@ IXMLContent *ConfigReader::parseElements(QXmlStreamReader &xml)
             {
                 QString name = xml.name().toString();
                 xml.readNext();
-                config->addXML(new XMLElement(name, xml.text().toString(), config));
+                config->addXML(QSharedPointer<IXMLContent>(new XMLElement(name, xml.text().toString())));
             }
             else
             {
@@ -93,7 +94,7 @@ IXMLContent *ConfigReader::parseElements(QXmlStreamReader &xml)
     return config;
 }
 
-IXMLContent *ConfigReader::getConfiguration()
+QSharedPointer<IXMLContent> ConfigReader::getConfiguration()
 {
     return xmlConfig;
 }

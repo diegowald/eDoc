@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>:/bedwyr.ico</normaloff>:/bedwyr.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="spacing">
@@ -49,14 +53,14 @@
         <item>
          <widget class="QToolBox" name="toolBox">
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="page">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>497</width>
+             <width>401</width>
              <height>429</height>
             </rect>
            </property>
@@ -168,7 +172,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>497</width>
+             <width>401</width>
              <height>429</height>
             </rect>
            </property>
@@ -241,6 +245,15 @@
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
                  </property>
+                 <property name="dragDropMode">
+                  <enum>QAbstractItemView::DropOnly</enum>
+                 </property>
+                 <property name="defaultDropAction">
+                  <enum>Qt::CopyAction</enum>
+                 </property>
+                 <property name="sortingEnabled">
+                  <bool>true</bool>
+                 </property>
                  <property name="animated">
                   <bool>true</bool>
                  </property>
@@ -264,7 +277,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>497</width>
+             <width>401</width>
              <height>429</height>
             </rect>
            </property>
@@ -395,6 +408,7 @@
    </attribute>
    <addaction name="actionAdd_Document"/>
    <addaction name="actionAdd_1000_Documents"/>
+   <addaction name="actionSet_Query_Date_and_Time"/>
   </widget>
   <action name="actionAdd_Document">
    <property name="text">
@@ -407,6 +421,11 @@
   <action name="actionAdd_1000_Documents">
    <property name="text">
     <string>Add 1000 Documents</string>
+   </property>
+  </action>
+  <action name="actionSet_Query_Date_and_Time">
+   <property name="text">
+    <string>Set Query Date and Time</string>
    </property>
   </action>
  </widget>

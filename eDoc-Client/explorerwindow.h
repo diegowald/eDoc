@@ -2,9 +2,11 @@
 #define EXPLORERWINDOW_H
 
 #include <QMainWindow>
+#include <QDateTime>
 #include "../eDoc-Factory/edocfactory.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include "../eDoc-API/IDocID.h"
+#include "../eDoc-ClientComponents/recordeditor.h"
 #include <QTreeWidgetItem>
 #include <QList>
 #include <QPair>
@@ -61,12 +63,17 @@ private slots:
 
     void on_btnBrowse_pressed();
 
+    void on_actionSet_Query_Date_and_Time_triggered();
+
 private:
     Ui::ExplorerWindow *ui;
     EDocFactory f;
     QSharedPointer<QObjectLogging> logger;
     QList<QSharedPointer<IParameter>> searchFilter;
     QList<QSharedPointer<IParameter>> treefilter;
+    RecordEditor *recordEditor;
+    bool useCurrentTime;
+    QDateTime dateTimeToUse;
 };
 
 #endif // EXPLORERWINDOW_H

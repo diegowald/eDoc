@@ -14,7 +14,7 @@ InMemoryDatabase::~InMemoryDatabase()
 {
 }
 
-void InMemoryDatabase::initialize(IXMLContent *configuration,
+void InMemoryDatabase::initialize(QSharedPointer<IXMLContent> configuration,
                                   QSharedPointer<QObjectLogging> logger,
                                   const QMap<QString, QString> &docpluginStock,
                                   const QMap<QString, QString> &DBplugins,
@@ -29,25 +29,28 @@ void InMemoryDatabase::initialize(IXMLContent *configuration,
     (void)serverPlugins;
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "InMemoryDatabasePlugin", "void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
-    m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
-    XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
-    createFields(confFields);
+    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
+    //XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
+    createFields(configuration.dynamicCast<XMLCollection>()->get("fields"));
 }
 
-void InMemoryDatabase::createFields(IXMLContent* configuration)
+void InMemoryDatabase::createFields(QSharedPointer<IXMLContent> configuration)
 {
-    XMLCollection *confFields = (XMLCollection*)configuration;
-    int count = ((XMLElement*)confFields->get("count"))->value().toInt();
+    QSharedPointer<XMLCollection> confFields = configuration.dynamicCast<XMLCollection>();
+    //int count = ((XMLElement*)confFields->get("count"))->value().toInt();
+    int count = confFields->get("count").dynamicCast<XMLElement>()->value().toInt();
     for (int i = 1; i <= count; ++i)
     {
         QString fieldName = "field" + QString::number(i);
-        XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
+        //XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
+        QSharedPointer<XMLCollection> field = confFields->get(fieldName).dynamicCast<XMLCollection>();
         QSharedPointer<IFieldDefinition> fDef = createField(field);
         m_Fields[fDef->name()] = fDef;
     }
 }
 
-QSharedPointer<IFieldDefinition> InMemoryDatabase::createField(IXMLContent *configuration)
+QSharedPointer<IFieldDefinition> InMemoryDatabase::createField(QSharedPointer<IXMLContent> configuration)
 {
     QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition(this));
     QMap<QString, QString> empty;

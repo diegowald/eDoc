@@ -25,4 +25,6 @@ private:
     QString _id;
 };
 
+typedef QSharedPointer<ProxyRecordID> ProxyRecordIDPtr;
+
 #endif // PROXYRECORDID_H

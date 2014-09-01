@@ -8,7 +8,7 @@
 #include <inmemorymultidocument.h>
 #include <../eDoc-Configuration/xmlcollection.h>
 
-class MemoryDocEngine : public QObject, IDocEngine
+class MemoryDocEngine : public QObject, public IDocEngine
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
@@ -20,7 +20,7 @@ public:
     MemoryDocEngine(QObject *parent = 0);
     virtual ~MemoryDocEngine();
 
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
@@ -33,7 +33,7 @@ public:
     virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
     virtual QString name();
 private:
-    QSharedPointer<IDocEngine> createPersistentEngine(XMLCollection *confEngine,
+    IDocEngine * createPersistentEngine(QSharedPointer<XMLCollection> confEngine,
                                        const QMap<QString, QString> &docpluginStock,
                                        const QMap<QString, QString> &DBplugins,
                                        const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -41,11 +41,11 @@ private:
                                        const QMap<QString, QString> &serverPlugins);
 
 private:
-     QSharedPointer<IDocEngine> persistentEngine;
+     IDocEngine* persistentEngine;
      QMap<QString, QSharedPointer<IDocBase>> m_Cache;
      int maxCachedFiles;
-     QSharedPointer<QObjectLogging> m_Logger;
 
+     QSharedPointer<QObjectLogging> m_Logger;
 };
 
 #endif // MEMORYDOCENGINE_H

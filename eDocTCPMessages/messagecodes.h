@@ -58,6 +58,15 @@ public:
         RSP_getDistinctColumnValuesWithHistory,
         RSP_getHistory,
         RSP_getHistoryChanges,
+        // ITagProxessor
+        REQ_addTagRecord,
+        REQ_findByTags,
+        REQ_removeRecord,
+        REQ_processKeywordString,
+        RSP_addTagRecord,
+        RSP_findByTags,
+        RSP_removeRecord,
+        RSP_processKeywordString,
     };
 
     static QString toString(CodeNumber code);

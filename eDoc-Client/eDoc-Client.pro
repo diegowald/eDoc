@@ -17,15 +17,18 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     dlgadddocument.cpp \
-    explorerwindow.cpp
+    explorerwindow.cpp \
+    setdatetimetouse.cpp
 
 HEADERS  += mainwindow.h \
     dlgadddocument.h \
-    explorerwindow.h
+    explorerwindow.h \
+    setdatetimetouse.h
 
 FORMS    += mainwindow.ui \
     dlgadddocument.ui \
-    explorerwindow.ui
+    explorerwindow.ui \
+    setdatetimetouse.ui
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
@@ -56,3 +59,6 @@ unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-ClientComponents
 
 INCLUDEPATH += $$PWD/../eDoc-ClientComponents
 DEPENDPATH += $$PWD/../eDoc-ClientComponents
+
+RESOURCES += \
+    eDoc-Client.qrc

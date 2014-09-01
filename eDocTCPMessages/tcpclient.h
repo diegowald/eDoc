@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtNetwork/QTcpSocket>
+#include <QSharedPointer>
 #include "../eDocTCPMessages/header.h"
 #include "../eDocTCPMessages/messagecodes.h"
 
@@ -29,11 +30,11 @@ private slots:
 protected:
     QString ipAddress;
     int port;
-    QDataStream *out;
+    QSharedPointer<QDataStream> out;
 
 private:
 
-    QTcpSocket *tcpSocket;
+    QSharedPointer<QTcpSocket> tcpSocket;
     //QNetworkSession *networkSession;
 
     int blockSize;

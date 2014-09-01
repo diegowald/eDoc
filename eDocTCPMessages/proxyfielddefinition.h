@@ -12,7 +12,7 @@ public:
     explicit ProxyFieldDefinition(QObject *parent = 0);
     virtual ~ProxyFieldDefinition();
 
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,

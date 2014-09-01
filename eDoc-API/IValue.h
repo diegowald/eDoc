@@ -15,4 +15,6 @@ public:
     virtual ~IValue() {}
 };
 
+typedef QSharedPointer<IValue> IValuePtr;
+
 #endif // IVALUE_H

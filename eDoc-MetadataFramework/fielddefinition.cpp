@@ -18,7 +18,7 @@ FieldDefinition::~FieldDefinition()
 {
 }
 
-void FieldDefinition::initialize(IXMLContent *configuration,
+void FieldDefinition::initialize(QSharedPointer<IXMLContent> configuration,
                                  QSharedPointer<QObjectLogging> logger,
                                  const QMap<QString, QString> &docpluginStock,
                                  const QMap<QString, QString> &DBplugins,
@@ -35,19 +35,26 @@ void FieldDefinition::initialize(IXMLContent *configuration,
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-MetadataFramework", "void FieldDefinition::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
 
-    m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
-    m_Type = ((XMLElement*)((XMLCollection*) configuration)->get("type"))->value();
-    m_ReadOnly = ((XMLElement*)((XMLCollection*) configuration)->get("readonly"))->value() == "1" ? true : false;
-    m_Visible = ((XMLElement*)((XMLCollection*) configuration)->get("visible"))->value() == "1" ? true : false;
+    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
+    //m_Type = ((XMLElement*)((XMLCollection*) configuration)->get("type"))->value();
+    m_Type = configuration.dynamicCast<XMLCollection>()->get("type").dynamicCast<XMLElement>()->value();
+    //m_ReadOnly = ((XMLElement*)((XMLCollection*) configuration)->get("readonly"))->value() == "1" ? true : false;
+    m_ReadOnly = configuration.dynamicCast<XMLCollection>()->get("readonly").dynamicCast<XMLElement>()->value() == "1" ? true : false;
+    //m_Visible = ((XMLElement*)((XMLCollection*) configuration)->get("visible"))->value() == "1" ? true : false;
+    m_Visible = configuration.dynamicCast<XMLCollection>()->get("visible").dynamicCast<XMLElement>()->value() == "1" ? true : false;
     m_DataType = analyzeType();
-    m_FieldNameInDatabase = ((XMLElement*)((XMLCollection*)configuration)->get("fieldname"))->value();
+    //m_FieldNameInDatabase = ((XMLElement*)((XMLCollection*)configuration)->get("fieldname"))->value();
+    m_FieldNameInDatabase = configuration.dynamicCast<XMLCollection>()->get("fieldname").dynamicCast<XMLElement>()->value();
     m_Queryable = true;
     switch (m_DataType)
     {
     case IRECORD_REFERENCE_TYPE:
     case IMULTIRECORD_REFERENCE_TYPE:
-        m_OtherDatabaseName = ((XMLElement*)((XMLCollection*)configuration)->get("datanase"))->value();
-        m_FieldToShow = ((XMLElement*)((XMLCollection*)configuration)->get("display_field"))->value();
+        //m_OtherDatabaseName = ((XMLElement*)((XMLCollection*)configuration)->get("datanase"))->value();
+        m_OtherDatabaseName = configuration.dynamicCast<XMLCollection>()->get("datanase").dynamicCast<XMLElement>()->value();
+        //m_FieldToShow = ((XMLElement*)((XMLCollection*)configuration)->get("display_field"))->value();
+        m_FieldToShow = configuration.dynamicCast<XMLCollection>()->get("display_field").dynamicCast<XMLElement>()->value();
         break;
     case IDOCBASE_TYPE:
     case IDOCUMENT_TYPE:

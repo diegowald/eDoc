@@ -14,7 +14,7 @@ public:
     explicit QueryEngine(QObject *parent = 0);\
     virtual ~QueryEngine();
 
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
@@ -29,7 +29,7 @@ signals:
 public slots:
 
 private:
-    void createQueryFromConf(XMLCollection* configuration);
+    void createQueryFromConf(QSharedPointer<XMLCollection> configuration);
 
 private:
     QMap<QString, QStringList> queries;

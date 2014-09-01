@@ -12,7 +12,7 @@ EDocTcpHistoricClient::~EDocTcpHistoricClient()
 {
 }
 
-void EDocTcpHistoricClient::initialize(IXMLContent *configuration,
+void EDocTcpHistoricClient::initialize(QSharedPointer<IXMLContent> configuration,
                                        QSharedPointer<QObjectLogging> logger,
                                        const QMap<QString, QString> &docpluginStock,
                                        const QMap<QString, QString> &DBplugins,
@@ -32,10 +32,10 @@ void EDocTcpHistoricClient::initialize(IXMLContent *configuration,
                            const QMap<QString, QString> &DBplugins, \
                            const QMap<QString, QString> &tagPlugins, \
                            const QMap<QString, QString> &serverPlugins)");
-    m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
+    m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
 
-    ipAddress = ((XMLElement*)((XMLCollection*) configuration)->get("url"))->value();
-    port = ((XMLElement*)((XMLCollection*) configuration)->get("port"))->value().toInt();
+    ipAddress = configuration.dynamicCast<XMLCollection>()->get("url").dynamicCast<XMLElement>()->value();
+    port = configuration.dynamicCast<XMLCollection>()->get("port").dynamicCast<XMLElement>()->value().toInt();
 }
 
 //IDatabase

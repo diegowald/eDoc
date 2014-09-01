@@ -2,6 +2,7 @@
 #define XMLCOLLECTION_H
 
 #include <QObject>
+#include <QSharedPointer>
 #include "IXMLContent.h"
 #include <QMap>
 
@@ -13,15 +14,16 @@ public:
     explicit XMLCollection(QObject *parent = 0);
     virtual ~XMLCollection();
     virtual bool isLeaf() const { return false; }
-    virtual void addXML(IXMLContent *content);
-    virtual IXMLContent* get(const QString &key);
+    virtual void addXML(IXMLContentPtr content);
+    virtual IXMLContentPtr get(const QString &key);
     virtual QString toDebugString(int indentation);
 signals:
     
 public slots:
     
 private:
-    QMap<QString, IXMLContent*> m_Content;
+    QMap<QString, IXMLContentPtr > m_Content;
 };
 
+typedef QSharedPointer<XMLCollection> XMLCollectionPtr;
 #endif // XMLCOLLECTION_H

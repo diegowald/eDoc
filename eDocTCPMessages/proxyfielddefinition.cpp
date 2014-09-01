@@ -16,7 +16,7 @@ ProxyFieldDefinition::~ProxyFieldDefinition()
 {
 }
 
-void ProxyFieldDefinition::initialize(IXMLContent *configuration,
+void ProxyFieldDefinition::initialize(QSharedPointer<IXMLContent> configuration,
                                       QSharedPointer<QObjectLogging> logger,
                                       const QMap<QString, QString> &docpluginStock,
                                       const QMap<QString, QString> &DBplugins,

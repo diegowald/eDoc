@@ -44,7 +44,7 @@ private:
     QMap<QString, QString> DBplugins;
     QMap<QString, QString> tagPlugins;
     QMap<QString, QString> serverPlugins;
-    IXMLContent *configuration;
+    QSharedPointer<IXMLContent> configuration;
     QSharedPointer<IDocEngine> engine;
     QSharedPointer<IDatabaseWithHistory> database;
     QSharedPointer<IQueryEngine> query;

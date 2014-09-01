@@ -14,6 +14,8 @@ public:
     virtual ~IDocument() {}
 };
 
-Q_DECLARE_METATYPE(QSharedPointer<IDocument>)
+typedef QSharedPointer<IDocument> IDocumentPtr;
+
+Q_DECLARE_METATYPE(IDocumentPtr)
 
 #endif // IDOCUMENT_H

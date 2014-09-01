@@ -12,4 +12,5 @@ struct IQueryEngine : public IInitializable
     virtual QStringList getFieldsForTree(const QString &viewName) = 0;
 };
 
+typedef QSharedPointer<IQueryEngine> IQueryEnginePtr;
 #endif // IQUERYENGINE_H

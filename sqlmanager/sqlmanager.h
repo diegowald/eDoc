@@ -5,15 +5,15 @@
 #include "sqlmanager_global.h"
 #include <QObject>
 #include <QSqlDatabase>
+#include <QSharedPointer>
 #include <QMap>
-#include <boost/shared_ptr.hpp>
 #include <../eDoc-Configuration/IXMLContent.h>
 #include <../eDoc-Configuration/qobjectlgging.h>
 #include <QVariant>
 
 typedef QMap<QString, QVariant> DBRecord;
-typedef boost::shared_ptr<DBRecord> DBRecordPtr;
-typedef boost::shared_ptr<QList<DBRecordPtr> > DBRecordSet;
+typedef QSharedPointer<DBRecord> DBRecordPtr;
+typedef QSharedPointer<QList<DBRecordPtr> > DBRecordSet;
 
 enum DBType
 {
@@ -35,7 +35,7 @@ class SQLMANAGERSHARED_EXPORT SQLManager : public QObject
 public:
     explicit SQLManager(QObject *parent = 0);
     virtual ~SQLManager();
-    virtual void initialize(IXMLContent *configuration, QSharedPointer<QObjectLogging> logger,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration, QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &tagPlugins,

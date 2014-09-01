@@ -10,15 +10,16 @@
 struct IRecord
 {
 public:
-    virtual void setID(QSharedPointer<IRecordID> ID) = 0;
-    virtual QSharedPointer<IRecordID> ID() = 0;
-    virtual QSharedPointer<IValue> value(QSharedPointer<IFieldDefinition> field) = 0;
-    virtual QSharedPointer<IValue> value(const QString &fieldName) = 0;
-    virtual QSharedPointer<IFieldDefinition> fieldDefinition(const QString &fieldName) = 0;
+    virtual void setID(IRecordIDPtr ID) = 0;
+    virtual IRecordIDPtr ID() = 0;
+    virtual IValuePtr value(IFieldDefinitionPtr field) = 0;
+    virtual IValuePtr value(const QString &fieldName) = 0;
+    virtual IFieldDefinitionPtr fieldDefinition(const QString &fieldName) = 0;
     virtual QList<QString> fieldNames() = 0;
     virtual ~IRecord() {}
 };
 
-Q_DECLARE_METATYPE(QSharedPointer<IRecord>)
+typedef QSharedPointer<IRecord> IRecordPtr;
+Q_DECLARE_METATYPE(IRecordPtr)
 
 #endif // IRECORD_H

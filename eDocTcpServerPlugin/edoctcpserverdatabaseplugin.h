@@ -8,6 +8,7 @@
 #include "../eDoc-API/IDatabase.h"
 #include "../eDoc-API/IDatabaseWithHistory.h"
 #include "../eDoc-API/IDocEngine.h"
+#include "../eDoc-API/ITagProcessor.h"
 
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDocTCPMessages/header.h"
@@ -21,11 +22,12 @@ class EDOCTCPSERVERPLUGIN_EXPORT EDocTCPServerDatabasePlugin : public QThread
     typedef void (EDocTCPServerDatabasePlugin::*Executor) (QDataStream&);
 
 public:
-    EDocTCPServerDatabasePlugin(QSharedPointer<QObjectLogging> Logger,
+    EDocTCPServerDatabasePlugin(QObjectLoggingPtr Logger,
                                 QSharedPointer<QTcpSocket> socket,
-                                QSharedPointer<IDatabase> persistance,
-                                QSharedPointer<IDatabaseWithHistory> histPersistance,
-                                QSharedPointer<IDocEngine> docEngine,
+                                IDatabasePtr persistance,
+                                IDatabaseWithHistoryPtr histPersistance,
+                                IDocEnginePtr docEngine,
+                                ITagProcessorPtr tagProcessor,
                                 QObject *parent = 0);
     virtual ~EDocTCPServerDatabasePlugin();
 
@@ -61,14 +63,19 @@ private:
     void processREQGetDistinctColumnValuesWithHistory(QDataStream &in);
     void processREQGetHistory(QDataStream &in);
     void processREQGetHistoryChanges(QDataStream &in);
+    void processREQAddTagRecord(QDataStream &in);
+    void processREQFindByTags(QDataStream &in);
+    void processREQRemoveRecord(QDataStream &in);
+    void processREQprocessKeywordString(QDataStream &in);
 
 private:
     QSharedPointer<QObjectLogging> logger;
     QString m_Name;
     QSharedPointer<QTcpSocket> _socket;
-    QSharedPointer<IDatabase> _persistance;
-    QSharedPointer<IDatabaseWithHistory> _persistanceHist;
-    QSharedPointer<IDocEngine> _docEngine;
+    IDatabasePtr _persistance;
+    IDatabaseWithHistoryPtr _persistanceHist;
+    IDocEnginePtr _docEngine;
+    ITagProcessorPtr _tagProcessor;
     int blockSize;
 
     QByteArray blob;

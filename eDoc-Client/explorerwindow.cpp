@@ -1,12 +1,13 @@
 #include "explorerwindow.h"
 #include "ui_explorerwindow.h"
 #include <QsLog.h>
-#include "../eDoc-ClientComponents/recordeditor.h"
+
 #include "../eDoc-API/IDocument.h"
 #include "../eDoc-MetadataFramework/valuedefinitions.h"
 #include <QFileDialog>
 #include "dlgadddocument.h"
 #include <QVariant>
+#include "setdatetimetouse.h"
 
 ExplorerWindow::ExplorerWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,7 +15,7 @@ ExplorerWindow::ExplorerWindow(QWidget *parent) :
 {
     QLOG_TRACE() << "ExplorerWindow::ExplorerWindow(QWidget *parent)";
 
-    logger = QSharedPointer<QObjectLogging>(new QObjectLogging());
+    logger = QObjectLoggingPtr(new QObjectLogging());
     connect(logger.data(), SIGNAL(LogDebug(QString)), this, SLOT(on_LogDebug(QString)));
     connect(logger.data(), SIGNAL(LogError(QString)), this, SLOT(on_LogError(QString)));
     connect(logger.data(), SIGNAL(LogFatal(QString)), this, SLOT(on_LogFatal(QString)));
@@ -24,12 +25,16 @@ ExplorerWindow::ExplorerWindow(QWidget *parent) :
 
     ui->setupUi(this);
     ui->treeStructure->setColumnCount(1);
+    ui->searchResult->setRowCount(0);
 
     f.initialize(QApplication::applicationDirPath(), "./client.conf.xml", logger);
 
+    useCurrentTime = true;
+    dateTimeToUse = QDateTime::currentDateTimeUtc();
     fillFieldsCombo();
     fillOperatorsCombo();
     fillTreeCombo();
+    recordEditor = NULL;
 }
 
 ExplorerWindow::~ExplorerWindow()
@@ -71,21 +76,26 @@ void ExplorerWindow::on_LogFatal(const QString& text)
 void ExplorerWindow::fillFieldsCombo()
 {
     ui->cboField->clear();
-
-    foreach (QSharedPointer<IFieldDefinition> fDef, f.databaseEngine()->fields())
+    if (!f.databaseEngine().isNull())
     {
-        if (fDef->isVisible() && fDef->isQueryable())
-            ui->cboField->addItem(fDef->name());
+        foreach (IFieldDefinitionPtr fDef, f.databaseEngine()->fields())
+        {
+            if (fDef->isVisible() && fDef->isQueryable())
+                ui->cboField->addItem(fDef->name());
+        }
     }
 }
-
 
 void ExplorerWindow::fillTreeCombo()
 {
     ui->cboTree->clear();
-    foreach (QString view, f.queryEngine()->getTreeNames())
+
+    if (!f.queryEngine().isNull())
     {
-        ui->cboTree->addItem(view);
+        foreach (QString view, f.queryEngine()->getTreeNames())
+        {
+            ui->cboTree->addItem(view);
+        }
     }
 }
 
@@ -114,15 +124,15 @@ void ExplorerWindow::on_cboOperator_currentIndexChanged(int index)
     ui->searchValue2->setVisible(show2ndParameter);
 }
 
-QSharedPointer<IParameter> ExplorerWindow::createSearchParameter(const QString &fieldName, VALIDQUERY queryType, QVariant value1, QVariant value2)
+IParameterPtr ExplorerWindow::createSearchParameter(const QString &fieldName, VALIDQUERY queryType, QVariant value1, QVariant value2)
 {
-    QSharedPointer<IParameter> param = f.databaseEngine()->createEmptyParameter();
-    QSharedPointer<IFieldDefinition> fDef = f.databaseEngine()->field(fieldName);
+    IParameterPtr param = f.databaseEngine()->createEmptyParameter();
+    IFieldDefinitionPtr fDef = f.databaseEngine()->field(fieldName);
 
-    QSharedPointer<IValue> v1 = fDef->createEmptyValue();
+    IValuePtr v1 = fDef->createEmptyValue();
     v1->setValue(value1);
 
-    QSharedPointer<IValue> v2;
+    IValuePtr v2;
     if (queryType == BETWEEN)
     {
         v2 = fDef->createEmptyValue();
@@ -145,30 +155,6 @@ void ExplorerWindow::on_btnAddToSearch_released()
     searchFilter.append(createSearchParameter(ui->cboField->currentText(),
                                               queryType, QVariant(ui->searchValue1->text()),
                                               QVariant(ui->searchValue2->text())));
-    /*
-    IParameter *param = f.databaseEngine()->createEmptyParameter();
-    IFieldDefinition* fDef = f.databaseEngine()->field(ui->cboField->currentText());
-
-    IValue* value1 = fDef->createEmptyValue();
-    value1->setValue(QVariant(ui->searchValue1->text()));
-
-    VALIDQUERY queryType = (VALIDQUERY) ui->cboOperator->itemData(ui->cboOperator->currentIndex()).toInt();
-
-    IValue *value2 = NULL;
-    if (queryType == BETWEEN)
-    {
-        value2 = fDef->createEmptyValue();
-        value2->setValue(QVariant(ui->searchValue2->text()));
-    }
-
-    param->setField(fDef);
-    param->setQueryType(queryType);
-    param->addValue(value1);
-    if (queryType == BETWEEN)
-        param->addValue(value2);
-
-    searchFilter.append(param);*/
-
     QString displayFormat = "%1 %2 %3%4";
     QString display = displayFormat.arg(ui->cboField->currentText())
             .arg(ui->cboOperator->currentText())
@@ -187,21 +173,25 @@ void ExplorerWindow::on_btnSearchAgain_released()
     doSearch(searchFilter);
 }
 
-void ExplorerWindow::doSearch(QList<QSharedPointer<IParameter>> &filter)
+void ExplorerWindow::doSearch(QList<IParameterPtr> &filter)
 {
     ui->searchResult->setRowCount(0);
     if (filter.size() > 0)
     {
-        QList<QSharedPointer<IRecordID>> result = f.databaseEngine()->search(filter);
+        QList<IRecordIDPtr> result = useCurrentTime ?
+                    f.databaseEngine()->search(filter) :
+                    f.databaseEngine()->searchByDate(filter, dateTimeToUse);
 
         QStringList ids;
-        foreach (QSharedPointer<IRecordID> id, result)
+        foreach (IRecordIDPtr id, result)
         {
             ids.append(id->asString());
         }
-        QList<QSharedPointer<IRecord>> records = f.databaseEngine()->getRecords(ids);
+        QList<IRecordPtr> records = useCurrentTime ?
+                    f.databaseEngine()->getRecords(ids) :
+                    f.databaseEngine()->getRecordsByDate(ids, dateTimeToUse);
 
-        foreach (QSharedPointer<IRecord> rec, records)
+        foreach (IRecordPtr rec, records)
         {
             //IRecord *rec = f.databaseEngine()->getRecord(id);
             int rowNum = ui->searchResult->rowCount();
@@ -229,17 +219,20 @@ void ExplorerWindow::on_searchResult_itemSelectionChanged()
     if (selection.count() == 0)
         return;
 
-    QSharedPointer<IRecord>rec = ui->searchResult->item(selection.at(0)->row(), 0)->data(Qt::UserRole).value<QSharedPointer<IRecord>>();
+    IRecordPtr rec = ui->searchResult->item(selection.at(0)->row(), 0)->data(Qt::UserRole).value<IRecordPtr>();
 
-    RecordEditor *r = new RecordEditor(this);
-    connect(r, SIGNAL(downloadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)), this, SLOT(downloadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)));
-    connect(r, SIGNAL(uploadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)), this, SLOT(uploadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)));
+    if (!recordEditor)
+    {
+        recordEditor = new RecordEditor(this);
+        connect(recordEditor, SIGNAL(downloadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)), this, SLOT(downloadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)));
+        connect(recordEditor, SIGNAL(uploadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)), this, SLOT(uploadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)));
+        QVBoxLayout* layout = new QVBoxLayout();
+        layout->addWidget(recordEditor);
+        ui->frameProperties->setLayout(layout);
+    }
 
     //r->setEnabledEdition(false);
-    r->setRecord(rec);
-    QVBoxLayout* layout = new QVBoxLayout();
-    layout->addWidget(r);
-    ui->frameProperties->setLayout(layout);
+    recordEditor->setRecord(rec);
 }
 
 void ExplorerWindow::on_actionAdd_Document_triggered()
@@ -344,7 +337,10 @@ void ExplorerWindow::fillSubTree(QTreeWidgetItem *parent)
     if (fieldsForTree.count() > filter.count())
     {
         QString field = f.queryEngine()->getFieldsForTree(ui->cboTree->currentText()).at(filter.count());
-        QStringList values = f.databaseEngine()->getDistinctColumnValues(filter, field);
+        QStringList values = useCurrentTime ?
+                    f.databaseEngine()->getDistinctColumnValues(filter, field) :
+                    f.databaseEngine()->getDistinctColumnValuesByDate(filter, field, dateTimeToUse);
+
         foreach (QString value, values)
         {
             QTreeWidgetItem *item = NULL;
@@ -415,18 +411,33 @@ void ExplorerWindow::on_btnBrowse_pressed()
 
     ui->searchResult->setRowCount(0);
 
-
     foreach (QString id, result)
     {
-        QSharedPointer<IRecord> rec = f.databaseEngine()->getRecord(id);
-        int rowNum = ui->searchResult->rowCount();
-        ui->searchResult->insertRow(rowNum);
-        rowNum = ui->searchResult->rowCount() - 1;
-        ui->searchResult->setItem(rowNum, 0, new QTableWidgetItem(rec->value("campo1")->asVariant().toString()));
-        ui->searchResult->setItem(rowNum, 1, new QTableWidgetItem(rec->value("campo2")->asVariant().toString()));
-        QVariant r;
-        r.setValue(rec);
-        ui->searchResult->item(rowNum, 0)->setData(Qt::UserRole, r);
+        QSharedPointer<IRecord> rec = useCurrentTime ?
+                    f.databaseEngine()->getRecord(id) :
+                    f.databaseEngine()->getRecordByDate(id, dateTimeToUse);
+        if (!rec.isNull())
+        {
+            int rowNum = ui->searchResult->rowCount();
+            ui->searchResult->insertRow(rowNum);
+            rowNum = ui->searchResult->rowCount() - 1;
+            ui->searchResult->setItem(rowNum, 0, new QTableWidgetItem(rec->value("campo1")->asVariant().toString()));
+            ui->searchResult->setItem(rowNum, 1, new QTableWidgetItem(rec->value("campo2")->asVariant().toString()));
+            QVariant r;
+            r.setValue(rec);
+            ui->searchResult->item(rowNum, 0)->setData(Qt::UserRole, r);
+        }
     }
 }
 
+
+void ExplorerWindow::on_actionSet_Query_Date_and_Time_triggered()
+{
+    setDateTimeToUse dlg(this);
+    dlg.setData(dateTimeToUse, useCurrentTime);
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        useCurrentTime = dlg.isUsingCurrent();
+        dateTimeToUse = dlg.getDateAndTime();
+    }
+}

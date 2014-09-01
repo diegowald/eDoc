@@ -11,16 +11,17 @@
 struct IMultiRecord
 {
 public:
-    virtual void setID(QSharedPointer<IRecordID> ID) = 0;
-    virtual QSharedPointer<IRecordID> ID() = 0;
-    virtual void addRecord(QSharedPointer<IRecord> record) = 0;
-    virtual QSharedPointer<IRecord> getRecord(QSharedPointer<IRecordID> recordID) = 0;
-    virtual QList<QSharedPointer<IRecord>> getRecords() = 0;
-    virtual void removeRecord(QSharedPointer<IRecordID> recordID) = 0;
-    virtual bool containsRecord(QSharedPointer<IRecordID> recordID) = 0;
+    virtual void setID(IRecordIDPtr ID) = 0;
+    virtual IRecordIDPtr ID() = 0;
+    virtual void addRecord(IRecordPtr record) = 0;
+    virtual IRecordPtr getRecord(IRecordIDPtr recordID) = 0;
+    virtual QList<IRecordPtr> getRecords() = 0;
+    virtual void removeRecord(IRecordIDPtr recordID) = 0;
+    virtual bool containsRecord(IRecordIDPtr recordID) = 0;
     virtual ~IMultiRecord() {}
 };
 
-Q_DECLARE_METATYPE(QSharedPointer<IMultiRecord>)
+typedef QSharedPointer<IMultiRecord> IMultiRecordPtr;
+Q_DECLARE_METATYPE(IMultiRecordPtr)
 
 #endif // IMULTIRECORD_H

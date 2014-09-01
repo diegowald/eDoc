@@ -1,5 +1,6 @@
 #ifndef IXMLCONTENT_H
 #define IXMLCONTENT_H
+#include <QSharedPointer>
 #include <QString>
 //#include <QsLog.h>
 #include "edoc-configuration_global.h"
@@ -32,4 +33,5 @@ private:
     QString m_Key;
 };
 
+typedef QSharedPointer<IXMLContent> IXMLContentPtr;
 #endif // IXMLCONTENT_H

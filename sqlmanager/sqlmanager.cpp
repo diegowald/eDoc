@@ -1,6 +1,5 @@
 #include "sqlmanager.h"
 #include <QSqlQuery>
-#include <boost/make_shared.hpp>
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QSqlField>
@@ -19,7 +18,7 @@ SQLManager::~SQLManager()
         db.close();
 }
 
-void SQLManager::initialize(IXMLContent *configuration,
+void SQLManager::initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
@@ -34,10 +33,14 @@ void SQLManager::initialize(IXMLContent *configuration,
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
-    m_database = ((XMLElement*)((XMLCollection*) configuration)->get("database_type"))->value();
-    m_Server = ((XMLElement*)((XMLCollection*) configuration)->get("server"))->value();
-    m_User = ((XMLElement*)((XMLCollection*) configuration)->get("user"))->value();
-    m_Password = ((XMLElement*)((XMLCollection*) configuration)->get("password"))->value();
+    //m_database = ((XMLElement*)((XMLCollection*) configuration)->get("database_type"))->value();
+    m_database = configuration.dynamicCast<XMLCollection>()->get("database_type").dynamicCast<XMLElement>()->value();
+    //m_Server = ((XMLElement*)((XMLCollection*) configuration)->get("server"))->value();
+    m_Server = configuration.dynamicCast<XMLCollection>()->get("server").dynamicCast<XMLElement>()->value();
+    //m_User = ((XMLElement*)((XMLCollection*) configuration)->get("user"))->value();
+    m_User = configuration.dynamicCast<XMLCollection>()->get("user").dynamicCast<XMLElement>()->value();
+    //m_Password = ((XMLElement*)((XMLCollection*) configuration)->get("password"))->value();
+    m_Password = configuration.dynamicCast<XMLCollection>()->get("password").dynamicCast<XMLElement>()->value();
 
     m_DBType = String2DBType();
     /*m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
@@ -74,7 +77,7 @@ DBType SQLManager::String2DBType()
 DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)");
-    DBRecordSet response = boost::make_shared<QList<DBRecordPtr> >();
+    DBRecordSet response = DBRecordSet(new QList<DBRecordPtr>());
 
     if (!tryReconnect())
     {
@@ -93,7 +96,7 @@ DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)
     while (q.next())
     {
         QSqlRecord rec = q.record();
-        DBRecordPtr record = boost::make_shared<DBRecord>();
+        DBRecordPtr record = DBRecordPtr(new DBRecord());
         for (int i = 0; i < rec.count(); i++)
         {
             (*record)[rec.fieldName(i)] = rec.field(i).value();
@@ -112,7 +115,7 @@ DBRecordSet SQLManager::getRecords(const QString &sql, DBRecordPtr record)
 DBRecordSet SQLManager::getRecords(const QString &sql)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "DBRecordSet SQLManager::getRecords(const QString &sql)");
-    DBRecordSet response = boost::make_shared<QList<DBRecordPtr> >();
+    DBRecordSet response = DBRecordSet(new QList<DBRecordPtr>());
 
     if (!tryReconnect())
     {
@@ -130,7 +133,7 @@ DBRecordSet SQLManager::getRecords(const QString &sql)
     while (q.next())
     {
         QSqlRecord rec = q.record();
-        DBRecordPtr record = boost::make_shared<DBRecord>();
+        DBRecordPtr record = DBRecordPtr(new DBRecord());
         for (int i = 0; i < rec.count(); i++)
         {
             (*record)[rec.fieldName(i)] = rec.field(i).value();

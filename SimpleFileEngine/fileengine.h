@@ -4,7 +4,7 @@
 #include <IDocEngine.h>
 #include "filemanagement.h"
 
-class FileEngine : public QObject, IDocEngine
+class FileEngine : public QObject, public IDocEngine
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
@@ -17,7 +17,7 @@ public:
     FileEngine(QObject *parent = 0);
     virtual ~FileEngine();
 
-    virtual void initialize(IXMLContent *configuration,
+    virtual void initialize(QSharedPointer<IXMLContent> configuration,
                             QSharedPointer<QObjectLogging> logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,

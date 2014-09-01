@@ -10,11 +10,11 @@ struct IMultiDocument: public IDocBase
 {
 public:
     virtual bool isComplex() const { return true; }
-    virtual void addDocument(QSharedPointer<IDocBase> id) = 0;
-    virtual QList<QSharedPointer<IDocBase> > getDocuments() = 0;
-    virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id) = 0;
-    virtual void removeDocument(QSharedPointer<IDocID> id) = 0;
-    virtual bool containsDocument(QSharedPointer<IDocID> id) = 0;
+    virtual void addDocument(IDocBasePtr id) = 0;
+    virtual QList<IDocBasePtr> getDocuments() = 0;
+    virtual IDocBasePtr getDocument(IDocIDPtr id) = 0;
+    virtual void removeDocument(IDocIDPtr id) = 0;
+    virtual bool containsDocument(IDocIDPtr id) = 0;
     virtual ~IMultiDocument() {}
 };
 

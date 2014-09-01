@@ -14,6 +14,7 @@ public:
 
 };
 
+typedef QSharedPointer<IServer> IServerPtr;
 Q_DECLARE_INTERFACE(IServer, "com.mksingenieria.eDoc.IServer/0.0")
 
 #endif // ISERVER_H

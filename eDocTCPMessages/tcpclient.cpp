@@ -3,14 +3,14 @@
 TcpClient::TcpClient(QObject *parent) :
     QObject(parent)
 {
-    tcpSocket = new QTcpSocket(this);
+    tcpSocket = QSharedPointer<QTcpSocket>(new QTcpSocket());
     ipAddress = "";
     port = 0;
-    out = NULL;
+    out = QSharedPointer<QDataStream>();
     timeOut = 15000;
 
-    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(on_error(QAbstractSocket::SocketError)));
-    connect(tcpSocket, SIGNAL(connected()), this, SLOT(connected()));
+    connect(tcpSocket.data(), SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(on_error(QAbstractSocket::SocketError)));
+    connect(tcpSocket.data(), SIGNAL(connected()), this, SLOT(connected()));
 }
 
 TcpClient::~TcpClient()
@@ -20,21 +20,21 @@ TcpClient::~TcpClient()
         tcpSocket->abort();
         tcpSocket->close();
     }
-    if (out != NULL)
+    if (!out.isNull())
     {
-        delete out;
+        out.clear();
     }
 }
 
 void TcpClient::prepareToSend(MessageCodes::CodeNumber code)
 {
-    if (out != NULL)
+    if (!out.isNull())
     {
-        delete out;
+        out.clear();
     }
 
     buildingBlob.clear();
-    out = new QDataStream(&buildingBlob, QIODevice::WriteOnly);
+    out = QSharedPointer<QDataStream>(new QDataStream(&buildingBlob, QIODevice::WriteOnly));
     out->setVersion(QDataStream::Qt_5_3);
 
     Header header;
@@ -71,7 +71,7 @@ QByteArray TcpClient::send()
     tcpSocket->waitForBytesWritten();
     blob.clear();
 
-    QDataStream in(tcpSocket);
+    QDataStream in(tcpSocket.data());
     in.setVersion(QDataStream::Qt_5_3);
 
 

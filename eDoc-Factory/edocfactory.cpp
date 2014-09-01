@@ -1,6 +1,7 @@
 #include "edocfactory.h"
 #include <QDir>
 #include <QPluginLoader>
+#include <QSharedPointer>
 #include "configreader.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
@@ -125,14 +126,15 @@ QSharedPointer<IDocEngine> EDocFactory::createEngine()
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDocEngine *EDocFactory::createEngine()");
     if ("edoc" == configuration->key())
     {
-        XMLCollection *c = (XMLCollection*) configuration;
-        XMLCollection *conf = (XMLCollection*)c->get("engine");
-        if (conf)
+        QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
+        QSharedPointer<XMLCollection> conf = c->get("engine").dynamicCast<XMLCollection>();
+        if (!conf.isNull())
         {
-            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
             QPluginLoader pluginLoader(plugins[engineClass]);
             QObject *plugin = pluginLoader.instance();
-            if (plugin) {
+            if (plugin)
+            {
                 IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
                 engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 
@@ -150,11 +152,11 @@ QSharedPointer<IDatabaseWithHistory> EDocFactory::createDatabase()
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase *EDocFactory::createDatabase()");
     if ("edoc" == configuration->key())
     {
-        XMLCollection *c = (XMLCollection*) configuration;
-        XMLCollection *conf = (XMLCollection*)c->get("database");
+        QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
+        QSharedPointer<XMLCollection> conf = c->get("database").dynamicCast<XMLCollection>();
         if (conf)
         {
-            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
             if (DBWithHistoryPlugins.contains(engineClass))
             {
                 QPluginLoader pluginLoader(DBWithHistoryPlugins[engineClass]);
@@ -180,11 +182,11 @@ QSharedPointer<IDatabaseWithHistory> EDocFactory::createDatabaseWithoutHistory()
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabaseWithHistory *EDocFactory::createDatabaseWithoutHistory()");
     if ("edoc" == configuration->key())
     {
-        XMLCollection *c = (XMLCollection*) configuration;
-        XMLCollection *conf = (XMLCollection*)c->get("database");
+        QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
+        QSharedPointer<XMLCollection> conf = c->get("database").dynamicCast<XMLCollection>();
         if (conf)
         {
-            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
             QPluginLoader pluginLoader(DBplugins[engineClass]);
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
@@ -204,8 +206,8 @@ QSharedPointer<IQueryEngine> EDocFactory::createQueryEngine()
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IQueryEngine *EDocFactory::createQueryEngine()");
     if ("edoc" == configuration->key())
     {
-        XMLCollection *c = (XMLCollection*) configuration;
-        XMLCollection *conf = (XMLCollection*)c->get("queries");
+        QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
+        QSharedPointer<XMLCollection> conf = c->get("queries").dynamicCast<XMLCollection>();
         if (conf)
         {
             query = QSharedPointer<QueryEngine>(new QueryEngine());
@@ -222,11 +224,12 @@ QSharedPointer<ITagProcessor> EDocFactory::createTagEngine()
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "ITagEngine *EDocFactory::createTagEngine()");
     if ("edoc" == configuration->key())
     {
-        XMLCollection *c = (XMLCollection*) configuration;
-        XMLCollection *conf = (XMLCollection*)c->get("tagengine");
+        QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
+        QSharedPointer<XMLCollection> conf = c->get("tagengine").dynamicCast<XMLCollection>();
+
         if (conf)
         {
-            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
 
             QPluginLoader pluginLoader(tagPlugins[engineClass]);
             QObject *plugin = pluginLoader.instance();
@@ -246,11 +249,11 @@ QSharedPointer<IServer> EDocFactory::createServerEngine()
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IServer *EDocFactory::createServerEngine()");
     if ("edoc" == configuration->key())
     {
-        XMLCollection *c = (XMLCollection*) configuration;
-        XMLCollection *conf = (XMLCollection*)c->get("server");
+        QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
+        QSharedPointer<XMLCollection> conf = c->get("server").dynamicCast<XMLCollection>();
         if (conf)
         {
-            QString engineClass = ((XMLElement*)conf->get("class"))->value();
+            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
 
             QPluginLoader pluginLoader(serverPlugins[engineClass]);
             QObject *plugin = pluginLoader.instance();

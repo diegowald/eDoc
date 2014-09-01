@@ -12,6 +12,7 @@ public:
     virtual ~IDocID() {}
 };
 
-Q_DECLARE_METATYPE(QSharedPointer<IDocID>)
+typedef QSharedPointer<IDocID> IDocIDPtr;
+Q_DECLARE_METATYPE(IDocIDPtr)
 
 #endif // IDOCID_H
