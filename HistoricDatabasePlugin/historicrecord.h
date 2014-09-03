@@ -29,4 +29,5 @@ private:
     QSharedPointer<IRecordID> _masterID;
 };
 
+typedef QSharedPointer<HistoricRecord> HistoricRecordPtr;
 #endif // HISOTRICRECORD_H

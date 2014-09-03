@@ -6,12 +6,13 @@
 #include "historicrecord.h"
 
 
-HistoricDatabase::HistoricDatabase()
+HistoricDatabase::HistoricDatabase() : QObject(), m_SQLManager(this)
 {
 }
 
 HistoricDatabase::~HistoricDatabase()
 {
+    databaseEngine.clear();
 }
 
 // IInitializable
@@ -26,43 +27,39 @@ void HistoricDatabase::initialize(QSharedPointer<IXMLContent> configuration,
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "HistoricDatabasePlugin", "void HistoricDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
-    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
 
-    //m_MasterTableName = ((XMLElement*)((XMLCollection*)configuration)->get("mastertablename"))->value();
     m_MasterTableName = configuration.dynamicCast<XMLCollection>()->get("mastertablename").dynamicCast<XMLElement>()->value();
-    //m_HistoryTableName = ((XMLElement*)((XMLCollection*)configuration)->get("historytablename"))->value();
     m_HistoryTableName = configuration.dynamicCast<XMLCollection>()->get("historytablename").dynamicCast<XMLElement>()->value();
 
     m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
 
-    //XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("database");
     QSharedPointer<XMLCollection> confEngine = configuration.dynamicCast<XMLCollection>()->get("database").dynamicCast<XMLCollection>();
     databaseEngine = createDatabaseEngine(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 }
 
 // IDatabase
-QList<QSharedPointer<IFieldDefinition> > HistoricDatabase::fields()
+QList<IFieldDefinitionPtr> HistoricDatabase::fields()
 {
     return databaseEngine->fields();
 }
 
-QSharedPointer<IFieldDefinition> HistoricDatabase::field(const QString &fieldName)
+IFieldDefinitionPtr HistoricDatabase::field(const QString &fieldName)
 {
     return databaseEngine->field(fieldName);
 }
 
-QSharedPointer<IParameter> HistoricDatabase::createEmptyParameter()
+IParameterPtr HistoricDatabase::createEmptyParameter()
 {
     return databaseEngine->createEmptyParameter();
 }
 
-QList<QSharedPointer<IRecordID> > HistoricDatabase::search(const QList<QSharedPointer<IParameter> > &parameters)
+QList<IRecordIDPtr> HistoricDatabase::search(const QList<IParameterPtr> &parameters)
 {
     return searchByDate(parameters, now());
 }
 
-QList<QSharedPointer<IRecordID> > HistoricDatabase::searchWithin(const QList<QSharedPointer<IParameter> > &parameters, const QList<QSharedPointer<IRecordID> > &records)
+QList<IRecordIDPtr> HistoricDatabase::searchWithin(const QList<IParameterPtr> &parameters, const QList<IRecordIDPtr> &records)
 {
     QList<QSharedPointer<IRecordID>> result;
     QStringList recIds;
@@ -87,14 +84,14 @@ QList<QSharedPointer<IRecordID> > HistoricDatabase::searchWithin(const QList<QSh
 }
 
 
-QSharedPointer<IRecord> HistoricDatabase::createEmptyRecord()
+IRecordPtr HistoricDatabase::createEmptyRecord()
 {
     QSharedPointer<HistoricRecord> record = QSharedPointer<HistoricRecord>(new HistoricRecord(databaseEngine->createEmptyRecord()));
     record->setID(QSharedPointer<IRecordID>(new RecordID(record.data())));
     return record;
 }
 
-QSharedPointer<IRecordID> HistoricDatabase::addRecord(QSharedPointer<IRecord> record)
+IRecordIDPtr HistoricDatabase::addRecord(IRecordPtr record)
 {
     QSharedPointer<HistoricRecord> rec = record.dynamicCast<HistoricRecord>();
     if (rec.isNull())
@@ -106,7 +103,7 @@ QSharedPointer<IRecordID> HistoricDatabase::addRecord(QSharedPointer<IRecord> re
     databaseEngine->addRecord(rec->getRecord());
 
     QString SQLhistory = "INSERT INTO %1 (MasterID, record_id, fromDate) VALUES (:MasterID, :record_id, :fromDate)";
-    QString sql = SQLhistory.arg(this->m_HistoryTableName);
+    QString sql = SQLhistory.arg(m_HistoryTableName);
     DBRecordPtr r = DBRecordPtr(new DBRecord());
     (*r)["MasterID"] = rec->ID()->asString();
     (*r)["record_id"] = rec->getRecord()->ID()->asString();
@@ -151,7 +148,7 @@ void HistoricDatabase::updateRecord(QSharedPointer<IRecord> record)
     databaseEngine->addRecord(histRec->getRecord());
 
     QString SQLhistory = "INSERT INTO %1 (MasterID, record_id, fromDate) VALUES (:MasterID, :record_id, :fromDate)";
-    QString sql = SQLhistory.arg(this->m_HistoryTableName);
+    QString sql = SQLhistory.arg(m_HistoryTableName);
     DBRecordPtr r = DBRecordPtr(new DBRecord());
     (*r)["MasterID"] = histRec->ID()->asString();
     (*r)["record_id"] = histRec->getRecord()->ID()->asString();
@@ -221,11 +218,15 @@ QList<QSharedPointer<IRecordID> > HistoricDatabase::searchByDate(const QList<QSh
 
 QSharedPointer<IRecord> HistoricDatabase::getRecordByDate(QSharedPointer<IRecordID> id, const QDateTime &date)
 {
-    QMap<QString, QSharedPointer<IRecordID>> validRecord = getValidRecords(id, date);
+    HistoricRecordPtr rec = HistoricRecordPtr();
 
-    QSharedPointer<IRecord> record = databaseEngine->getRecord(validRecord.keys().at(0));
-    QSharedPointer<HistoricRecord> rec = QSharedPointer<HistoricRecord>(new HistoricRecord(record));
-    rec->setID(id);
+    QMap<QString, QSharedPointer<IRecordID>> validRecord = getValidRecords(id, date);
+    if (validRecord.count() > 0)
+    {
+        IRecordPtr record = databaseEngine->getRecord(validRecord.keys().at(0));
+        rec = HistoricRecordPtr(new HistoricRecord(record));
+        rec->setID(id);
+    }
     return rec;
 }
 
@@ -299,9 +300,10 @@ QSharedPointer<IDatabase> HistoricDatabase::createDatabaseEngine(QSharedPointer<
             QObject *plugin = pluginLoader.instance();
             if (plugin)
             {
-                IDatabase *engine = qobject_cast<IDatabase*>(plugin);
+                IDatabase *engineCreator = qobject_cast<IDatabase*>(plugin);
+                IDatabasePtr engine = engineCreator->newDatabase();
                 engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return QSharedPointer<IDatabase>(engine);
+                return engine;
             }
             else
             {
@@ -358,6 +360,15 @@ QStringList HistoricDatabase::intersectRecords(QStringList &list1, QStringList &
     return set1.intersect(set2).toList();
 }
 
+IDatabasePtr HistoricDatabase::newDatabase()
+{
+    return IDatabasePtr(new HistoricDatabase());
+}
+
+IDatabaseWithHistoryPtr HistoricDatabase::newDatabaseWithHistory()
+{
+    return IDatabaseWithHistoryPtr(new HistoricDatabase());
+}
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(HistoricDatabasePlugin, HistoricDatabase)

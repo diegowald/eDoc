@@ -25,13 +25,9 @@ void TcpServer::initialize(IXMLContentPtr configuration,
 {
     this->logger = logger;
     logger->logTrace(__FILE__, __LINE__, "EDocTCPServerDatabasePlugin", "void EDocTCPServerDatabasePlugin::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
-    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
 
-
-    //port = ((XMLElement*)((XMLCollection*) configuration)->get("port"))->value().toInt();
     port = configuration.dynamicCast<XMLCollection>()->get("port").dynamicCast<XMLElement>()->value().toInt();
-    //XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("database");
     XMLCollectionPtr confEngine = configuration.dynamicCast<XMLCollection>()->get("database").dynamicCast<XMLCollection>();
     dbh = createHistoryDBPersistentEngine(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
     if (!dbh)
@@ -39,14 +35,13 @@ void TcpServer::initialize(IXMLContentPtr configuration,
         database = createPersistentEngine(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
     }
 
-    //confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
     confEngine = configuration.dynamicCast<XMLCollection>()->get("engine").dynamicCast<XMLCollection>();
     docEngine = createDocEnginePersistance(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 
     confEngine = configuration.dynamicCast<XMLCollection>()->get("tagengine").dynamicCast<XMLCollection>();
     tagProcessor = createTagProcessor(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 
-    tcpServer = QSharedPointer<QTcpServer>(new QTcpServer(this));
+    tcpServer = QSharedPointer<QTcpServer>(new QTcpServer());
     if (!tcpServer->listen(QHostAddress::Any, port))
     {
         logger->logError("Unable to start server");
@@ -76,7 +71,8 @@ IDatabasePtr TcpServer::createPersistentEngine(XMLCollectionPtr confEngine,
             QObject *plugin = pluginLoader.instance();
             if (plugin)
             {
-                IDatabase* engine = qobject_cast<IDatabase*>(plugin);
+                IDatabase* engineCreator = qobject_cast<IDatabase*>(plugin);
+                IDatabasePtr engine = engineCreator->newDatabase();
                 engine->initialize(confEngine, logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
                 return IDatabasePtr(qobject_cast<IDatabase *>(plugin));
             }
@@ -105,7 +101,6 @@ IDatabaseWithHistoryPtr TcpServer::createHistoryDBPersistentEngine(XMLCollection
 
     if (confEngine->key() == "database")
     {
-        //XMLCollection *conf = (XMLCollection*) confEngine;
         XMLCollectionPtr conf = confEngine.dynamicCast<XMLCollection>();
         QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
 
@@ -115,7 +110,8 @@ IDatabaseWithHistoryPtr TcpServer::createHistoryDBPersistentEngine(XMLCollection
             QObject *plugin = pluginLoader.instance();
             if (plugin)
             {
-                IDatabaseWithHistory* engine = qobject_cast<IDatabaseWithHistory*>(plugin);
+                IDatabaseWithHistory* engineCreator = qobject_cast<IDatabaseWithHistory*>(plugin);
+                IDatabaseWithHistoryPtr engine = engineCreator->newDatabaseWithHistory();
                 engine->initialize(confEngine, logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
                 return IDatabaseWithHistoryPtr(engine);
             }
@@ -153,7 +149,8 @@ IDocEnginePtr TcpServer::createDocEnginePersistance(XMLCollectionPtr confEngine,
             QObject *plugin = pluginLoader.instance();
             if (plugin)
             {
-                IDocEngine* engine = qobject_cast<IDocEngine*>(plugin);
+                IDocEngine* engineCreator = qobject_cast<IDocEngine*>(plugin);
+                IDocEnginePtr engine = engineCreator->newDocEngine();
                 engine->initialize(confEngine, logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
                 return IDocEnginePtr(engine);
             }
@@ -191,9 +188,10 @@ ITagProcessorPtr TcpServer::createTagProcessor(XMLCollectionPtr confEngine,
             QObject *plugin = pluginLoader.instance();
             if (plugin)
             {
-                ITagProcessor *engine = qobject_cast<ITagProcessor*>(plugin);
+                ITagProcessor *engineCreator = qobject_cast<ITagProcessor*>(plugin);
+                ITagProcessorPtr engine = engineCreator->newTagProcessor();
                 engine->initialize(confEngine, logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return ITagProcessorPtr(engine);
+                return engine;
             }
             else
             {
@@ -258,6 +256,10 @@ QString TcpServer::name() const
     return "eDocTcpServerPlugin";
 }
 
+IServerPtr TcpServer::newServer()
+{
+    return IServerPtr(new TcpServer());
+}
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(eDocTcpServerPlugin, TcpServer)

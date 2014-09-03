@@ -24,12 +24,9 @@ void InMemoryTagProcessor::initialize(QSharedPointer<IXMLContent> configuration,
 {
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "InMemoryTagProcessor", "void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
-    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
 
-    //m_keywordsTableName = ((XMLElement*)((XMLCollection*)configuration)->get("keywordtablename"))->value();
     m_keywordsTableName = configuration.dynamicCast<XMLCollection>()->get("keywordtablename").dynamicCast<XMLElement>()->value();
-    //m_indexTableName = ((XMLElement*)((XMLCollection*)configuration)->get("indextablename"))->value();
     m_indexTableName = configuration.dynamicCast<XMLCollection>()->get("indextablename").dynamicCast<XMLElement>()->value();
     m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
     loadIntoMemory();
@@ -181,6 +178,11 @@ void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const
     (*recordOccurrence)["record_id"] = recordID->asString();
 
     m_SQLManager.executeCommand(sql2, recordOccurrence);
+}
+
+ITagProcessorPtr InMemoryTagProcessor::newTagProcessor()
+{
+    return ITagProcessorPtr(new InMemoryTagProcessor());
 }
 
 #if QT_VERSION < 0x050000

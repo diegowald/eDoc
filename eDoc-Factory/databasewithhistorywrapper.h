@@ -8,7 +8,7 @@ class DatabaseWithHistoryWrapper : public QObject, public IDatabaseWithHistory
 {
     Q_OBJECT
 public:
-    explicit DatabaseWithHistoryWrapper(QSharedPointer<IDatabase> realDatabase, QSharedPointer<QObjectLogging> Logger, QObject *parent = 0);
+    explicit DatabaseWithHistoryWrapper(IDatabasePtr realDatabase, QObjectLoggingPtr Logger, QObject *parent = 0);
     virtual ~DatabaseWithHistoryWrapper();
 
     // IInitializable
@@ -38,7 +38,8 @@ public:
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName);
     virtual QList<QPair<QString, QString>> getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName);
     virtual QString name();
-
+    virtual IDatabasePtr newDatabase();
+    virtual IDatabaseWithHistoryPtr newDatabaseWithHistory();
 protected:
     virtual QMap<QString, QSharedPointer<IRecordID>> search(QSharedPointer<IParameter> parameter);
 
@@ -60,7 +61,7 @@ signals:
 public slots:
 
 private:
-    QSharedPointer<IDatabase> database;
+    IDatabasePtr database;
     QSharedPointer<QObjectLogging> logger;
 };
 

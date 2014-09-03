@@ -36,6 +36,7 @@ public:
     virtual QSet<QString> findByTags(const QStringList &tags);
     virtual void removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag);
     virtual QString name();
+    virtual ITagProcessorPtr newTagProcessor();
 
 private:
     void loadIntoMemory();

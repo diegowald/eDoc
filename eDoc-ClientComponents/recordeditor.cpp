@@ -16,7 +16,7 @@ RecordEditor::~RecordEditor()
     delete ui;
 }
 
-void RecordEditor::setRecord(QSharedPointer<IRecord> record)
+void RecordEditor::setRecord(IRecordPtr record)
 {
     m_Record = record;
     ui->lstFields->clear();
@@ -61,13 +61,13 @@ QFieldWidget *RecordEditor::createWidget(QSharedPointer<IRecord> record, const Q
         DocumentWidget *dw = new DocumentWidget(parent);
         dw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
         w = dw;
-        connect(dw, SIGNAL(download(const IValue*)), this, SLOT(download(const IValue*)));
-        connect(dw, SIGNAL(upload(const IValue*)), this, SLOT(upload(const IValue*)));
+        connect(dw, SIGNAL(download(const IValuePtr)), this, SLOT(download(const IValuePtr)));
+        connect(dw, SIGNAL(upload(const IValuePtr)), this, SLOT(upload(const IValuePtr)));
     }
     return w;
 }
 
-void RecordEditor::applyValuesToRecord(QSharedPointer<IRecord> record)
+void RecordEditor::applyValuesToRecord(IRecordPtr record)
 {
     QStringList fields = collection.keys();
     foreach (QString fieldName, fields)
@@ -76,7 +76,6 @@ void RecordEditor::applyValuesToRecord(QSharedPointer<IRecord> record)
         if (fieldDef && (fieldDef->isVisible() && fieldDef->isQueryable()))
         {
             QVariant v = collection[fieldName]->value();
-            //record->value(fieldName)->setValue(v);
             record->value(fieldName)->setValue(collection[fieldName]->value());
         }
     }
@@ -98,12 +97,12 @@ void RecordEditor::setEnabledStatus()
     }
 }
 
-void RecordEditor::download(const QSharedPointer<IValue> value)
+void RecordEditor::download(const IValuePtr value)
 {
     emit downloadFile(m_Record, value);
 }
 
-void RecordEditor::upload(const QSharedPointer<IValue> value)
+void RecordEditor::upload(const IValuePtr value)
 {
     emit uploadFile(m_Record, value);
 }

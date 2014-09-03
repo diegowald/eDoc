@@ -91,37 +91,37 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     server = createServerEngine();
 }
 
-QSharedPointer<IDocEngine> EDocFactory::docEngine()
+IDocEnginePtr EDocFactory::docEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDocEngine* EDocFactory::docEngine()");
     return engine;
 }
 
-QSharedPointer<IDatabaseWithHistory> EDocFactory::databaseEngine()
+IDatabaseWithHistoryPtr EDocFactory::databaseEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase* EDocFactory::databaseEngine()");
     return database;
 }
 
-QSharedPointer<IQueryEngine> EDocFactory::queryEngine()
+IQueryEnginePtr EDocFactory::queryEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IQueryEngine * EDocFactory::queryEngine()");
     return query;
 }
 
-QSharedPointer<ITagProcessor> EDocFactory::tagEngine()
+ITagProcessorPtr EDocFactory::tagEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "ITagProcessor *EDocFactory::tagEngine()");
     return tagger;
 }
 
-QSharedPointer<IServer> EDocFactory::serverEngine()
+IServerPtr EDocFactory::serverEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IServer *EDocFactory::serverEngine()");
     return server;
 }
 
-QSharedPointer<IDocEngine> EDocFactory::createEngine()
+IDocEnginePtr EDocFactory::createEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDocEngine *EDocFactory::createEngine()");
     if ("edoc" == configuration->key())
@@ -135,10 +135,13 @@ QSharedPointer<IDocEngine> EDocFactory::createEngine()
             QObject *plugin = pluginLoader.instance();
             if (plugin)
             {
-                IDocEngine * engine = qobject_cast<IDocEngine*>(plugin);
+                IDocEngine * engineCreator = qobject_cast<IDocEngine*>(plugin);
+
+                IDocEnginePtr engine = engineCreator->newDocEngine();
+
                 engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
 
-                return QSharedPointer<IDocEngine>(qobject_cast<IDocEngine *>(plugin));
+                return engine;
             }
             m_Logger->logError("Cannot create Engine " + engineClass);
         }
@@ -147,7 +150,7 @@ QSharedPointer<IDocEngine> EDocFactory::createEngine()
     return QSharedPointer<IDocEngine>();
 }
 
-QSharedPointer<IDatabaseWithHistory> EDocFactory::createDatabase()
+IDatabaseWithHistoryPtr EDocFactory::createDatabase()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase *EDocFactory::createDatabase()");
     if ("edoc" == configuration->key())
@@ -161,10 +164,14 @@ QSharedPointer<IDatabaseWithHistory> EDocFactory::createDatabase()
             {
                 QPluginLoader pluginLoader(DBWithHistoryPlugins[engineClass]);
                 QObject *plugin = pluginLoader.instance();
-                if (plugin) {
-                    IDatabaseWithHistory *engine = qobject_cast<IDatabaseWithHistory*>(plugin);
+                if (plugin)
+                {
+                    IDatabaseWithHistory *engineCreator = qobject_cast<IDatabaseWithHistory*>(plugin);
+
+                    IDatabaseWithHistoryPtr engine = engineCreator->newDatabaseWithHistory();
+
                     engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                    return QSharedPointer<IDatabaseWithHistory>(qobject_cast<IDatabaseWithHistory *>(plugin));
+                    return engine;
                 }
             }
             else
@@ -177,7 +184,7 @@ QSharedPointer<IDatabaseWithHistory> EDocFactory::createDatabase()
     return QSharedPointer<IDatabaseWithHistory>();
 }
 
-QSharedPointer<IDatabaseWithHistory> EDocFactory::createDatabaseWithoutHistory()
+IDatabaseWithHistoryPtr EDocFactory::createDatabaseWithoutHistory()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabaseWithHistory *EDocFactory::createDatabaseWithoutHistory()");
     if ("edoc" == configuration->key())
@@ -190,9 +197,10 @@ QSharedPointer<IDatabaseWithHistory> EDocFactory::createDatabaseWithoutHistory()
             QPluginLoader pluginLoader(DBplugins[engineClass]);
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
-                QSharedPointer<IDatabase> engine = QSharedPointer<IDatabase>(qobject_cast<IDatabase*>(plugin));
+                IDatabase* engineCreator = qobject_cast<IDatabase*>(plugin);
+                IDatabasePtr engine = engineCreator->newDatabase();
                 engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                QSharedPointer<IDatabaseWithHistory> db = QSharedPointer<IDatabaseWithHistory>(new DatabaseWithHistoryWrapper(engine, m_Logger));
+                IDatabaseWithHistoryPtr db = IDatabaseWithHistoryPtr(new DatabaseWithHistoryWrapper(engine, m_Logger));
                 return db;
             }
         }
@@ -219,7 +227,7 @@ QSharedPointer<IQueryEngine> EDocFactory::createQueryEngine()
     return QSharedPointer<QueryEngine>();
 }
 
-QSharedPointer<ITagProcessor> EDocFactory::createTagEngine()
+ITagProcessorPtr EDocFactory::createTagEngine()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "ITagEngine *EDocFactory::createTagEngine()");
     if ("edoc" == configuration->key())
@@ -234,14 +242,15 @@ QSharedPointer<ITagProcessor> EDocFactory::createTagEngine()
             QPluginLoader pluginLoader(tagPlugins[engineClass]);
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
-                ITagProcessor *engine = qobject_cast<ITagProcessor*>(plugin);
+                ITagProcessor *engineCreator = qobject_cast<ITagProcessor*>(plugin);
+                ITagProcessorPtr engine = engineCreator->newTagProcessor();
                 engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return QSharedPointer<ITagProcessor>(qobject_cast<ITagProcessor *>(plugin));
+                return engine;
             }
         }
     }
     m_Logger->logError("Cannot create database engine");
-    return QSharedPointer<ITagProcessor>();
+    return ITagProcessorPtr();
 }
 
 QSharedPointer<IServer> EDocFactory::createServerEngine()
@@ -273,7 +282,7 @@ QSharedPointer<IServer> EDocFactory::createServerEngine()
     return QSharedPointer<IServer>();
 }
 
-QSharedPointer<IRecord> EDocFactory::createEmptyRecord()
+IRecordPtr EDocFactory::createEmptyRecord()
 {
     return databaseEngine()->createEmptyRecord();
 }
@@ -290,7 +299,6 @@ void EDocFactory::addDocument(const QString &filename, QSharedPointer<IRecord> r
 void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename, QSharedPointer<IRecord> record)
 {
     QSharedPointer<IDocID> docId = engine->addDocument(blob);
-//    IDocument *doc = (IDocument*)engine->getDocument(docId);
 
     record->value("archivo")->setValue(docId->asString());
     record->value("filename")->setValue(filename);
@@ -299,7 +307,9 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
 
     if (!record->value("keywords")->isNull())
     {
-        if (!tagEngine().isNull())
+        if (tagEngine() != NULL)
+        {
             tagEngine()->processKeywordString(record_id, record->value("keywords")->content().toString());
+        }
     }
 }

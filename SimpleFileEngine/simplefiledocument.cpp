@@ -5,13 +5,13 @@
 SimpleFileDocument::SimpleFileDocument(QSharedPointer<FileManagement> FileManager, QObject *parent) :
     QObject(parent), fileManager(FileManager)
 {
-    idDocument = QSharedPointer<SimpleFileID>(new SimpleFileID(this));
+    idDocument = QSharedPointer<SimpleFileID>(new SimpleFileID());
 }
 
 SimpleFileDocument::SimpleFileDocument(QSharedPointer<FileManagement> FileManager, QString stringID, QObject *parent) :
     QObject(parent), fileManager(FileManager)
 {
-    idDocument = QSharedPointer<SimpleFileID>(new SimpleFileID(stringID,this));
+    idDocument = QSharedPointer<SimpleFileID>(new SimpleFileID(stringID));
 }
 
 SimpleFileDocument::~SimpleFileDocument()

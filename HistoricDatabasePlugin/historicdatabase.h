@@ -33,13 +33,13 @@ public:
 
     // IDatabase
 public:
-    virtual QList<QSharedPointer<IFieldDefinition> > fields();
-    virtual QSharedPointer<IFieldDefinition> field(const QString &fieldName);
-    virtual QSharedPointer<IParameter> createEmptyParameter();
-    virtual QList<QSharedPointer<IRecordID> > search(const QList<QSharedPointer<IParameter> > &parameters);
-    virtual QList<QSharedPointer<IRecordID> > searchWithin(const QList<QSharedPointer<IParameter> > &parameters, const QList<QSharedPointer<IRecordID> > &records);
-    virtual QSharedPointer<IRecord> createEmptyRecord();
-    virtual QSharedPointer<IRecordID> addRecord(QSharedPointer<IRecord> record);
+    virtual QList<IFieldDefinitionPtr> fields();
+    virtual IFieldDefinitionPtr field(const QString &fieldName);
+    virtual IParameterPtr createEmptyParameter();
+    virtual QList<IRecordIDPtr> search(const QList<IParameterPtr> &parameters);
+    virtual QList<IRecordIDPtr> searchWithin(const QList<IParameterPtr> &parameters, const QList<IRecordIDPtr> &records);
+    virtual IRecordPtr createEmptyRecord();
+    virtual IRecordIDPtr addRecord(IRecordPtr record);
     virtual QSharedPointer<IRecord> getRecord(QSharedPointer<IRecordID> id);
     virtual QSharedPointer<IRecord> getRecord(const QString &id);
     virtual QList<QSharedPointer<IRecord>> getRecords(const QStringList &ids);
@@ -48,6 +48,8 @@ public:
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName);
     virtual QList<QPair<QString, QString> > getColumnValue(const QList<QPair<QString, QString> > &filter, const QString &columnName);
     virtual QString name();
+    virtual IDatabasePtr newDatabase();
+    virtual IDatabaseWithHistoryPtr newDatabaseWithHistory();
 protected:
     virtual QMap<QString, QSharedPointer<IRecordID> > search(QSharedPointer<IParameter> parameter);
 
@@ -84,7 +86,6 @@ private:
     QString m_MasterTableName;
     QString m_HistoryTableName;
     SQLManager m_SQLManager;
-
 };
 
 #endif // HISTORICDATABASEPLUGIN_H

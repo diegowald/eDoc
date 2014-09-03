@@ -26,10 +26,9 @@ void FileEngine::initialize(QSharedPointer<IXMLContent> configuration,
     (void)DBWithHistoryPlugins;
     (void)tagPlugins;
     (void)serverPlugins;
-    //folder = ((XMLElement*)((XMLCollection*) configuration)->get("folder"))->value();
     folder = configuration.dynamicCast<XMLCollection>()->get("folder").dynamicCast<XMLElement>()->value();
     m_Logger = logger;
-    fileManager = QSharedPointer<FileManagement>(new FileManagement(folder, this));
+    fileManager = QSharedPointer<FileManagement>(new FileManagement(folder));
 }
 
 QSharedPointer<IDocID> FileEngine::addDocument(const QByteArray& blob)
@@ -45,7 +44,7 @@ QSharedPointer<IDocID> FileEngine::addDocument(const QByteArray& blob)
 QSharedPointer<IDocBase> FileEngine::getDocument(QSharedPointer<IDocID> id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "IDocBase* FileEngine::getDocument(IDocID *id) const");
-    QSharedPointer<SimpleFileDocument> doc = QSharedPointer<SimpleFileDocument>(new SimpleFileDocument(fileManager, id->asString(), this));
+    QSharedPointer<SimpleFileDocument> doc = QSharedPointer<SimpleFileDocument>(new SimpleFileDocument(fileManager, id->asString()));
     return doc;
 }
 
@@ -65,6 +64,10 @@ QString FileEngine::name()
     return "SimpleFileEngine";
 }
 
+IDocEnginePtr FileEngine::newDocEngine()
+{
+    return IDocEnginePtr(new FileEngine());
+}
 
 #if QT_VERSION < 0x050000
 Q_EXPORT_PLUGIN2(SimpleFileEngine, FileEngine)

@@ -58,4 +58,9 @@ QSharedPointer<IDocID> DocEngine::IValueToIDocId(QSharedPointer<IValue> value)
     return QSharedPointer<IDocID>(new DocID(value->content().toString()));
 }
 
+IDocEnginePtr DocEngine::newDocEngine()
+{
+    return IDocEnginePtr(new DocEngine());
+}
+
 //Q_EXPORT_PLUGIN2(edoccore, DocEngine);

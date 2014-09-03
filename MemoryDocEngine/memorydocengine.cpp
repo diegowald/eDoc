@@ -6,7 +6,6 @@
 MemoryDocEngine::MemoryDocEngine(QObject *parent) :
     QObject(parent)
 {
-    persistentEngine = NULL;
 }
 
 MemoryDocEngine::~MemoryDocEngine()
@@ -21,11 +20,9 @@ void MemoryDocEngine::initialize(QSharedPointer<IXMLContent> configuration,
                                  const QMap<QString, QString> &tagPlugins,
                                  const QMap<QString, QString> &serverPlugins)
 {
-    //maxCachedFiles = ((XMLElement*)((XMLCollection*) configuration)->get("maxCachedFiles"))->value().toInt();
     maxCachedFiles = configuration.dynamicCast<XMLCollection>()->get("maxCachedFiles").dynamicCast<XMLElement>()->value().toInt();
     m_Logger = logger;
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
-    //XMLCollection *confEngine = (XMLCollection*)((XMLCollection*)configuration)->get("engine");
     QSharedPointer<XMLCollection> confEngine = configuration.dynamicCast<XMLCollection>()->get("engine").dynamicCast<XMLCollection>();
 
     persistentEngine = createPersistentEngine(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
@@ -50,7 +47,6 @@ QSharedPointer<IDocBase> MemoryDocEngine::getDocument(QSharedPointer<IDocID> id)
             doc = QSharedPointer<IDocBase>(new InMemoryDocument(persistentDoc.dynamicCast<IDocument>(), this));
         QString idString = id->asString();
         m_Cache.insert(idString, doc);
-        //m_Cache[idString] = doc;
     }
     return m_Cache[id->asString()];
 }
@@ -67,7 +63,7 @@ QString MemoryDocEngine::name()
 }
 
 
-IDocEngine *MemoryDocEngine::createPersistentEngine(QSharedPointer<XMLCollection> confEngine,
+IDocEnginePtr MemoryDocEngine::createPersistentEngine(QSharedPointer<XMLCollection> confEngine,
                                                                     const QMap<QString, QString> &docpluginStock,
                                                                     const QMap<QString, QString> &DBplugins,
                                                                     const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -87,7 +83,8 @@ IDocEngine *MemoryDocEngine::createPersistentEngine(QSharedPointer<XMLCollection
             QObject *plugin = pluginLoader.instance();
             if (plugin)
             {
-                IDocEngine* engine = qobject_cast<IDocEngine*>(plugin);
+                IDocEngine* engineCreator = qobject_cast<IDocEngine*>(plugin);
+                IDocEnginePtr engine = engineCreator->newDocEngine();
                 engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
                 return engine;
             }
@@ -100,13 +97,17 @@ IDocEngine *MemoryDocEngine::createPersistentEngine(QSharedPointer<XMLCollection
         }
 
     }
-    //return QSharedPointer<IDocEngine>();
-    return NULL;
+    return QSharedPointer<IDocEngine>();
 }
 
 QSharedPointer<IDocID> MemoryDocEngine::IValueToIDocId(QSharedPointer<IValue> value)
 {
     return persistentEngine->IValueToIDocId(value);
+}
+
+IDocEnginePtr MemoryDocEngine::newDocEngine()
+{
+    return IDocEnginePtr(new MemoryDocEngine());
 }
 
 #if QT_VERSION < 0x050000

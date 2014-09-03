@@ -15,17 +15,16 @@ DESTDIR = ../
 CONFIG += c++11
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     dlgadddocument.cpp \
     explorerwindow.cpp \
     setdatetimetouse.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     dlgadddocument.h \
     explorerwindow.h \
     setdatetimetouse.h
 
-FORMS    += mainwindow.ui \
+FORMS    += \
     dlgadddocument.ui \
     explorerwindow.ui \
     setdatetimetouse.ui

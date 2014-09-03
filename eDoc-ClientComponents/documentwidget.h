@@ -19,12 +19,12 @@ public:
     explicit DocumentWidget(QWidget *parent = 0);
     ~DocumentWidget();
 
-    void setField(QSharedPointer<IFieldDefinition> fieldDefinition, QSharedPointer<IValue> value);
+    void setField(IFieldDefinitionPtr fieldDefinition, IValuePtr value);
     virtual QVariant value();
 
 signals:
-    void download(const QSharedPointer<IValue> value);
-    void upload(const QSharedPointer<IValue> value);
+    void download(const IValuePtr value);
+    void upload(const IValuePtr value);
 
 private slots:
     void on_btnDownload_clicked();
@@ -33,8 +33,8 @@ private slots:
 
 private:
     Ui::DocumentWidget *ui;
-    QSharedPointer<IFieldDefinition> m_FieldDefinition;
-    QSharedPointer<IValue> m_Value;
+    IFieldDefinitionPtr m_FieldDefinition;
+    IValuePtr m_Value;
 };
 
 #endif // DOCUMENTWIDGET_H

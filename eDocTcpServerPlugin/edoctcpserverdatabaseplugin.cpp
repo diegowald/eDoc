@@ -103,7 +103,6 @@ void EDocTCPServerDatabasePlugin::onReadyRead()
     QByteArray blob;
     in >> blob;
     QByteArray uncompressed = qUncompress(blob);
-    //QDataStream in2(&blob, QIODevice::ReadOnly);
     QDataStream in2(&uncompressed, QIODevice::ReadOnly);
     in2.setVersion(QDataStream::Qt_5_3);
 
@@ -165,7 +164,7 @@ void EDocTCPServerDatabasePlugin::processREQSearch(QDataStream &in)
     QList<QSharedPointer<IParameter>> parameters;
     for (int i = 0; i < count; ++i)
     {
-        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter(this));
+        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter());
         in >> *param;
         parameters.push_back(param);
     }
@@ -185,7 +184,7 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithin(QDataStream &in)
     QList<QSharedPointer<IParameter> > parameters;
     for (int i = 0; i < count; ++i)
     {
-        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter(this));
+        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter());
         in >> *param;
         parameters.push_back(param);
     }
@@ -194,7 +193,7 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithin(QDataStream &in)
     QList<QSharedPointer<IRecordID> > records;
     for (int i = 0; i < count; ++i)
     {
-        QSharedPointer<ProxyRecordID> rec = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
+        QSharedPointer<ProxyRecordID> rec = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
         in >> *rec;
         records.push_back(rec);
     }
@@ -227,7 +226,7 @@ void EDocTCPServerDatabasePlugin::processREQAddRecord(QDataStream &in)
 
 void EDocTCPServerDatabasePlugin::processREQGetRecord(QDataStream &in)
 {
-    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
+    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
     in >> *proxyRecordID;
     QSharedPointer<IRecord> record = _persistanceHist ? _persistanceHist->getRecord(proxyRecordID) : _persistance->getRecord(proxyRecordID);
     prepareToSend(MessageCodes::CodeNumber::RSP_getRecord);
@@ -307,7 +306,7 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithHistory(QDataStream &in)
     QList<QSharedPointer<IParameter> > parameters;
     for (int i = 0; i < count; ++i)
     {
-        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter(this));
+        QSharedPointer<ProxyParameter> param = QSharedPointer<ProxyParameter>(new ProxyParameter());
         in >> *param;
         parameters.push_back(param);
     }
@@ -324,13 +323,18 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithHistory(QDataStream &in)
 
 void EDocTCPServerDatabasePlugin::processREQGetRecordWithHistory(QDataStream &in)
 {
-    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
+    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
     in >> *proxyRecordID;
     QDateTime date;
     in >> date;
     QSharedPointer<IRecord> record = _persistanceHist->getRecordByDate(proxyRecordID, date);
     prepareToSend(MessageCodes::CodeNumber::RSP_getRecordWithHistory);
-    (*out) << *record;
+    bool recordNull = record.isNull();
+    (*out) << recordNull;
+    if (!recordNull)
+    {
+        (*out) << *record;
+    }
 }
 
 void EDocTCPServerDatabasePlugin::processREQGetRecordsWithHistory(QDataStream &in)
@@ -372,7 +376,7 @@ void EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValuesWithHistory(Q
 
 void EDocTCPServerDatabasePlugin::processREQGetHistory(QDataStream &in)
 {
-    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID(this));
+    QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
     in >> *proxyRecordID;
     QDateTime date;
     in >> date;
@@ -431,7 +435,6 @@ void EDocTCPServerDatabasePlugin::processREQRemoveRecord(QDataStream &in)
 {
     Q_ASSERT(false);
 
-//    _tagProcessor->removeRecord(ProxyRecord, tag);
 }
 
 void EDocTCPServerDatabasePlugin::processREQprocessKeywordString(QDataStream &in)
@@ -453,8 +456,6 @@ void EDocTCPServerDatabasePlugin::send()
     out.setVersion(QDataStream::Qt_5_3);
 
     QByteArray compressed = qCompress(buildingBlob, 9);
-//    out << (buildingBlob.size() + (int)sizeof(int));
-//    out << buildingBlob;
     out << (compressed.size() + (int)sizeof(int));
     out << compressed;
 

@@ -10,6 +10,8 @@
 #include "IParameter.h"
 #include <QMap>
 
+struct IDatabase;
+typedef QSharedPointer<IDatabase> IDatabasePtr;
 
 struct IDatabase : public IInitializable {
 public:
@@ -29,13 +31,14 @@ public:
     virtual QList<QPair<QString, QString> > getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName) = 0;
     virtual QString name() = 0;
 
+    virtual IDatabasePtr newDatabase() = 0;
+
     virtual ~IDatabase() {}
 
 protected:
     virtual QMap<QString, IRecordIDPtr > search(IParameterPtr parameter) = 0;
 };
 
-typedef QSharedPointer<IDatabase> IDatabasePtr;
 
 Q_DECLARE_INTERFACE(IDatabase, "com.mksingenieria.eDoc.IDatabase/0.0")
 #endif // IDATABASE_H

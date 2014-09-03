@@ -30,6 +30,8 @@ public:
     virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
     virtual QString name();
 
+    virtual IDocEnginePtr newDocEngine();
+
 private:
     QString folder;
     QSharedPointer<QObjectLogging> m_Logger;

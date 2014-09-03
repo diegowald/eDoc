@@ -45,6 +45,8 @@ public:
     virtual QStringList getDistinctColumnValues(const QList<QPair<QString, QString> >& filter, const QString & columnName);
     virtual QList<QPair<QString, QString>> getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName);
     virtual QString name();
+    virtual IDatabasePtr newDatabase();
+    virtual IDatabaseWithHistoryPtr newDatabaseWithHistory();
 
 protected:
     virtual QMap<QString, QSharedPointer<IRecordID> > search(QSharedPointer<IParameter> parameter);

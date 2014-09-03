@@ -29,21 +29,17 @@ void InMemoryDatabase::initialize(QSharedPointer<IXMLContent> configuration,
     (void)serverPlugins;
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "InMemoryDatabasePlugin", "void MemoryDocEngine::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
-    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
-    //XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
     createFields(configuration.dynamicCast<XMLCollection>()->get("fields"));
 }
 
 void InMemoryDatabase::createFields(QSharedPointer<IXMLContent> configuration)
 {
     QSharedPointer<XMLCollection> confFields = configuration.dynamicCast<XMLCollection>();
-    //int count = ((XMLElement*)confFields->get("count"))->value().toInt();
     int count = confFields->get("count").dynamicCast<XMLElement>()->value().toInt();
     for (int i = 1; i <= count; ++i)
     {
         QString fieldName = "field" + QString::number(i);
-        //XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
         QSharedPointer<XMLCollection> field = confFields->get(fieldName).dynamicCast<XMLCollection>();
         QSharedPointer<IFieldDefinition> fDef = createField(field);
         m_Fields[fDef->name()] = fDef;
@@ -52,7 +48,7 @@ void InMemoryDatabase::createFields(QSharedPointer<IXMLContent> configuration)
 
 QSharedPointer<IFieldDefinition> InMemoryDatabase::createField(QSharedPointer<IXMLContent> configuration)
 {
-    QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition(this));
+    QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition());
     QMap<QString, QString> empty;
     field->initialize(configuration, m_Logger, empty, empty, empty, empty, empty);
     return field;
@@ -88,14 +84,14 @@ QSharedPointer<IParameter> InMemoryDatabase::createEmptyParameter()
 QSharedPointer<IRecord> InMemoryDatabase::createEmptyRecord()
 {
     QList<QSharedPointer<IFieldDefinition>> flds = m_Fields.values();
-    QSharedPointer<IRecord> rec = QSharedPointer<IRecord>(new Record(flds, this));
-    rec->setID(QSharedPointer<IRecordID>(new RecordID(this)));
+    QSharedPointer<IRecord> rec = QSharedPointer<IRecord>(new Record(flds));
+    rec->setID(QSharedPointer<IRecordID>(new RecordID()));
     return rec;
 }
 
 QSharedPointer<IRecordID> InMemoryDatabase::addRecord(QSharedPointer<IRecord> record)
 {
-    QSharedPointer<IRecordID> ID = QSharedPointer<IRecordID>(new RecordID(this));
+    QSharedPointer<IRecordID> ID = QSharedPointer<IRecordID>(new RecordID());
     record->setID(ID);
     m_Records[ID->asString()] = record;
     return ID;
@@ -145,6 +141,11 @@ QList<QPair<QString, QString>> InMemoryDatabase::getColumnValue(const QList<QPai
 QString InMemoryDatabase::name()
 {
     return "InMemoryDatabase";
+}
+
+IDatabasePtr InMemoryDatabase::newDatabase()
+{
+    return IDatabasePtr(new InMemoryDatabase());
 }
 
 #if QT_VERSION < 0x050000

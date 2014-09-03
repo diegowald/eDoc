@@ -27,11 +27,14 @@ private:
     void fillFieldsCombo();
     void fillOperatorsCombo();
     void fillTreeCombo();
+    void fillSearchResultColumns();
     void fillSubTree(QTreeWidgetItem *parent);
     QList<QPair<QString, QString> > getTreeFilter(QTreeWidgetItem *parent);
     void doSearch(QList<QSharedPointer<IParameter>> &filter);
     QSharedPointer<IParameter> createSearchParameter(const QString &fieldName, VALIDQUERY queryType, QVariant value1, QVariant value2);
     void updateTreeFilter(QTreeWidgetItem *node);
+
+    void openDatabase(const QString &file);
 
 private slots:
     void on_LogTrace(const QString& text);
@@ -53,7 +56,7 @@ private slots:
 
     void on_actionAdd_Document_triggered();
 
-    void downloadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value);
+    void downloadFile(IRecordPtr record, const IValuePtr value);
     void uploadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value);
     void on_cboTree_currentIndexChanged(const QString &arg1);
 
@@ -65,6 +68,10 @@ private slots:
 
     void on_actionSet_Query_Date_and_Time_triggered();
 
+    void on_actionImport_Folder_triggered();
+
+    void on_actionOpen_database_triggered();
+
 private:
     Ui::ExplorerWindow *ui;
     EDocFactory f;
@@ -74,6 +81,7 @@ private:
     RecordEditor *recordEditor;
     bool useCurrentTime;
     QDateTime dateTimeToUse;
+    QStringList columns;
 };
 
 #endif // EXPLORERWINDOW_H

@@ -25,7 +25,6 @@ signals:
 
 private slots:
     void on_error(QAbstractSocket::SocketError socketError);
-    void connected();
 
 protected:
     QString ipAddress;
@@ -35,7 +34,6 @@ protected:
 private:
 
     QSharedPointer<QTcpSocket> tcpSocket;
-    //QNetworkSession *networkSession;
 
     int blockSize;
     int timeOut;

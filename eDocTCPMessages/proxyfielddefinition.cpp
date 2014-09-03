@@ -65,7 +65,7 @@ QList<VALIDQUERY> ProxyFieldDefinition::validQueries()
 
 QSharedPointer<IValue> ProxyFieldDefinition::createEmptyValue()
 {
-    return QSharedPointer<IValue>(new ProxyValue(this));
+    return QSharedPointer<IValue>(new ProxyValue());
 }
 
 void ProxyFieldDefinition::setName(const QString &newName)

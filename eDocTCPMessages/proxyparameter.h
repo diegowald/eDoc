@@ -23,7 +23,6 @@ public:
     virtual void setQueryType(VALIDQUERY queryType);
     virtual VALIDQUERY queryType();
 
-    //friend QDataStream& operator>>(QDataStream& is, ProxyFieldDefinition &obj);
     friend QDataStream& operator>>(QDataStream& is, ProxyParameter &obj);
 signals:
 

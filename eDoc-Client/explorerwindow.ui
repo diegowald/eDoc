@@ -406,9 +406,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionOpen_database"/>
    <addaction name="actionAdd_Document"/>
    <addaction name="actionAdd_1000_Documents"/>
    <addaction name="actionSet_Query_Date_and_Time"/>
+   <addaction name="actionImport_Folder"/>
   </widget>
   <action name="actionAdd_Document">
    <property name="text">
@@ -426,6 +428,16 @@
   <action name="actionSet_Query_Date_and_Time">
    <property name="text">
     <string>Set Query Date and Time</string>
+   </property>
+  </action>
+  <action name="actionImport_Folder">
+   <property name="text">
+    <string>Import Folder</string>
+   </property>
+  </action>
+  <action name="actionOpen_database">
+   <property name="text">
+    <string>Open database</string>
    </property>
   </action>
  </widget>

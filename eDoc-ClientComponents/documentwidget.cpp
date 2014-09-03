@@ -15,11 +15,6 @@ DocumentWidget::~DocumentWidget()
 
 void DocumentWidget::setField(QSharedPointer<IFieldDefinition> fieldDefinition, QSharedPointer<IValue> value)
 {
-//    ui->label->setText(fieldDefinition->name());
-//    ui->ReadOnlyValue->setVisible(fieldDefinition->isReadOnly());
-//    ui->EditValue->setVisible(!fieldDefinition->isReadOnly());
-//    ui->ReadOnlyValue->setText(value->content().toString());
-//    ui->EditValue->setText(value->content().toString());
     m_FieldDefinition = fieldDefinition;
     m_Value = value;
 }

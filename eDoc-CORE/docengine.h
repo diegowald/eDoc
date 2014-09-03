@@ -33,6 +33,7 @@ public:
     virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
     virtual QString name();
 
+    virtual IDocEnginePtr newDocEngine();
     
 signals:
     

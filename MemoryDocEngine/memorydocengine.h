@@ -32,8 +32,10 @@ public:
     virtual bool deleteDocument(QSharedPointer<IDocID> id);
     virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
     virtual QString name();
+    virtual IDocEnginePtr newDocEngine();
+
 private:
-    IDocEngine * createPersistentEngine(QSharedPointer<XMLCollection> confEngine,
+    IDocEnginePtr createPersistentEngine(QSharedPointer<XMLCollection> confEngine,
                                        const QMap<QString, QString> &docpluginStock,
                                        const QMap<QString, QString> &DBplugins,
                                        const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -41,7 +43,7 @@ private:
                                        const QMap<QString, QString> &serverPlugins);
 
 private:
-     IDocEngine* persistentEngine;
+     IDocEnginePtr persistentEngine;
      QMap<QString, QSharedPointer<IDocBase>> m_Cache;
      int maxCachedFiles;
 

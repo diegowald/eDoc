@@ -1,6 +1,6 @@
 #include "databasewithhistorywrapper.h"
 
-DatabaseWithHistoryWrapper::DatabaseWithHistoryWrapper(QSharedPointer<IDatabase> realDatabase, QSharedPointer<QObjectLogging> Logger, QObject *parent)  :
+DatabaseWithHistoryWrapper::DatabaseWithHistoryWrapper(IDatabasePtr realDatabase, QObjectLoggingPtr Logger, QObject *parent)  :
     QObject(parent)
 {
     database = realDatabase;
@@ -150,4 +150,14 @@ QList<QSharedPointer<IRecordID>> DatabaseWithHistoryWrapper::getChanges(const QD
 QMap<QString, QSharedPointer<IRecordID>> DatabaseWithHistoryWrapper::searchByDate(QSharedPointer<IParameter> parameter, const QDateTime &date)
 {
     return search(parameter);
+}
+
+IDatabasePtr DatabaseWithHistoryWrapper::newDatabase()
+{
+    return IDatabaseWithHistoryPtr(new DatabaseWithHistoryWrapper(database, logger));
+}
+
+IDatabaseWithHistoryPtr DatabaseWithHistoryWrapper::newDatabaseWithHistory()
+{
+    return IDatabaseWithHistoryPtr(new DatabaseWithHistoryWrapper(database, logger));
 }

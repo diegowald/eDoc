@@ -35,6 +35,7 @@ public:
     virtual void run();
     virtual void stop();
     virtual QString name() const;
+    IServerPtr newServer();
 
 private:
     IDatabasePtr createPersistentEngine(XMLCollectionPtr confEngine,

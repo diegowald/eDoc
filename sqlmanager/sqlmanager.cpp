@@ -14,8 +14,6 @@ SQLManager::SQLManager(QObject *parent) :
 
 SQLManager::~SQLManager()
 {
-    if (db.isOpen())
-        db.close();
 }
 
 void SQLManager::initialize(QSharedPointer<IXMLContent> configuration,
@@ -33,19 +31,12 @@ void SQLManager::initialize(QSharedPointer<IXMLContent> configuration,
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
-    //m_database = ((XMLElement*)((XMLCollection*) configuration)->get("database_type"))->value();
     m_database = configuration.dynamicCast<XMLCollection>()->get("database_type").dynamicCast<XMLElement>()->value();
-    //m_Server = ((XMLElement*)((XMLCollection*) configuration)->get("server"))->value();
     m_Server = configuration.dynamicCast<XMLCollection>()->get("server").dynamicCast<XMLElement>()->value();
-    //m_User = ((XMLElement*)((XMLCollection*) configuration)->get("user"))->value();
     m_User = configuration.dynamicCast<XMLCollection>()->get("user").dynamicCast<XMLElement>()->value();
-    //m_Password = ((XMLElement*)((XMLCollection*) configuration)->get("password"))->value();
     m_Password = configuration.dynamicCast<XMLCollection>()->get("password").dynamicCast<XMLElement>()->value();
 
     m_DBType = String2DBType();
-    /*m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
-    XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
-    */
 }
 
 DBType SQLManager::String2DBType()

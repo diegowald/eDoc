@@ -3,6 +3,9 @@
 
 #include "IDatabase.h"
 
+struct IDatabaseWithHistory;
+typedef QSharedPointer<IDatabaseWithHistory> IDatabaseWithHistoryPtr;
+
 struct IDatabaseWithHistory : public IDatabase
 {
 public:
@@ -14,12 +17,15 @@ public:
     virtual QList<IRecordPtr> getHistory(IRecordIDPtr recordID) = 0;
     virtual QList<IRecordIDPtr> getChanges(const QDateTime &fromDate, const QDateTime &toDate) = 0;
 
+    virtual IDatabaseWithHistoryPtr newDatabaseWithHistory() = 0;
+
     virtual ~IDatabaseWithHistory() {}
+
 protected:
     virtual QMap<QString, IRecordIDPtr> searchByDate(IParameterPtr parameter, const QDateTime &date) = 0;
 };
 
-typedef QSharedPointer<IDatabaseWithHistory> IDatabaseWithHistoryPtr;
+
 
 Q_DECLARE_INTERFACE(IDatabaseWithHistory, "com.mksingenieria.eDoc.IDatabaseWithHistory/0.0")
 #endif // IDATABASEWITHHISTORY_H

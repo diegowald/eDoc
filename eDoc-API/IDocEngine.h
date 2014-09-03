@@ -9,6 +9,10 @@
 #include "IValue.h"
 #include <QMap>
 
+struct IDocEngine;
+
+typedef QSharedPointer<IDocEngine> IDocEnginePtr;
+
 struct IDocEngine : public IInitializable
 {
 public:
@@ -17,10 +21,9 @@ public:
     virtual bool deleteDocument(IDocIDPtr id) = 0;
     virtual IDocIDPtr IValueToIDocId(IValuePtr value) = 0;
     virtual QString name() = 0;
+    virtual IDocEnginePtr newDocEngine() = 0;
     virtual ~IDocEngine() {}
 };
-
-typedef QSharedPointer<IDocEngine> IDocEnginePtr;
 
 Q_DECLARE_INTERFACE(IDocEngine, "com.mksingenieria.eDoc.IDocEngine/0.0")
 

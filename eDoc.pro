@@ -1,25 +1,25 @@
 TEMPLATE = subdirs
-
+CONFIG += ordered
 SUBDIRS += \
     eDoc-Configuration \
     eDoc-API \
+    eDoc-MetadataFramework \
     eDoc-Factory \
+    sqlmanager \
     eDoc-CORE \
     eDoc-Client \
     testCORE \
     SimpleFileEngine \
     MemoryDocEngine \
-    eDoc-MetadataFramework \
     InMemoryDatabasePlugin \
     GenericDatabasePlugin \
     eDoc-ClientComponents \
     eDoc-InMemoryTagging \
-    sqlmanager \
+    eDocTCPMessages \
     eDoc-tcpClient/edoctcpclient.pro \
     eDoc-Console \
 #     tcpMessages
     eDocTcpServerPlugin/eDocTcpServerPlugin.pro \
-    eDocTCPMessages \
     HistoricDatabasePlugin \
     eDocTcpHistoricClient
 

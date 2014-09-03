@@ -27,14 +27,7 @@ ExplorerWindow::ExplorerWindow(QWidget *parent) :
     ui->treeStructure->setColumnCount(1);
     ui->searchResult->setRowCount(0);
 
-    f.initialize(QApplication::applicationDirPath(), "./client.conf.xml", logger);
-
-    useCurrentTime = true;
-    dateTimeToUse = QDateTime::currentDateTimeUtc();
-    fillFieldsCombo();
-    fillOperatorsCombo();
-    fillTreeCombo();
-    recordEditor = NULL;
+    openDatabase("./client.conf.xml");
 }
 
 ExplorerWindow::~ExplorerWindow()
@@ -76,13 +69,32 @@ void ExplorerWindow::on_LogFatal(const QString& text)
 void ExplorerWindow::fillFieldsCombo()
 {
     ui->cboField->clear();
-    if (!f.databaseEngine().isNull())
+    if (f.databaseEngine() != NULL)
     {
         foreach (IFieldDefinitionPtr fDef, f.databaseEngine()->fields())
         {
             if (fDef->isVisible() && fDef->isQueryable())
                 ui->cboField->addItem(fDef->name());
         }
+    }
+}
+
+void ExplorerWindow::fillSearchResultColumns()
+{
+    ui->searchResult->clear();
+    ui->searchResult->setRowCount(0);
+    columns.clear();
+    if (f.databaseEngine() != NULL)
+    {
+        foreach (IFieldDefinitionPtr fDef, f.databaseEngine()->fields())
+        {
+            if (fDef->isVisible())
+            {
+                columns.append(fDef->name());
+            }
+        }
+        ui->searchResult->setColumnCount(columns.count());
+        ui->searchResult->setHorizontalHeaderLabels(columns);
     }
 }
 
@@ -175,33 +187,37 @@ void ExplorerWindow::on_btnSearchAgain_released()
 
 void ExplorerWindow::doSearch(QList<IParameterPtr> &filter)
 {
-    ui->searchResult->setRowCount(0);
-    if (filter.size() > 0)
+    if (columns.count() > 0)
     {
-        QList<IRecordIDPtr> result = useCurrentTime ?
-                    f.databaseEngine()->search(filter) :
-                    f.databaseEngine()->searchByDate(filter, dateTimeToUse);
-
-        QStringList ids;
-        foreach (IRecordIDPtr id, result)
+        ui->searchResult->setRowCount(0);
+        if (filter.size() > 0)
         {
-            ids.append(id->asString());
-        }
-        QList<IRecordPtr> records = useCurrentTime ?
-                    f.databaseEngine()->getRecords(ids) :
-                    f.databaseEngine()->getRecordsByDate(ids, dateTimeToUse);
+            QList<IRecordIDPtr> result = useCurrentTime ?
+                        f.databaseEngine()->search(filter) :
+                        f.databaseEngine()->searchByDate(filter, dateTimeToUse);
 
-        foreach (IRecordPtr rec, records)
-        {
-            //IRecord *rec = f.databaseEngine()->getRecord(id);
-            int rowNum = ui->searchResult->rowCount();
-            ui->searchResult->insertRow(rowNum);
-            rowNum = ui->searchResult->rowCount() - 1;
-            ui->searchResult->setItem(rowNum, 0, new QTableWidgetItem(rec->value("campo1")->asVariant().toString()));
-            ui->searchResult->setItem(rowNum, 1, new QTableWidgetItem(rec->value("campo2")->asVariant().toString()));
-            QVariant r;
-            r.setValue(rec);
-            ui->searchResult->item(rowNum, 0)->setData(Qt::UserRole, r);
+            QStringList ids;
+            foreach (IRecordIDPtr id, result)
+            {
+                ids.append(id->asString());
+            }
+            QList<IRecordPtr> records = useCurrentTime ?
+                        f.databaseEngine()->getRecords(ids) :
+                        f.databaseEngine()->getRecordsByDate(ids, dateTimeToUse);
+
+            foreach (IRecordPtr rec, records)
+            {
+                int rowNum = ui->searchResult->rowCount();
+                ui->searchResult->insertRow(rowNum);
+                rowNum = ui->searchResult->rowCount() - 1;
+                for (int i = 0; i < columns.count(); ++i)
+                {
+                    ui->searchResult->setItem(rowNum, i, new QTableWidgetItem(rec->value(columns.at(i))->asVariant().toString()));
+                }
+                QVariant r;
+                r.setValue(rec);
+                ui->searchResult->item(rowNum, 0)->setData(Qt::UserRole, r);
+            }
         }
     }
 }
@@ -224,8 +240,8 @@ void ExplorerWindow::on_searchResult_itemSelectionChanged()
     if (!recordEditor)
     {
         recordEditor = new RecordEditor(this);
-        connect(recordEditor, SIGNAL(downloadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)), this, SLOT(downloadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)));
-        connect(recordEditor, SIGNAL(uploadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)), this, SLOT(uploadFile(QSharedPointer<IRecord>,const QSharedPointer<IRecord>)));
+        connect(recordEditor, SIGNAL(downloadFile(IRecordPtr,const IValuePtr)), this, SLOT(downloadFile(IRecordPtr,const IValuePtr)));
+        connect(recordEditor, SIGNAL(uploadFile(IRecordPtr,const IRecordPtr)), this, SLOT(uploadFile(IRecordPtr,const IRecordPtr)));
         QVBoxLayout* layout = new QVBoxLayout();
         layout->addWidget(recordEditor);
         ui->frameProperties->setLayout(layout);
@@ -241,10 +257,10 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
 
     if (filenames.count() > 0)
     {
-        QSharedPointer<IDatabaseWithHistory> db = f.databaseEngine();
-        QSharedPointer<IDocEngine> e = f.docEngine();
+        IDatabaseWithHistoryPtr db = f.databaseEngine();
+        IDocEnginePtr e = f.docEngine();
 
-        QSharedPointer<IRecord> rec;
+        IRecordPtr rec;
         foreach (QString filename, filenames)
         {
             rec = f.createEmptyRecord();
@@ -262,14 +278,14 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
     }
 }
 
-void ExplorerWindow::downloadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value)
+void ExplorerWindow::downloadFile(IRecordPtr record, const IValuePtr value)
 {
     QString filename = QFileDialog::getSaveFileName(this, tr("Save file"), ".");
-    QSharedPointer<IDocEngine> e = f.docEngine();
+    IDocEnginePtr e = f.docEngine();
 
     QSharedPointer<IDocumentIDValue> v = record->value("archivo").dynamicCast<IDocumentIDValue>();
-    QSharedPointer<IDocID> docId = e->IValueToIDocId(v);
-    QSharedPointer<IDocBase> doc = e->getDocument(docId);
+    IDocIDPtr docId = e->IValueToIDocId(v);
+    IDocBasePtr doc = e->getDocument(docId);
     if (!doc->isComplex())
     {
         QSharedPointer<IDocument> document = doc.dynamicCast<IDocument>();
@@ -380,8 +396,8 @@ void ExplorerWindow::on_actionAdd_1000_Documents_triggered()
 
     if (filenames.count() > 0)
     {
-        QSharedPointer<IDatabaseWithHistory> db = f.databaseEngine();
-        QSharedPointer<IDocEngine> e = f.docEngine();
+        IDatabaseWithHistoryPtr db = f.databaseEngine();
+        IDocEnginePtr e = f.docEngine();
 
         QString filename = filenames.at(0);
 
@@ -405,7 +421,7 @@ void ExplorerWindow::on_btnBrowse_pressed()
 
     QStringList keywordsList = keywords.split(' ', QString::SkipEmptyParts);
 
-    QSharedPointer<ITagProcessor> tagger = f.tagEngine();
+    ITagProcessorPtr tagger = f.tagEngine();
 
     QSet<QString> result = tagger->findByTags(keywordsList);
 
@@ -440,4 +456,33 @@ void ExplorerWindow::on_actionSet_Query_Date_and_Time_triggered()
         useCurrentTime = dlg.isUsingCurrent();
         dateTimeToUse = dlg.getDateAndTime();
     }
+}
+
+void ExplorerWindow::on_actionImport_Folder_triggered()
+{
+    QString folder = QFileDialog::getExistingDirectory(this, tr("Import folder"), ".");
+    QStringList folderParts = folder.split("/", QString::SplitBehavior::KeepEmptyParts);
+}
+
+void ExplorerWindow::on_actionOpen_database_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open database"), ".xml");
+    if (filename != "")
+    {
+        openDatabase(filename);
+    }
+}
+
+void ExplorerWindow::openDatabase(const QString &file)
+{
+    columns.clear();
+    f.initialize(QApplication::applicationDirPath(), file, logger);
+
+    useCurrentTime = true;
+    dateTimeToUse = QDateTime::currentDateTimeUtc();
+    fillFieldsCombo();
+    fillOperatorsCombo();
+    fillTreeCombo();
+    fillSearchResultColumns();
+    recordEditor = NULL;
 }

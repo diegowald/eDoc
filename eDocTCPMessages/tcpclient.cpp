@@ -10,7 +10,6 @@ TcpClient::TcpClient(QObject *parent) :
     timeOut = 15000;
 
     connect(tcpSocket.data(), SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(on_error(QAbstractSocket::SocketError)));
-    connect(tcpSocket.data(), SIGNAL(connected()), this, SLOT(connected()));
 }
 
 TcpClient::~TcpClient()
@@ -60,8 +59,6 @@ QByteArray TcpClient::send()
     out.setVersion(QDataStream::Qt_5_3);
 
     QByteArray compressed = qCompress(buildingBlob, 9);
-//    out << (buildingBlob.size() + (int)sizeof(int));
-//    out << buildingBlob;
     out << (compressed.size() + (int)sizeof(int));
     out << compressed;
 
@@ -119,10 +116,3 @@ void TcpClient::on_error(QAbstractSocket::SocketError socketError)
      }
 }
 
-void TcpClient::connected()
-{
-//    tcpSocket->write(blob);
-//    tcpSocket->flush();
-//    tcpSocket->waitForBytesWritten();
-//    blob.clear();
-}

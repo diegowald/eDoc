@@ -335,8 +335,13 @@ QSharedPointer<IRecord> EDocTcpHistoricClient::getRecordByDate(const QString &id
     QSharedPointer<ProxyRecord> record;
     if (header.command() == MessageCodes::CodeNumber::RSP_getRecordWithHistory)
     {
-        record = QSharedPointer<ProxyRecord>(new ProxyRecord());
-        in >> *record;
+        bool recordNull;
+        in >> recordNull;
+        if (!recordNull)
+        {
+            record = QSharedPointer<ProxyRecord>(new ProxyRecord());
+            in >> *record;
+        }
     }
     return record;
 }
@@ -451,4 +456,14 @@ QMap<QString, QSharedPointer<IRecordID>> EDocTcpHistoricClient::searchByDate(QSh
     (void) parameter;
     (void) date;
     return QMap<QString, QSharedPointer<IRecordID>>();
+}
+
+IDatabasePtr EDocTcpHistoricClient::newDatabase()
+{
+    return IDatabasePtr(new EDocTcpHistoricClient());
+}
+
+IDatabaseWithHistoryPtr EDocTcpHistoricClient::newDatabaseWithHistory()
+{
+    return IDatabaseWithHistoryPtr(new EDocTcpHistoricClient());
 }

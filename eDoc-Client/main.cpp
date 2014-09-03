@@ -1,4 +1,3 @@
-#include "mainwindow.h"
 #include <QApplication>
 #include <QsLog.h>
 #include <QDir>
@@ -30,10 +29,12 @@ int main(int argc, char *argv[])
 
 /*    MainWindow w;
     w.show();*/
+
     ExplorerWindow w;
     w.show();
-    
+
     int result = a.exec();
     QLOG_TRACE() << "Aplication ended. Result code: " << result;
+    a.quit();
     return result;
 }

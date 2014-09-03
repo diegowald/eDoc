@@ -30,12 +30,9 @@ void GenericDatabase::initialize(QSharedPointer<IXMLContent> configuration,
 {
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
-    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
-    //XMLCollection *confFields = (XMLCollection*)((XMLCollection*)configuration)->get("fields");
     createFields(configuration.dynamicCast<XMLCollection>()->get("fields"));
 
-    //m_TableName = ((XMLElement*)((XMLCollection*)configuration)->get("tablename"))->value();
     m_TableName = configuration.dynamicCast<XMLCollection>()->get("tablename").dynamicCast<XMLElement>()->value();
     m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
 }
@@ -43,14 +40,11 @@ void GenericDatabase::initialize(QSharedPointer<IXMLContent> configuration,
 void GenericDatabase::createFields(QSharedPointer<IXMLContent> configuration)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::createFields(IXMLContent* configuration)");
-    //XMLCollection *confFields = (XMLCollection*)configuration;
     QSharedPointer<XMLCollection> confFields = configuration.dynamicCast<XMLCollection>();
-    //int count = ((XMLElement*)confFields->get("count"))->value().toInt();
     int count = confFields->get("count").dynamicCast<XMLElement>()->value().toInt();
     for (int i = 1; i <= count; ++i)
     {
         QString fieldName = "field" + QString::number(i);
-        //XMLCollection *field = (XMLCollection*)confFields->get(fieldName);
         QSharedPointer<IFieldDefinition> fDef = createField(confFields->get(fieldName));
         m_Fields[fDef->name()] = fDef;
         m_FieldsBasedOnDatabase[fDef.dynamicCast<FieldDefinition>()->fieldNameInDatabase()] = fDef;
@@ -59,7 +53,7 @@ void GenericDatabase::createFields(QSharedPointer<IXMLContent> configuration)
 
 QSharedPointer<IFieldDefinition> GenericDatabase::createField(QSharedPointer<IXMLContent> configuration)
 {
-    QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition(this));
+    QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition());
     QMap<QString, QString> empty;
     field->initialize(configuration, m_Logger, empty, empty, empty, empty, empty);
     return field;
@@ -136,55 +130,55 @@ std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(QSharedPointer<I
 {
     QString whereClause = "";
     DBRecordPtr r = DBRecordPtr(new DBRecord());
-
+    QString fieldNameInDB = m_Fields[parameter->field()->name()].dynamicCast<FieldDefinition>()->fieldNameInDatabase();
     switch (parameter->queryType())
     {
     case EQUALS_TO:
-        whereClause = QString("%1 = :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        whereClause = QString("%1 = :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
     case DISTINT_TO:
-        whereClause = QString("%1 <> :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        whereClause = QString("%1 <> :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
     case LESS_THAN:
-        whereClause = QString("%1 < :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        whereClause = QString("%1 < :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
     case LESS_THAN_OR_EQUALS_TO:
-        whereClause = QString("%1 <= :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        whereClause = QString("%1 <= :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
     case GREATER_THAN:
-        whereClause = QString("%1 > :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        whereClause = QString("%1 > :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
     case GREATER_THAN_OR_EQUALS_TO:
-        whereClause = QString("%1 >= :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
+        whereClause = QString("%1 >= :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
     case BETWEEN:
-        whereClause = QString("%1 BETWEEN :%2 AND :%3TO").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant();
-        (*r)[QString("%1TO").arg(parameter->field()->name())] = parameter->values().at(1)->asVariant();
+        whereClause = QString("%1 BETWEEN :%2 AND :%3TO").arg(fieldNameInDB).arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
+        (*r)[QString("%1TO").arg(fieldNameInDB)] = parameter->values().at(1)->asVariant();
         break;
     case CONTAINS:
-        whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString() + "%";
+        whereClause = QString("%1 LIKE :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = "%" + parameter->values().at(0)->asVariant().toString() + "%";
         break;
     case STARTS_WITH:
-        whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = parameter->values().at(0)->asVariant().toString() + "%";
+        whereClause = QString("%1 LIKE :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant().toString() + "%";
         break;
     case ENDS_WITH:
-        whereClause = QString("%1 LIKE :%2").arg(parameter->field()->name()).arg(parameter->field()->name());
-        (*r)[QString("%1").arg(parameter->field()->name())] = "%" + parameter->values().at(0)->asVariant().toString();
+        whereClause = QString("%1 LIKE :%2").arg(fieldNameInDB).arg(fieldNameInDB);
+        (*r)[QString("%1").arg(fieldNameInDB)] = "%" + parameter->values().at(0)->asVariant().toString();
         break;
     case IS_NULL:
-        whereClause = QString("(%1 IS NULL OR %1 = '')").arg(parameter->field()->name());
+        whereClause = QString("(%1 IS NULL OR %1 = '')").arg(fieldNameInDB);
         break;
     case IS_NOT_NULL:
-        whereClause = QString("(%1 IS NOT NULL AND %1 <> '')").arg(parameter->field()->name());
+        whereClause = QString("(%1 IS NOT NULL AND %1 <> '')").arg(fieldNameInDB);
         break;
     }
 
@@ -202,7 +196,7 @@ QMap<QString, QSharedPointer<IRecordID> > GenericDatabase::search(QSharedPointer
     QMap<QString, QSharedPointer<IRecordID>> result;
     foreach (DBRecordPtr rec, *rs)
     {
-        QSharedPointer<IRecordID> rID = QSharedPointer<IRecordID>(new RecordID((*rec)["record_id"].toString(), this));
+        QSharedPointer<IRecordID> rID = QSharedPointer<IRecordID>(new RecordID((*rec)["record_id"].toString()));
         result[rID->asString()] = rID;
     }
     return result;
@@ -210,13 +204,13 @@ QMap<QString, QSharedPointer<IRecordID> > GenericDatabase::search(QSharedPointer
 
 QSharedPointer<IParameter> GenericDatabase::createEmptyParameter()
 {
-    return QSharedPointer<IParameter>(new Parameter(this));
+    return QSharedPointer<IParameter>(new Parameter());
 }
 
 QSharedPointer<IRecord> GenericDatabase::createEmptyRecord()
 {
-    QSharedPointer<IRecord> rec = QSharedPointer<IRecord>(new Record(m_Fields.values(), this));
-    rec->setID(QSharedPointer<IRecordID>(new RecordID(this)));
+    QSharedPointer<IRecord> rec = QSharedPointer<IRecord>(new Record(m_Fields.values()));
+    rec->setID(QSharedPointer<IRecordID>(new RecordID()));
     return rec;
 }
 
@@ -248,7 +242,7 @@ QSharedPointer<IRecord> GenericDatabase::getRecord(const QString &id)
 
     DBRecordPtr recPtr = res->at(0);
 
-    QSharedPointer<IRecord> record = QSharedPointer<IRecord>(new Record(m_Fields.values(), this));
+    QSharedPointer<IRecord> record = QSharedPointer<IRecord>(new Record(m_Fields.values()));
 
     foreach (QString key, recPtr->keys())
     {
@@ -256,7 +250,7 @@ QSharedPointer<IRecord> GenericDatabase::getRecord(const QString &id)
 
         if ("record_id" == key)
         {
-            record->setID(QSharedPointer<IRecordID>(new RecordID(((*recPtr)[key]).toString(), this)));
+            record->setID(QSharedPointer<IRecordID>(new RecordID(((*recPtr)[key]).toString())));
         }
         else
         {
@@ -291,7 +285,6 @@ void GenericDatabase::updateRecord(QSharedPointer<IRecord> record)
 void GenericDatabase::executeSQLCommand(const QString &sql, QSharedPointer<IRecord> record)
 {
     DBRecordPtr r = DBRecordPtr(new DBRecord());
-//    (*r)["record_id"] = id->asString();
     (*r)["record_id"] = record->ID()->asString();
     foreach (QString key, m_Fields.keys())
     {
@@ -322,7 +315,7 @@ QString GenericDatabase::getFieldsString()
 {
     QStringList fields;
     fields.append("record_id");
-    fields.append(m_FieldsBasedOnDatabase.keys());//  m_Fields.keys();
+    fields.append(m_FieldsBasedOnDatabase.keys());
 
     return fields.join(", ");
 }
@@ -362,11 +355,12 @@ QStringList GenericDatabase::getDistinctColumnValues(const QList<QPair<QString, 
         {
             field = "%1 = :%2";
             whereClause += whereClause.length() > 0 ? " AND " : "";
-            whereClause += field.arg(column.first, column.first);
+            QString databaseColumn = m_Fields[column.first].dynamicCast<FieldDefinition>()->fieldNameInDatabase();
+            whereClause += field.arg(databaseColumn, databaseColumn);
         }
         whereClause = " AND " + whereClause;
     }
-    QString sqlToExecute = sql.arg(columnName).arg(m_TableName).arg(whereClause);
+    QString sqlToExecute = sql.arg(m_Fields[columnName].dynamicCast<FieldDefinition>()->fieldNameInDatabase()).arg(m_TableName).arg(whereClause);
 
     QStringList result = m_SQLManager.getDistintValues(sqlToExecute, filter);
 
@@ -389,11 +383,16 @@ QList<QPair<QString, QString>> GenericDatabase::getColumnValue(const QList<QPair
         }
         whereClause = " AND " + whereClause;
     }
-    QString sqlToExecute = sql.arg(columnName).arg(m_TableName).arg(whereClause);
+    QString sqlToExecute = sql.arg(m_Fields[columnName].dynamicCast<FieldDefinition>()->fieldNameInDatabase()).arg(m_TableName).arg(whereClause);
 
     QList<QPair<QString, QString>> result = m_SQLManager.getColumnValues(sqlToExecute, filter);
 
     return result;
+}
+
+IDatabasePtr GenericDatabase::newDatabase()
+{
+    return IDatabasePtr(new GenericDatabase());
 }
 
 #if QT_VERSION < 0x050000

@@ -35,25 +35,18 @@ void FieldDefinition::initialize(QSharedPointer<IXMLContent> configuration,
     m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-MetadataFramework", "void FieldDefinition::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
 
-    //m_Name = ((XMLElement*)((XMLCollection*) configuration)->get("name"))->value();
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
-    //m_Type = ((XMLElement*)((XMLCollection*) configuration)->get("type"))->value();
     m_Type = configuration.dynamicCast<XMLCollection>()->get("type").dynamicCast<XMLElement>()->value();
-    //m_ReadOnly = ((XMLElement*)((XMLCollection*) configuration)->get("readonly"))->value() == "1" ? true : false;
     m_ReadOnly = configuration.dynamicCast<XMLCollection>()->get("readonly").dynamicCast<XMLElement>()->value() == "1" ? true : false;
-    //m_Visible = ((XMLElement*)((XMLCollection*) configuration)->get("visible"))->value() == "1" ? true : false;
     m_Visible = configuration.dynamicCast<XMLCollection>()->get("visible").dynamicCast<XMLElement>()->value() == "1" ? true : false;
     m_DataType = analyzeType();
-    //m_FieldNameInDatabase = ((XMLElement*)((XMLCollection*)configuration)->get("fieldname"))->value();
     m_FieldNameInDatabase = configuration.dynamicCast<XMLCollection>()->get("fieldname").dynamicCast<XMLElement>()->value();
     m_Queryable = true;
     switch (m_DataType)
     {
     case IRECORD_REFERENCE_TYPE:
     case IMULTIRECORD_REFERENCE_TYPE:
-        //m_OtherDatabaseName = ((XMLElement*)((XMLCollection*)configuration)->get("datanase"))->value();
         m_OtherDatabaseName = configuration.dynamicCast<XMLCollection>()->get("datanase").dynamicCast<XMLElement>()->value();
-        //m_FieldToShow = ((XMLElement*)((XMLCollection*)configuration)->get("display_field"))->value();
         m_FieldToShow = configuration.dynamicCast<XMLCollection>()->get("display_field").dynamicCast<XMLElement>()->value();
         break;
     case IDOCBASE_TYPE:
@@ -141,44 +134,44 @@ QSharedPointer<IValue> FieldDefinition::createEmptyValue()
     switch (m_DataType)
     {
     case INTEGER_TYPE:
-        value = QSharedPointer<IValue>(new IntegerValue(this));
+        value = QSharedPointer<IValue>(new IntegerValue());
         break;
     case DOUBLE_TYPE:
-        value = QSharedPointer<IValue>(new DoubleValue(this));
+        value = QSharedPointer<IValue>(new DoubleValue());
         break;
     case BOOL_TYPE:
-        value = QSharedPointer<IValue>(new BoolValue(this));
+        value = QSharedPointer<IValue>(new BoolValue());
         break;
     case QSTRING_TYPE:
-        value = QSharedPointer<IValue>(new QStringValue(this));
+        value = QSharedPointer<IValue>(new QStringValue());
         break;
     case QDATETIME_TYPE:
-        value = QSharedPointer<IValue>(new QDateTimeValue(this));
+        value = QSharedPointer<IValue>(new QDateTimeValue());
         break;
     case QDATE_TYPE:
-        value = QSharedPointer<IValue>(new QDateValue(this));
+        value = QSharedPointer<IValue>(new QDateValue());
         break;
     case QTIME_TYPE:
-        value = QSharedPointer<IValue>(new QTimeValue(this));
+        value = QSharedPointer<IValue>(new QTimeValue());
         break;
     case IDOCBASE_TYPE:
-        value = QSharedPointer<IValue>(new IDocBaseValue(QSharedPointer<IDocBase>(), this));
+        value = QSharedPointer<IValue>(new IDocBaseValue(QSharedPointer<IDocBase>()));
         value->setNull();
         break;
     case IDOCUMENT_TYPE:
-        value = QSharedPointer<IValue>(new IDocumentIDValue(NULL, this));
+        value = QSharedPointer<IValue>(new IDocumentIDValue(NULL));
         value->setNull();
         break;
     case IMULTIDOCUMENT_TYPE:
-        value = QSharedPointer<IValue>(new IMultiDocumentValue(QSharedPointer<IMultiDocument>(), this));
+        value = QSharedPointer<IValue>(new IMultiDocumentValue(QSharedPointer<IMultiDocument>()));
         value->setNull();
         break;
     case IRECORD_REFERENCE_TYPE:
-        value = QSharedPointer<IValue>(new IRecordValue(QSharedPointer<IRecord>(), this));
+        value = QSharedPointer<IValue>(new IRecordValue(QSharedPointer<IRecord>()));
         value->setNull();
         break;
     case IMULTIRECORD_REFERENCE_TYPE:
-        value = QSharedPointer<IValue>(new IMultiRecordValue(QSharedPointer<IMultiRecord>(), this));
+        value = QSharedPointer<IValue>(new IMultiRecordValue(QSharedPointer<IMultiRecord>()));
         value->setNull();
         break;
     case TAG_TYPE:
@@ -186,7 +179,7 @@ QSharedPointer<IValue> FieldDefinition::createEmptyValue()
         QVariant v;
         v.setValue(new Tag());
         value->setValue(v);*/
-        value = QSharedPointer<IValue>(new Tag(this));
+        value = QSharedPointer<IValue>(new Tag());
         value->setNull();
         break;
     case INVALID_TYPE:

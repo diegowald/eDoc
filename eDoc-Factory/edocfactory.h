@@ -19,23 +19,23 @@ public:
     EDocFactory();
     virtual ~EDocFactory();
     virtual void initialize(const QString &pluginPath, const QString &xmlFile, QSharedPointer<QObjectLogging> logger);
-    virtual QSharedPointer<IDocEngine> docEngine();
-    virtual QSharedPointer<IDatabaseWithHistory> databaseEngine();
-    virtual QSharedPointer<IQueryEngine> queryEngine();
-    virtual QSharedPointer<ITagProcessor> tagEngine();
-    virtual QSharedPointer<IServer> serverEngine();
-    virtual QSharedPointer<IRecord> createEmptyRecord();
+    virtual IDocEnginePtr docEngine();
+    virtual IDatabaseWithHistoryPtr databaseEngine();
+    virtual IQueryEnginePtr queryEngine();
+    virtual ITagProcessorPtr tagEngine();
+    virtual IServerPtr serverEngine();
+    virtual IRecordPtr createEmptyRecord();
     virtual void addDocument(const QString &filename, QSharedPointer<IRecord> record);
 
 protected:
     virtual void addDocumentFromBlob(QByteArray &blob, const QString &filename, QSharedPointer<IRecord> record);
     void readAvailablePlugins();
-    QSharedPointer<IDocEngine> createEngine();
-    QSharedPointer<IDatabaseWithHistory> createDatabase();
-    QSharedPointer<IDatabaseWithHistory> createDatabaseWithoutHistory();
+    IDocEnginePtr createEngine();
+    IDatabaseWithHistoryPtr createDatabase();
+    IDatabaseWithHistoryPtr createDatabaseWithoutHistory();
     QSharedPointer<IQueryEngine> createQueryEngine();
-    QSharedPointer<ITagProcessor> createTagEngine();
-    QSharedPointer<IServer> createServerEngine();
+    ITagProcessorPtr createTagEngine();
+    IServerPtr createServerEngine();
 private:
     QString pluginPath;
     QString xmlFile;
@@ -44,13 +44,13 @@ private:
     QMap<QString, QString> DBplugins;
     QMap<QString, QString> tagPlugins;
     QMap<QString, QString> serverPlugins;
-    QSharedPointer<IXMLContent> configuration;
-    QSharedPointer<IDocEngine> engine;
-    QSharedPointer<IDatabaseWithHistory> database;
-    QSharedPointer<IQueryEngine> query;
-    QSharedPointer<ITagProcessor> tagger;
-    QSharedPointer<QObjectLogging> m_Logger;
-    QSharedPointer<IServer> server;
+    IXMLContentPtr configuration;
+    IDocEnginePtr engine;
+    IDatabaseWithHistoryPtr database;
+    IQueryEnginePtr query;
+    ITagProcessorPtr tagger;
+    QObjectLoggingPtr m_Logger;
+    IServerPtr server;
 };
 
 #endif // EDOCFACTORY_H

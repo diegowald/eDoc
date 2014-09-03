@@ -111,7 +111,6 @@ QDateTimeValue::QDateTimeValue(QObject *parent) :
 
 void QDateTimeValue::setValue(const QVariant &newValue)
 {
-    //setValue2(QDateTime::fromString(newValue, "yyyyMMdd hh:mm:ss"));
     setValue2(newValue.toDateTime());
 }
 
@@ -140,7 +139,6 @@ QDateValue::~QDateValue()
 
 void QDateValue::setValue(const QVariant &newValue)
 {
-    //setValue2(QDate::fromString(newValue, "yyyyMMdd"));
     setValue2(newValue.toDate());
 }
 
@@ -166,7 +164,6 @@ QTimeValue::~QTimeValue()
 
 void QTimeValue::setValue(const QVariant &newValue)
 {
-    //setValue2(QTime::fromString(newValue, "hh:mm:ss"));
     setValue2(newValue.toTime());
 }
 
@@ -186,6 +183,7 @@ IDocBaseValue::~IDocBaseValue()
 
 void IDocBaseValue::setValue(const QVariant &newValue)
 {
+    (void)newValue;
     // Esto es una exception
 }
 
