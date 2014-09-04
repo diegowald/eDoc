@@ -10,6 +10,7 @@ struct IDocBase
 public:
     virtual IDocIDPtr id() = 0;
     virtual bool isComplex() const = 0;
+    virtual long size() = 0;
     virtual ~IDocBase() {}
 };
 

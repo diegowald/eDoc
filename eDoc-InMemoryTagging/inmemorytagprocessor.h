@@ -40,7 +40,7 @@ public:
 
 private:
     void loadIntoMemory();
-    void saveKeyword(QSharedPointer<IRecordID> recordID, const QString &keyword);
+    void saveKeyword(QSharedPointer<IRecordID> recordID, const QString &keyword, bool newKeyword);
 
 signals:
     

@@ -13,6 +13,7 @@ public:
 
     virtual QSharedPointer<IDocID> id();
     virtual QByteArray blob();
+    virtual long size();
 
 signals:
     

@@ -369,6 +369,14 @@ QStringList GenericDatabase::getDistinctColumnValues(const QList<QPair<QString, 
 
 QList<QPair<QString, QString>> GenericDatabase::getColumnValue(const QList<QPair<QString, QString> >& filter, const QString & columnName)
 {
+    QList<QPair<QString, QString> > filterONDB;
+    QPair<QString, QString> pair, pairONDB;
+    foreach (pair, filter)
+    {
+        pairONDB.first = m_Fields[pair.first].dynamicCast<FieldDefinition>()->fieldNameInDatabase();
+        pairONDB.second = pair.second;
+        filterONDB.append(pairONDB);
+    }
     QString sql = "SELECT record_id, %1 FROM %2 WHERE %1 <> '' AND %1 IS NOT NULL %3";
     QString whereClause = "";
     if (filter.count() > 0)
@@ -377,15 +385,16 @@ QList<QPair<QString, QString>> GenericDatabase::getColumnValue(const QList<QPair
         QPair<QString, QString> column;
         foreach (column, filter)
         {
+            QString columnInDB = m_Fields[column.first].dynamicCast<FieldDefinition>()->fieldNameInDatabase();
             field = "%1 = :%2";
             whereClause += whereClause.length() > 0 ? " AND " : "";
-            whereClause += field.arg(column.first, column.first);
+            whereClause += field.arg(columnInDB, columnInDB);
         }
         whereClause = " AND " + whereClause;
     }
     QString sqlToExecute = sql.arg(m_Fields[columnName].dynamicCast<FieldDefinition>()->fieldNameInDatabase()).arg(m_TableName).arg(whereClause);
 
-    QList<QPair<QString, QString>> result = m_SQLManager.getColumnValues(sqlToExecute, filter);
+    QList<QPair<QString, QString>> result = m_SQLManager.getColumnValues(sqlToExecute, filterONDB);
 
     return result;
 }

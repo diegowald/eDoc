@@ -27,3 +27,8 @@ QByteArray SimpleFileDocument::blob()
 {
     return fileManager->readFile(idDocument->asString());
 }
+
+long SimpleFileDocument::size()
+{
+    return fileManager->size(idDocument->asString());
+}

@@ -16,6 +16,7 @@ public:
     virtual ~SimpleFileDocument();
     virtual QSharedPointer<IDocID> id();
     virtual QByteArray blob();
+    virtual long size();
 
 signals:
     
@@ -24,6 +25,8 @@ public slots:
 private:
     QSharedPointer<SimpleFileID> idDocument;
     QSharedPointer<FileManagement> fileManager;
+    QString _filename;
+
 };
 
 #endif // SIMPLEFILEDOCUMENT_H

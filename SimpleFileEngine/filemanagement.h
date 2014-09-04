@@ -10,6 +10,7 @@ public:
     explicit FileManagement(const QString &folder, QObject *parent = 0);
     void createFile(QString fileName, const QByteArray &blob);
     QByteArray readFile(QString fileName);
+    long size(QString filename);
 signals:
     
 public slots:

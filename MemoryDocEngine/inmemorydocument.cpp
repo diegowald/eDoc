@@ -25,3 +25,9 @@ QByteArray InMemoryDocument::blob()
     }
     return cachedData;
 }
+
+long InMemoryDocument::size()
+{
+    long docSize = blob().size();
+    return docSize;
+}

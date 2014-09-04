@@ -8,6 +8,7 @@
 #include "queryengine.h"
 #include "../eDoc-API/IDocument.h"
 #include "databasewithhistorywrapper.h"
+#include <QProcess>
 
 EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
@@ -301,7 +302,15 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
     QSharedPointer<IDocID> docId = engine->addDocument(blob);
 
     record->value("archivo")->setValue(docId->asString());
-    record->value("filename")->setValue(filename);
+    QFileInfo file(filename);
+    if (file.exists())
+    {
+        record->value("filename")->setValue(file.fileName());
+    }
+    else
+    {
+        record->value("filename")->setNull();
+    }
 
     QSharedPointer<IRecordID> record_id = databaseEngine()->addRecord(record);
 
@@ -310,6 +319,27 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
         if (tagEngine() != NULL)
         {
             tagEngine()->processKeywordString(record_id, record->value("keywords")->content().toString());
+        }
+    }
+
+    if (tagEngine())
+    {
+        if (file.completeSuffix() == "pdf")
+        {
+            QProcess process;
+            QString cmd = "pdftotext " + filename + " - | grep -o -E '\\w+' | sort -u -f";
+            process.start("bash", QStringList() << "-c" << cmd);
+            process.waitForBytesWritten();
+            process.waitForFinished();
+            QString result(process.readAll());
+            QStringList x = result.split('\n');
+            tagEngine()->processKeywordString(record_id, x.join(' '));
+        }
+        if (file.completeSuffix() == "txt")
+        {
+        }
+        if (file.completeSuffix() == "doc")
+        {
         }
     }
 }

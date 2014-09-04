@@ -437,8 +437,10 @@ void ExplorerWindow::on_btnBrowse_pressed()
             int rowNum = ui->searchResult->rowCount();
             ui->searchResult->insertRow(rowNum);
             rowNum = ui->searchResult->rowCount() - 1;
-            ui->searchResult->setItem(rowNum, 0, new QTableWidgetItem(rec->value("campo1")->asVariant().toString()));
-            ui->searchResult->setItem(rowNum, 1, new QTableWidgetItem(rec->value("campo2")->asVariant().toString()));
+            for (int i = 0; i < columns.count(); ++i)
+            {
+                ui->searchResult->setItem(rowNum, i, new QTableWidgetItem(rec->value(columns.at(i))->asVariant().toString()));
+            }
             QVariant r;
             r.setValue(rec);
             ui->searchResult->item(rowNum, 0)->setData(Qt::UserRole, r);

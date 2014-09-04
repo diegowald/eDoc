@@ -16,3 +16,8 @@ QByteArray Document::blob()
     return QByteArray();
 }
 
+long Document::size()
+{
+    return 0;
+}
+

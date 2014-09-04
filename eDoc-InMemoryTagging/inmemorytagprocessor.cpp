@@ -51,16 +51,18 @@ void InMemoryTagProcessor::processKeywordString(QSharedPointer<IRecordID> record
 void InMemoryTagProcessor::processKeywordString(QSharedPointer<IRecordID> recordID, const QStringList &keywords)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStringList &keywords)");
+    bool newKeyword = false;
     foreach (QString tagString, keywords)
     {
-        if (!m_Tag.contains(tagString))
+        newKeyword = !m_Tag.contains(tagString);
+        if (newKeyword)
         {
             maxIdUsed++;
             m_Tag[tagString].id = maxIdUsed;
             m_Tag[tagString].saved = false;
         }
         m_Tag[tagString].occurrences.insert(recordID->asString());
-        saveKeyword(recordID, tagString);
+        saveKeyword(recordID, tagString, newKeyword);
     }
 }
 
@@ -146,10 +148,10 @@ void InMemoryTagProcessor::loadIntoMemory()
     }
 }
 
-void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const QString &keyword)
+void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const QString &keyword, bool newKeyword)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::saveKeyword(const int keyword_id)");
-
+/*
     DBRecordPtr keywordRecord = DBRecordPtr(new DBRecord());
     // Borro el keyword y sus occurrences
     QString SQL = "DELETE from %1 WHERE keyword_id = :keyword_id AND record_id = :record_id";
@@ -157,17 +159,20 @@ void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const
     (*keywordRecord)["record_id"] = recordID->asString();
     QString sql = SQL.arg(m_indexTableName);
     m_SQLManager.executeCommand(sql, keywordRecord);
-
-    if (!m_Tag[keyword].saved)
+*/
+    if (newKeyword)
     {
-        SQL = "INSERT into %1 (keyword_id, word) VALUES (:keyword_id, :word);";
-        sql = SQL.arg(m_keywordsTableName);
+        if (!m_Tag[keyword].saved)
+        {
+            QString SQL = "INSERT into %1 (keyword_id, word) VALUES (:keyword_id, :word);";
+            QString sql = SQL.arg(m_keywordsTableName);
 
-        DBRecordPtr record = DBRecordPtr(new DBRecord());
-        (*record)["keyword_id"] = m_Tag[keyword].id;
-        (*record)["word"] = keyword;
-        m_SQLManager.executeCommand(sql, record);
-        m_Tag[keyword].saved = true;
+            DBRecordPtr record = DBRecordPtr(new DBRecord());
+            (*record)["keyword_id"] = m_Tag[keyword].id;
+            (*record)["word"] = keyword;
+            m_SQLManager.executeCommand(sql, record);
+            m_Tag[keyword].saved = true;
+        }
     }
 
     DBRecordPtr recordOccurrence = DBRecordPtr(new DBRecord());

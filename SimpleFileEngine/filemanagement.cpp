@@ -1,5 +1,6 @@
 #include "filemanagement.h"
 #include <QFile>
+#include <QFileInfo>
 
 FileManagement::FileManagement(const QString &folder, QObject *parent) :
     QObject(parent)
@@ -22,4 +23,10 @@ QByteArray FileManagement::readFile(QString fileName)
     QFile file(fn);
     file.open(QIODevice::ReadOnly);
     return file.readAll();
+}
+
+long FileManagement::size(QString filename)
+{
+    QFileInfo fileInfo(filename);
+    return fileInfo.size();
 }

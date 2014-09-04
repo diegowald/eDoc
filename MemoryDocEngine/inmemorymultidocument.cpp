@@ -65,3 +65,13 @@ bool InMemoryMultiDocument::containsDocument(QSharedPointer<IDocID> id)
 {
     return m_Collection.contains(id->asString());
 }
+
+long InMemoryMultiDocument::size()
+{
+    long totalSize = 0;
+    foreach (IDocBasePtr doc, m_Collection.values())
+    {
+        totalSize += doc->size();
+    }
+    return totalSize;
+}
