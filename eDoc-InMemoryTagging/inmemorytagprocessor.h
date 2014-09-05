@@ -23,24 +23,25 @@ public:
     explicit InMemoryTagProcessor(QObject *parent = 0);
     virtual ~InMemoryTagProcessor();
 
-    virtual void initialize(QSharedPointer<IXMLContent> configuration,
-                            QSharedPointer<QObjectLogging> logger,
+    virtual void initialize(IXMLContentPtr configuration,
+                            QObjectLoggingPtr logger,
                             const QMap<QString, QString> &docpluginStock,
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &DBWithHistoryPlugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
-    virtual void addTagRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag);
-    virtual void processKeywordString(QSharedPointer<IRecordID> recordID, const QString &keywords);
-    virtual void processKeywordString(QSharedPointer<IRecordID> recordID, const QStringList &keywords);
+    virtual void addTagRecord(IRecordIDPtr recordID, ITagPtr tag);
+    virtual void processKeywordString(IRecordIDPtr recordID, const QString &keywords);
+    virtual void processKeywordString(IRecordIDPtr recordID, const QStringList &keywords);
     virtual QSet<QString> findByTags(const QStringList &tags);
-    virtual void removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag);
+    virtual void removeRecord(IRecordIDPtr recordID, ITagPtr tag);
     virtual QString name();
     virtual ITagProcessorPtr newTagProcessor();
 
 private:
     void loadIntoMemory();
-    void saveKeyword(QSharedPointer<IRecordID> recordID, const QString &keyword, bool newKeyword);
+    void saveKeyword(IRecordIDPtr recordID, const QString &keyword, bool newKeyword);
+    void bulkSave();
 
 signals:
     
@@ -63,6 +64,14 @@ private:
     QString m_indexTableName;
     SQLManager m_SQLManager;
     int maxIdUsed;
+
+    struct BULKSAVERECORD
+    {
+        IRecordIDPtr record;
+        QString tagString;
+        bool newElement;
+    };
+    QList<BULKSAVERECORD> recordsToSave;
 };
 
 #endif // INMEMORYTAGPROCESSOR_H

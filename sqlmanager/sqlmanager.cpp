@@ -219,6 +219,35 @@ int SQLManager::executeCommandAndReturnId(const QString &sql, DBRecordPtr record
     return id;
 }
 
+void SQLManager::executeBulk(const QString &sql, QList<DBRecordPtr> &records)
+{
+    //m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::executeCommand(const QString &sql, DBRecordPtr record)");
+    if (!tryReconnect())
+    {
+        m_Logger->logError(QString("Can't open Database."
+                           " Reason: ") +
+                           db.lastError().text());
+        // Error
+        return;
+    }
+
+    QSqlQuery q;
+    q.prepare(sql);
+    db.transaction();
+    foreach (DBRecordPtr record, records)
+    {
+        addParameters(q, sql, record);
+        q.exec();
+        if (q.lastError().type() != QSqlError::NoError)
+        {
+            m_Logger->logError("SQL Error:" + q.lastError().text());
+        }
+    }
+    db.commit();
+    db.close();
+    return;
+}
+
 QStringList SQLManager::getDistintValues(const QString &sql, const QList<QPair<QString, QString> >& filter)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "QStringList SQLManager::getDistintValues(const QString &sql, const QStringList& filter)");

@@ -14,8 +14,8 @@ InMemoryTagProcessor::~InMemoryTagProcessor()
 {
 }
 
-void InMemoryTagProcessor::initialize(QSharedPointer<IXMLContent> configuration,
-                                      QSharedPointer<QObjectLogging> logger,
+void InMemoryTagProcessor::initialize(IXMLContentPtr configuration,
+                                      QObjectLoggingPtr logger,
                                       const QMap<QString, QString> &docpluginStock,
                                       const QMap<QString, QString> &DBplugins,
                                       const QMap<QString, QString> &DBWithHistoryPlugins,
@@ -32,14 +32,14 @@ void InMemoryTagProcessor::initialize(QSharedPointer<IXMLContent> configuration,
     loadIntoMemory();
 }
 
-void InMemoryTagProcessor::addTagRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag)
+void InMemoryTagProcessor::addTagRecord(IRecordIDPtr recordID, ITagPtr tag)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::addTagRecord(IRecordID *recordID, ITag* tag)");
     QStringList tags = tag->keys();
     processKeywordString(recordID, tags);
 }
 
-void InMemoryTagProcessor::processKeywordString(QSharedPointer<IRecordID> recordID, const QString &keywords)
+void InMemoryTagProcessor::processKeywordString(IRecordIDPtr recordID, const QString &keywords)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QString &keywords)");
     QString s = keywords;
@@ -48,8 +48,9 @@ void InMemoryTagProcessor::processKeywordString(QSharedPointer<IRecordID> record
     processKeywordString(recordID, tags);
 }
 
-void InMemoryTagProcessor::processKeywordString(QSharedPointer<IRecordID> recordID, const QStringList &keywords)
+void InMemoryTagProcessor::processKeywordString(IRecordIDPtr recordID, const QStringList &keywords)
 {
+    recordsToSave.clear();
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStringList &keywords)");
     bool newKeyword = false;
     foreach (QString tagString, keywords)
@@ -62,8 +63,14 @@ void InMemoryTagProcessor::processKeywordString(QSharedPointer<IRecordID> record
             m_Tag[tagString].saved = false;
         }
         m_Tag[tagString].occurrences.insert(recordID->asString());
-        saveKeyword(recordID, tagString, newKeyword);
+        //saveKeyword(recordID, tagString, newKeyword);
+        BULKSAVERECORD bsr;
+        bsr.record = recordID;
+        bsr.tagString = tagString;
+        bsr.newElement = newKeyword;
+        recordsToSave.append(bsr);
     }
+    bulkSave();
 }
 
 QSet<QString> InMemoryTagProcessor::findByTags(const QStringList &tags)
@@ -96,7 +103,7 @@ QSet<QString> InMemoryTagProcessor::findByTags(const QStringList &tags)
     return result;
 }
 
-void InMemoryTagProcessor::removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag)
+void InMemoryTagProcessor::removeRecord(IRecordIDPtr recordID, ITagPtr tag)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::removeRecord(IRecordID* recordID, ITag* tag)");
     foreach (QString tagLabel, tag->keys())
@@ -148,7 +155,7 @@ void InMemoryTagProcessor::loadIntoMemory()
     }
 }
 
-void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const QString &keyword, bool newKeyword)
+void InMemoryTagProcessor::saveKeyword(IRecordIDPtr recordID, const QString &keyword, bool newKeyword)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::saveKeyword(const int keyword_id)");
 /*
@@ -183,6 +190,58 @@ void InMemoryTagProcessor::saveKeyword(QSharedPointer<IRecordID> recordID, const
     (*recordOccurrence)["record_id"] = recordID->asString();
 
     m_SQLManager.executeCommand(sql2, recordOccurrence);
+}
+
+void InMemoryTagProcessor::bulkSave()
+{
+    QList<DBRecordPtr> keywords;
+
+    QString SQL = "INSERT INTO %1 (%2, %3) VALUES (:%2, :%3)";
+    QString labelID = "keyword_id";
+    QString labelWord = "word";
+    SQL = SQL.arg(m_keywordsTableName, labelID, labelWord);
+    QSet<QString> uniqueKeywords;
+    bool execute = false;
+    foreach (BULKSAVERECORD bsr, recordsToSave)
+    {
+        if (bsr.newElement && !uniqueKeywords.contains(bsr.tagString))
+        {
+            DBRecordPtr record(new DBRecord());
+            (*record)[labelID] = m_Tag[bsr.tagString].id;
+            (*record)[labelWord] = bsr.tagString;
+            keywords.append(record);
+            uniqueKeywords.insert(bsr.tagString);
+            execute = true;
+        }
+    }
+    if (execute)
+    {
+        m_SQLManager.executeBulk(SQL, keywords);
+    }
+
+    keywords.clear();
+    execute = false;
+    QString keyID = "keyword_id";
+    QString recID = "record_id";
+    SQL = "INSERT INTO %1 (%2, %3) VALUES (:%2, :%3)";
+    SQL = SQL.arg(m_indexTableName, keyID, recID);
+    foreach (BULKSAVERECORD bsr, recordsToSave)
+    {
+        DBRecordPtr record(new DBRecord());
+        (*record)[keyID] = m_Tag[bsr.tagString].id;
+        (*record)[recID] = bsr.record->asString();
+        keywords.append(record);
+        execute = true;
+    }
+    if (execute)
+    {
+        m_SQLManager.executeBulk(SQL, keywords);
+    }
+    foreach (BULKSAVERECORD bsr, recordsToSave)
+    {
+        m_Tag[bsr.tagString].saved = true;
+    }
+    recordsToSave.clear();
 }
 
 ITagProcessorPtr InMemoryTagProcessor::newTagProcessor()

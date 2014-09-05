@@ -46,6 +46,7 @@ public:
     virtual void executeCommand(const QString &sql, DBRecordPtr record);
 
     virtual int executeCommandAndReturnId(const QString &sql, DBRecordPtr record);
+    virtual void executeBulk(const QString &sql, QList<DBRecordPtr> &records);
 
     virtual QStringList getDistintValues(const QString &sql, const QList<QPair<QString, QString> >& filter);
     virtual QList<QPair<QString, QString> > getColumnValues(const QString &sql, const QList<QPair<QString, QString> >& filter);
