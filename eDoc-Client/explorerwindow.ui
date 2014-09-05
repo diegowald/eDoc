@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>eDoc</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -60,10 +60,14 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>401</width>
-             <height>429</height>
+             <width>270</width>
+             <height>174</height>
             </rect>
            </property>
+           <attribute name="icon">
+            <iconset resource="eDoc-Client.qrc">
+             <normaloff>:/magnifying_glass.png</normaloff>:/magnifying_glass.png</iconset>
+           </attribute>
            <attribute name="label">
             <string>Search</string>
            </attribute>
@@ -173,9 +177,13 @@
              <x>0</x>
              <y>0</y>
              <width>401</width>
-             <height>429</height>
+             <height>418</height>
             </rect>
            </property>
+           <attribute name="icon">
+            <iconset resource="eDoc-Client.qrc">
+             <normaloff>:/forrst.png</normaloff>:/forrst.png</iconset>
+           </attribute>
            <attribute name="label">
             <string>Tree</string>
            </attribute>
@@ -277,10 +285,14 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>401</width>
-             <height>429</height>
+             <width>98</width>
+             <height>129</height>
             </rect>
            </property>
+           <attribute name="icon">
+            <iconset resource="eDoc-Client.qrc">
+             <normaloff>:/view.png</normaloff>:/view.png</iconset>
+           </attribute>
            <attribute name="label">
             <string>Browse</string>
            </attribute>
@@ -413,6 +425,10 @@
    <addaction name="actionImport_Folder"/>
   </widget>
   <action name="actionAdd_Document">
+   <property name="icon">
+    <iconset resource="eDoc-Client.qrc">
+     <normaloff>:/cloud_upload.png</normaloff>:/cloud_upload.png</iconset>
+   </property>
    <property name="text">
     <string>Add Document</string>
    </property>
@@ -424,8 +440,15 @@
    <property name="text">
     <string>Add 1000 Documents</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionSet_Query_Date_and_Time">
+   <property name="icon">
+    <iconset resource="eDoc-Client.qrc">
+     <normaloff>:/calendar.png</normaloff>:/calendar.png</iconset>
+   </property>
    <property name="text">
     <string>Set Query Date and Time</string>
    </property>
@@ -434,13 +457,22 @@
    <property name="text">
     <string>Import Folder</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionOpen_database">
+   <property name="icon">
+    <iconset resource="eDoc-Client.qrc">
+     <normaloff>:/suitcase.png</normaloff>:/suitcase.png</iconset>
+   </property>
    <property name="text">
     <string>Open database</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="eDoc-Client.qrc"/>
+ </resources>
  <connections/>
 </ui>

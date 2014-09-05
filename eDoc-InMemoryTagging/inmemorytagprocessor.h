@@ -32,7 +32,7 @@ public:
                             const QMap<QString, QString> &serverPlugins);
     virtual void addTagRecord(IRecordIDPtr recordID, ITagPtr tag);
     virtual void processKeywordString(IRecordIDPtr recordID, const QString &keywords);
-    virtual void processKeywordString(IRecordIDPtr recordID, const QStringList &keywords);
+    virtual void processKeywordStringList(IRecordIDPtr, const QStringList &keywords);
     virtual QSet<QString> findByTags(const QStringList &tags);
     virtual void removeRecord(IRecordIDPtr recordID, ITagPtr tag);
     virtual QString name();

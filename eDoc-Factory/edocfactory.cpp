@@ -324,7 +324,8 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
 
     if (tagEngine())
     {
-        if (file.completeSuffix() == "pdf")
+        QString suffix = file.completeSuffix();
+        if (suffix == "pdf")
         {
             QProcess process;
             QString cmd = "pdftotext " + filename + " - | grep -o -E '\\w+' | sort -u -f";
@@ -332,11 +333,19 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
             process.waitForBytesWritten();
             process.waitForFinished();
             QString result(process.readAll());
-            QStringList x = result.split('\n');
-            tagEngine()->processKeywordString(record_id, x.join(' '));
+            QStringList list = result.split('\n');
+            tagEngine()->processKeywordStringList(record_id, list);
         }
         if (file.completeSuffix() == "txt")
         {
+            QProcess process;
+            QString cmd = "cat " + filename + " | grep -o -E '\\w+' | sort -u -f";
+            process.start("bash", QStringList() << "-c" << cmd);
+            process.waitForBytesWritten();
+            process.waitForFinished();
+            QString result(process.readAll());
+            QStringList list = result.split('\n');
+            tagEngine()->processKeywordStringList(record_id, list);
         }
         if (file.completeSuffix() == "doc")
         {

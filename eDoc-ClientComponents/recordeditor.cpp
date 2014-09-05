@@ -50,6 +50,12 @@ QFieldWidget *RecordEditor::createWidget(QSharedPointer<IRecord> record, const Q
         sw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
         w = sw;
     }
+    else if (fieldType == "integer")
+    {
+        StringWidget *sw = new StringWidget(parent);
+        sw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
+        w = sw;
+    }
     else if (fieldType == "tag")
     {
         StringWidget *sw = new StringWidget(parent);

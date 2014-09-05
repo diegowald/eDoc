@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>cloud_upload.png</file>
+        <file>cloud_download.png</file>
+    </qresource>
+</RCC>

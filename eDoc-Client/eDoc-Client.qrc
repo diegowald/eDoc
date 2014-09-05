@@ -1,5 +1,46 @@
 <RCC>
     <qresource prefix="/">
         <file alias="mainIcon">bedwyr.ico</file>
+        <file>table_undo.png</file>
+        <file>tables.png</file>
+        <file>table_remove.png</file>
+        <file>table_redo.png</file>
+        <file>table_next.png</file>
+        <file>table_lines.png</file>
+        <file>table_edit.png</file>
+        <file>table_down.png</file>
+        <file>table_colums.png</file>
+        <file>table_add.png</file>
+        <file>equalizer.png</file>
+        <file>cog.png</file>
+        <file>code.png</file>
+        <file>cloud_upload.png</file>
+        <file>cloud_ok.png</file>
+        <file>cloud_fail.png</file>
+        <file>cloud_download.png</file>
+        <file>cloud.png</file>
+        <file>close.png</file>
+        <file>clip.png</file>
+        <file>circle_up.png</file>
+        <file>circle_stop.png</file>
+        <file>circle_skip_previous.png</file>
+        <file>circle_skip_next.png</file>
+        <file>circle_right.png</file>
+        <file>circle_rewind.png</file>
+        <file>circle_plus.png</file>
+        <file>circle_play.png</file>
+        <file>circle_pause.png</file>
+        <file>circle_ok.png</file>
+        <file>circle_minus.png</file>
+        <file>circle_left.png</file>
+        <file>circle_fast_forward.png</file>
+        <file>circle_down.png</file>
+        <file>circle_delete.png</file>
+        <file>circle.png</file>
+        <file>calendar.png</file>
+        <file>view.png</file>
+        <file>suitcase.png</file>
+        <file>magnifying_glass.png</file>
+        <file>forrst.png</file>
     </qresource>
 </RCC>

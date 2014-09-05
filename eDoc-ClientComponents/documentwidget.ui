@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>173</width>
+    <width>242</width>
     <height>29</height>
    </rect>
   </property>
@@ -40,6 +40,16 @@
      <property name="text">
       <string>Download</string>
      </property>
+     <property name="icon">
+      <iconset resource="clientResources.qrc">
+       <normaloff>:/cloud_download.png</normaloff>:/cloud_download.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
     </widget>
    </item>
    <item>
@@ -47,10 +57,22 @@
      <property name="text">
       <string>Upload</string>
      </property>
+     <property name="icon">
+      <iconset resource="clientResources.qrc">
+       <normaloff>:/cloud_upload.png</normaloff>:/cloud_upload.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
     </widget>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="clientResources.qrc"/>
+ </resources>
  <connections/>
 </ui>

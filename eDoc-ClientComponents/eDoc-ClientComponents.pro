@@ -46,3 +46,6 @@ else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
+
+RESOURCES += \
+    clientResources.qrc

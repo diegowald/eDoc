@@ -55,6 +55,7 @@ EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLoggingPtr Logge
     functionMap[MessageCodes::CodeNumber::REQ_findByTags] = &EDocTCPServerDatabasePlugin::processREQFindByTags;
     functionMap[MessageCodes::CodeNumber::REQ_removeRecord] = &EDocTCPServerDatabasePlugin::processREQRemoveRecord;
     functionMap[MessageCodes::CodeNumber::REQ_processKeywordString] = &EDocTCPServerDatabasePlugin::processREQprocessKeywordString;
+    functionMap[MessageCodes::CodeNumber::REQ_processKeywordStringList] = &EDocTCPServerDatabasePlugin::processREQprocessKeywordStringList;
 }
 
 EDocTCPServerDatabasePlugin::~EDocTCPServerDatabasePlugin()
@@ -434,7 +435,6 @@ void EDocTCPServerDatabasePlugin::processREQFindByTags(QDataStream &in)
 void EDocTCPServerDatabasePlugin::processREQRemoveRecord(QDataStream &in)
 {
     Q_ASSERT(false);
-
 }
 
 void EDocTCPServerDatabasePlugin::processREQprocessKeywordString(QDataStream &in)
@@ -445,6 +445,17 @@ void EDocTCPServerDatabasePlugin::processREQprocessKeywordString(QDataStream &in
     in >> keywords;
     _tagProcessor->processKeywordString(proxyRecordID, keywords);
     prepareToSend(MessageCodes::CodeNumber::RSP_processKeywordString);
+    (*out) << true;
+}
+
+void EDocTCPServerDatabasePlugin::processREQprocessKeywordStringList(QDataStream &in)
+{
+    ProxyRecordIDPtr proxyRecordID = ProxyRecordIDPtr(new ProxyRecordID());
+    in >> *proxyRecordID;
+    QStringList keywords;
+    in >> keywords;
+    _tagProcessor->processKeywordStringList(proxyRecordID, keywords);
+    prepareToSend(MessageCodes::CodeNumber::RSP_processKeywordStringList);
     (*out) << true;
 }
 

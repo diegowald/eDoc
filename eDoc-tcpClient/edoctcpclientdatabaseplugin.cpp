@@ -419,6 +419,25 @@ void eDocTcpClientDatabasePlugin::processKeywordString(QSharedPointer<IRecordID>
     }
 }
 
+void eDocTcpClientDatabasePlugin::processKeywordStringList(IRecordIDPtr recordID, const QStringList &keywords)
+{
+    prepareToSend(MessageCodes::CodeNumber::REQ_processKeywordStringList);
+    (*out) << *recordID;
+    (*out) << keywords;
+    QByteArray response = send();
+
+    QDataStream in(&response, QIODevice::ReadOnly);
+    in.setVersion(QDataStream::Qt_5_3);
+
+    Header header;
+    in >> header;
+    if (header.command() == MessageCodes::CodeNumber::RSP_processKeywordStringList)
+    {
+        bool ok = false;
+        in >> ok;
+    }
+}
+
 IDatabasePtr eDocTcpClientDatabasePlugin::newDatabase()
 {
     return IDatabasePtr(new eDocTcpClientDatabasePlugin());

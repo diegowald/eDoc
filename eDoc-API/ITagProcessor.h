@@ -14,6 +14,7 @@ struct ITagProcessor : public IInitializable
     virtual QSet<QString> findByTags(const QStringList &tags) = 0;
     virtual void removeRecord(IRecordIDPtr recordID, ITagPtr tag) = 0;
     virtual void processKeywordString(IRecordIDPtr recordID, const QString &keywords) = 0;
+    virtual void processKeywordStringList(IRecordIDPtr, const QStringList &keywords) = 0;
     virtual QString name() = 0;
     virtual ITagProcessorPtr newTagProcessor() = 0;
 

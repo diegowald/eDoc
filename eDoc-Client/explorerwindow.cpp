@@ -477,14 +477,19 @@ void ExplorerWindow::on_actionOpen_database_triggered()
 
 void ExplorerWindow::openDatabase(const QString &file)
 {
-    columns.clear();
-    f.initialize(QApplication::applicationDirPath(), file, logger);
+    QFileInfo fi(file);
+    if (fi.exists())
+    {
+        columns.clear();
+        f.initialize(QApplication::applicationDirPath(), file, logger);
 
-    useCurrentTime = true;
-    dateTimeToUse = QDateTime::currentDateTimeUtc();
-    fillFieldsCombo();
-    fillOperatorsCombo();
-    fillTreeCombo();
-    fillSearchResultColumns();
-    recordEditor = NULL;
+        useCurrentTime = true;
+        dateTimeToUse = QDateTime::currentDateTimeUtc();
+        fillFieldsCombo();
+        fillOperatorsCombo();
+        fillTreeCombo();
+        fillSearchResultColumns();
+        recordEditor = NULL;
+        setWindowTitle(tr("eDoc - ") + fi.baseName());
+    }
 }

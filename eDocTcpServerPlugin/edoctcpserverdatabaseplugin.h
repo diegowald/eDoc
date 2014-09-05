@@ -67,6 +67,7 @@ private:
     void processREQFindByTags(QDataStream &in);
     void processREQRemoveRecord(QDataStream &in);
     void processREQprocessKeywordString(QDataStream &in);
+    void processREQprocessKeywordStringList(QDataStream &in);
 
 private:
     QSharedPointer<QObjectLogging> logger;

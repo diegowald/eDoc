@@ -36,7 +36,7 @@ void InMemoryTagProcessor::addTagRecord(IRecordIDPtr recordID, ITagPtr tag)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::addTagRecord(IRecordID *recordID, ITag* tag)");
     QStringList tags = tag->keys();
-    processKeywordString(recordID, tags);
+    processKeywordStringList(recordID, tags);
 }
 
 void InMemoryTagProcessor::processKeywordString(IRecordIDPtr recordID, const QString &keywords)
@@ -45,10 +45,10 @@ void InMemoryTagProcessor::processKeywordString(IRecordIDPtr recordID, const QSt
     QString s = keywords;
     s = s.replace(".", " ").replace(",", " ");
     QStringList tags = s.split(' ', QString::SkipEmptyParts);
-    processKeywordString(recordID, tags);
+    processKeywordStringList(recordID, tags);
 }
 
-void InMemoryTagProcessor::processKeywordString(IRecordIDPtr recordID, const QStringList &keywords)
+void InMemoryTagProcessor::processKeywordStringList(IRecordIDPtr recordID, const QStringList &keywords)
 {
     recordsToSave.clear();
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStringList &keywords)");

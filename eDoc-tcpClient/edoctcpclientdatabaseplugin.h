@@ -72,6 +72,7 @@ public:
     virtual QSet<QString> findByTags(const QStringList &tags);
     virtual void removeRecord(QSharedPointer<IRecordID> recordID, QSharedPointer<ITag> tag);
     virtual void processKeywordString(QSharedPointer<IRecordID> recordID, const QString &keywords);
+    virtual void processKeywordStringList(IRecordIDPtr recordID, const QStringList &keywords);
 
 private slots:
 

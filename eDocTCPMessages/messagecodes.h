@@ -63,10 +63,12 @@ public:
         REQ_findByTags,
         REQ_removeRecord,
         REQ_processKeywordString,
+        REQ_processKeywordStringList,
         RSP_addTagRecord,
         RSP_findByTags,
         RSP_removeRecord,
         RSP_processKeywordString,
+        RSP_processKeywordStringList,
     };
 
     static QString toString(CodeNumber code);
