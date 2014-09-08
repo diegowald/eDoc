@@ -18,13 +18,7 @@ public:
     explicit InMemoryDatabase(QObject *parent = 0);
     virtual ~InMemoryDatabase();
     
-    virtual void initialize(QSharedPointer<IXMLContent> configuration,
-                            QSharedPointer<QObjectLogging> logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBplugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
     virtual QList<QSharedPointer<IFieldDefinition>> fields();
     virtual QSharedPointer<IFieldDefinition> field(const QString &fieldName);
     virtual QList<QSharedPointer<IRecordID>> search(const QList<QSharedPointer<IParameter>> &parameters);
@@ -46,8 +40,8 @@ protected:
     virtual QMap<QString, QSharedPointer<IRecordID>> search(QSharedPointer<IParameter> parameter);
 
 private:
-    void createFields(QSharedPointer<IXMLContent> configuration);
-    QSharedPointer<IFieldDefinition> createField(QSharedPointer<IXMLContent> configuration);
+    void createFields(IXMLContentPtr configuration, IFactory *factory);
+    QSharedPointer<IFieldDefinition> createField(IXMLContentPtr configuration, IFactory *factory);
 signals:
     
 public slots:

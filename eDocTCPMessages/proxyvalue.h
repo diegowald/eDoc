@@ -18,6 +18,11 @@ public:
     virtual void setNull();
     virtual bool isNull();
 
+    // slots
+public slots:
+    virtual void prepareToSave() {}
+    virtual void prepareToLoad() {}
+
 signals:
 
 public slots:

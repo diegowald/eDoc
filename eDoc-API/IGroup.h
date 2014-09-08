@@ -1,6 +1,7 @@
 #ifndef IGROUP_H
 #define IGROUP_H
 
+#include "forward.h"
 #include "IGroupID.h"
 #include <QSharedPointer>
 
@@ -10,5 +11,5 @@ struct IGroup
     virtual ~IGroup() {}
 };
 
-typedef QSharedPointer<IGroup> IGroupPtr;
+
 #endif // IGROUP_H

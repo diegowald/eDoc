@@ -66,6 +66,10 @@ public:
         return m_Value;
     }
 
+    // slots
+    virtual void prepareToSave() {}
+    virtual void prepareToLoad() {}
+
 private:
     TYPE m_Value;
     bool m_Null;

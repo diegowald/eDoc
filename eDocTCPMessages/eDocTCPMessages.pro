@@ -24,7 +24,8 @@ SOURCES += edoctcpmessages.cpp \
            streamhelpers.cpp \
     messagecodes.cpp \
     proxydocid.cpp \
-    tcpclient.cpp
+    tcpclient.cpp \
+    proxydocumentvalue.cpp
 
 HEADERS += edoctcpmessages.h\
            edoctcpmessages_global.h \
@@ -37,7 +38,8 @@ HEADERS += edoctcpmessages.h\
            streamhelpers.h \
     messagecodes.h \
     proxydocid.h \
-    tcpclient.h
+    tcpclient.h \
+    proxydocumentvalue.h
 
 unix {
     target.path = /usr/lib

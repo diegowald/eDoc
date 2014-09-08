@@ -1,6 +1,7 @@
 #ifndef IQUERYENGINE_H
 #define IQUERYENGINE_H
 
+#include "forward.h"
 #include <QStringList>
 #include "IInitializable.h"
 
@@ -12,5 +13,5 @@ struct IQueryEngine : public IInitializable
     virtual QStringList getFieldsForTree(const QString &viewName) = 0;
 };
 
-typedef QSharedPointer<IQueryEngine> IQueryEnginePtr;
+
 #endif // IQUERYENGINE_H

@@ -20,14 +20,16 @@ public:
     virtual QList<QString> fieldNames();
 
     friend QDataStream& operator>>(QDataStream& is, ProxyRecord &obj);
-signals:
 
 public slots:
+    // slots
+    virtual void prepareToSave();
+    virtual void prepareToLoad();
 
 private:
     QSharedPointer<IRecordID> _ID;
-    QMap<QString, QSharedPointer<IValue>> _values;
-    QMap<QString, QSharedPointer<IFieldDefinition>> _fieldDefinitions;
+    QMap<QString, IValuePtr> _values;
+    QMap<QString, IFieldDefinitionPtr> _fieldDefinitions;
 };
 
 #endif // PROXYRECORD_H

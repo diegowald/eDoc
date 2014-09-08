@@ -12,21 +12,11 @@ DatabaseWithHistoryWrapper::~DatabaseWithHistoryWrapper()
 }
 
 // IInitializable
-void DatabaseWithHistoryWrapper::initialize(QSharedPointer<IXMLContent> configuration,
-                                            QSharedPointer<QObjectLogging> logger,
-                                            const QMap<QString, QString> &docpluginStock,
-                                            const QMap<QString, QString> &DBPlugins,
-                                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                                            const QMap<QString, QString> &tagPlugins,
-                                            const QMap<QString, QString> &serverPlugins)
+
+void DatabaseWithHistoryWrapper::initialize(IXMLContentPtr configuration, IFactory *factory)
 {
-    (void)configuration;
-    (void)logger;
-    (void)DBPlugins;
-    (void)DBWithHistoryPlugins;
-    (void)docpluginStock;
-    (void)tagPlugins;
-    (void)serverPlugins;
+    (void) configuration;
+    (void) factory;
 }
 
 // IDatabase
@@ -114,6 +104,7 @@ QMap<QString, QSharedPointer<IRecordID> > DatabaseWithHistoryWrapper::search(QSh
 // IDatabaseWithHistory
 QList<QSharedPointer<IRecordID>> DatabaseWithHistoryWrapper::searchByDate(const QList<QSharedPointer<IParameter>> &parameters, const QDateTime &date)
 {
+    (void) date;
     return search(parameters);
 }
 

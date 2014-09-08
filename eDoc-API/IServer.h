@@ -1,11 +1,10 @@
 #ifndef ISERVER_H
 #define ISERVER_H
 
+#include "forward.h"
 #include <QtPlugin>
 #include "IInitializable.h"
 
-struct IServer;
-typedef QSharedPointer<IServer> IServerPtr;
 
 struct IServer : public IInitializable {
 public:

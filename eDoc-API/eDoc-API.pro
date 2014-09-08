@@ -39,7 +39,9 @@ HEADERS += edocapi_global.h \
     IQueryEngine.h \
     IServer.h \
     IInitializable.h \
-    IDatabaseWithHistory.h
+    IDatabaseWithHistory.h \
+    IFactory.h \
+    forward.h
 
 unix:!symbian {
     maemo5 {

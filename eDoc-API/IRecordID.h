@@ -1,6 +1,7 @@
 #ifndef IRECORDID_H
 #define IRECORDID_H
 
+#include "forward.h"
 #include <QMetaType>
 #include <QSharedPointer>
 #include "IMetadata.h"
@@ -13,7 +14,7 @@ public:
     virtual ~IRecordID() {}
 };
 
-typedef QSharedPointer<IRecordID> IRecordIDPtr;
+
 Q_DECLARE_METATYPE(IRecordIDPtr)
 
 #endif // IRECORDID_H

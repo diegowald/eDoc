@@ -1,12 +1,10 @@
 #ifndef ITAGPROCESSOR_H
 #define ITAGPROCESSOR_H
 
+#include "forward.h"
 #include "ITag.h"
 #include "IRecordID.h"
 #include "IInitializable.h"
-
-struct ITagProcessor;
-typedef QSharedPointer<ITagProcessor> ITagProcessorPtr;
 
 struct ITagProcessor : public IInitializable
 {

@@ -1,7 +1,7 @@
 #ifndef IUSERID_H
 #define IUSERID_H
 
-#include <QSharedPointer>
+#include "forward.h"
 
 struct IUserID
 {
@@ -10,6 +10,5 @@ public:
     virtual ~IUserID() {}
 };
 
-typedef QSharedPointer<IUserID> IUserIDPtr;
 
 #endif // IUSERID_H

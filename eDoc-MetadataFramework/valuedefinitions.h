@@ -116,6 +116,9 @@ public:
     virtual void setValue(const QVariant &newValue);
     virtual QVariant content();
     virtual QVariant asVariant();
+    // slots
+    virtual void prepareToSave() {}
+    virtual void prepareToLoad() {}
 };
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT IMultiDocumentValue : public QObject, public Value<QSharedPointer<IMultiDocument>>

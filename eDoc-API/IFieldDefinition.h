@@ -2,6 +2,7 @@
 #define IFIELDDEFINITION_H
 
 #include <QString>
+#include "forward.h"
 #include "APIEnums.h"
 #include "IInitializable.h"
 #include <QList>
@@ -19,5 +20,4 @@ public:
     virtual ~IFieldDefinition() {}
 };
 
-typedef QSharedPointer<IFieldDefinition> IFieldDefinitionPtr;
 #endif // IFIELDDEFINITION_H

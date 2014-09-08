@@ -7,13 +7,13 @@ SUBDIRS += \
     eDoc-Factory \
     sqlmanager \
     eDoc-CORE \
+    eDoc-ClientComponents \
     eDoc-Client \
     testCORE \
     SimpleFileEngine \
     MemoryDocEngine \
     InMemoryDatabasePlugin \
     GenericDatabasePlugin \
-    eDoc-ClientComponents \
     eDoc-InMemoryTagging \
     eDocTCPMessages \
     eDoc-tcpClient/edoctcpclient.pro \

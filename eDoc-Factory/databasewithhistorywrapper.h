@@ -13,13 +13,7 @@ public:
 
     // IInitializable
 public:
-    virtual void initialize(QSharedPointer<IXMLContent> configuration,
-                            QSharedPointer<QObjectLogging> logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBPlugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
 
     // IDatabase
 public:

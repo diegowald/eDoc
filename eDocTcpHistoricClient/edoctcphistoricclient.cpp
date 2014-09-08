@@ -1,4 +1,5 @@
 #include "edoctcphistoricclient.h"
+#include "../eDoc-API/IFactory.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDocTCPMessages/streamhelpers.h"
@@ -12,22 +13,10 @@ EDocTcpHistoricClient::~EDocTcpHistoricClient()
 {
 }
 
-void EDocTcpHistoricClient::initialize(QSharedPointer<IXMLContent> configuration,
-                                       QSharedPointer<QObjectLogging> logger,
-                                       const QMap<QString, QString> &docpluginStock,
-                                       const QMap<QString, QString> &DBplugins,
-                                       const QMap<QString, QString> &DBWithHistoryPlugins,
-                                       const QMap<QString, QString> &tagPlugins,
-                                       const QMap<QString, QString> &serverPlugins)
+void EDocTcpHistoricClient::initialize(IXMLContentPtr configuration, IFactory *factory)
 {
-    (void)docpluginStock;
-    (void)DBplugins;
-    (void)DBWithHistoryPlugins;
-    (void)tagPlugins;
-    (void)serverPlugins;
-
-    this->logger = logger;
-    this->logger->logTrace(__FILE__, __LINE__, "EDocTcpHistoricClient", "void EDocTcpHistoricClient::initialize(IXMLContent *configuration, QObjectLogging *logger, \
+    logger = factory->logger();
+    logger->logTrace(__FILE__, __LINE__, "EDocTcpHistoricClient", "void EDocTcpHistoricClient::initialize(IXMLContent *configuration, QObjectLogging *logger, \
                            const QMap<QString, QString> &docpluginStock, \
                            const QMap<QString, QString> &DBplugins, \
                            const QMap<QString, QString> &tagPlugins, \
@@ -188,6 +177,10 @@ QSharedPointer<IRecord> EDocTcpHistoricClient::createEmptyRecord()
 
 QSharedPointer<IRecordID> EDocTcpHistoricClient::addRecord(QSharedPointer<IRecord> record)
 {
+    if (record.dynamicCast<ProxyRecord>())
+    {
+        record.dynamicCast<ProxyRecord>()->prepareToSave();
+    }
     prepareToSend(MessageCodes::CodeNumber::REQ_addRecord);
     (*out) << *record;
     QByteArray response = send();
@@ -223,6 +216,10 @@ QList<QSharedPointer<IRecord> > EDocTcpHistoricClient::getRecords(const QStringL
 
 void EDocTcpHistoricClient::updateRecord(QSharedPointer<IRecord> record)
 {
+    if (record.dynamicCast<ProxyRecord>())
+    {
+        record.dynamicCast<ProxyRecord>()->prepareToSave();
+    }
     prepareToSend(MessageCodes::CodeNumber::REQ_updateRecord);
     (*out) << *record;
     QByteArray response = send();

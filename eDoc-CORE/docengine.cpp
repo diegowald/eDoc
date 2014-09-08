@@ -10,21 +10,10 @@ DocEngine::~DocEngine()
 {
 }
 
-void DocEngine::initialize(QSharedPointer<IXMLContent> configuration,
-                           QSharedPointer<QObjectLogging> logger,
-                           const QMap<QString, QString> &docpluginStock,
-                           const QMap<QString, QString> &DBplugins,
-                           const QMap<QString, QString> &DBWithHistoryPlugins,
-                           const QMap<QString, QString> &tagPlugins,
-                           const QMap<QString, QString> &serverPlugins)
+void DocEngine::initialize(IXMLContentPtr configuration, IFactory *factory)
 {
     (void)configuration;
-    (void)logger;
-    (void)docpluginStock;
-    (void)DBplugins;
-    (void)DBWithHistoryPlugins;
-    (void)tagPlugins;
-    (void)serverPlugins;
+    (void)factory;
 }
 
 QString DocEngine::name()

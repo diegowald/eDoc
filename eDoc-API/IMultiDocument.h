@@ -1,7 +1,7 @@
 #ifndef IMULTIDOCUMENT_H
 #define IMULTIDOCUMENT_H
 
-
+#include "forward.h"
 #include "IDocID.h"
 #include <QtPlugin>
 #include "IDocBase.h"

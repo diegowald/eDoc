@@ -1,6 +1,7 @@
 #ifndef IPARAMETER_H
 #define IPARAMETER_H
 
+#include "forward.h"
 #include "APIEnums.h"
 #include "IFieldDefinition.h"
 #include "IValue.h"
@@ -17,6 +18,6 @@ public:
     virtual ~IParameter() {}
 };
 
-typedef QSharedPointer<IParameter> IParameterPtr;
+
 
 #endif // IPARAMETER_H

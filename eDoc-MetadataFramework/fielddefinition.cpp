@@ -1,4 +1,6 @@
 #include "fielddefinition.h"
+#include <QPluginLoader>
+#include "../eDoc-API/IFactory.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "valuedefinitions.h"
@@ -18,21 +20,10 @@ FieldDefinition::~FieldDefinition()
 {
 }
 
-void FieldDefinition::initialize(QSharedPointer<IXMLContent> configuration,
-                                 QSharedPointer<QObjectLogging> logger,
-                                 const QMap<QString, QString> &docpluginStock,
-                                 const QMap<QString, QString> &DBplugins,
-                                 const QMap<QString, QString> &DBWithHistoryPlugins,
-                                 const QMap<QString, QString> &tagPlugins,
-                                 const QMap<QString, QString> &serverPlugins)
+void FieldDefinition::initialize(IXMLContentPtr configuration, IFactory *factory)
 {
-    (void)docpluginStock;
-    (void)DBplugins;
-    (void)DBWithHistoryPlugins;
-    (void)tagPlugins;
-    (void)serverPlugins;
+    m_Logger = factory->logger();
 
-    m_Logger = logger;
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-MetadataFramework", "void FieldDefinition::initialize(IXMLContent *configuration, QObjectLgging *logger, const QMap<QString, QString> &pluginStock)");
 
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
@@ -52,8 +43,12 @@ void FieldDefinition::initialize(QSharedPointer<IXMLContent> configuration,
     case IDOCBASE_TYPE:
     case IDOCUMENT_TYPE:
     case IMULTIDOCUMENT_TYPE:
+    {
         m_Queryable = false;
+        IXMLContentPtr confEngine = configuration.dynamicCast<XMLCollection>()->get("engine");
+        engine = factory->createEngine(confEngine);
         break;
+    }
     default:
         break;
     }

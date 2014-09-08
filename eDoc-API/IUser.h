@@ -1,6 +1,7 @@
 #ifndef IUSER_H
 #define IUSER_H
 
+#include "forward.h"
 #include <QList>
 #include "IGroup.h"
 #include "IUserID.h"
@@ -12,5 +13,5 @@ struct IUser
     virtual ~IUser() {}
 };
 
-typedef QSharedPointer<IUser> IUserPtr;
+
 #endif // IUSER_H

@@ -268,7 +268,7 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
             DlgAddDocument dlg(this);
             dlg.setData(filename, rec);
 
-            bool saveFile = dlg.exec() == QDialog::Accepted;
+            bool saveFile = (dlg.exec() == QDialog::Accepted);
             if (saveFile)
             {
                 dlg.applyData(rec);

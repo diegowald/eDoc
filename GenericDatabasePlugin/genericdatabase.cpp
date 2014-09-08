@@ -1,4 +1,5 @@
 #include "genericdatabase.h"
+#include "../eDoc-API/IFactory.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-MetadataFramework/fielddefinition.h"
@@ -20,24 +21,18 @@ GenericDatabase::~GenericDatabase()
 {
 }
 
-void GenericDatabase::initialize(QSharedPointer<IXMLContent> configuration,
-                                 QSharedPointer<QObjectLogging> logger,
-                                 const QMap<QString, QString> &docpluginStock,
-                                 const QMap<QString, QString> &DBplugins,
-                                 const QMap<QString, QString> &DBWithHistoryPlugins,
-                                 const QMap<QString, QString> &tagPlugins,
-                                 const QMap<QString, QString> &serverPlugins)
+void GenericDatabase::initialize(IXMLContentPtr configuration, IFactory* factory)
 {
-    m_Logger = logger;
+    m_Logger = factory->logger();
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
-    createFields(configuration.dynamicCast<XMLCollection>()->get("fields"));
+    createFields(configuration.dynamicCast<XMLCollection>()->get("fields"), factory);
 
     m_TableName = configuration.dynamicCast<XMLCollection>()->get("tablename").dynamicCast<XMLElement>()->value();
-    m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
+    m_SQLManager.initialize(configuration, factory);
 }
 
-void GenericDatabase::createFields(QSharedPointer<IXMLContent> configuration)
+void GenericDatabase::createFields(QSharedPointer<IXMLContent> configuration, IFactory *factory)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void GenericDatabase::createFields(IXMLContent* configuration)");
     QSharedPointer<XMLCollection> confFields = configuration.dynamicCast<XMLCollection>();
@@ -45,17 +40,16 @@ void GenericDatabase::createFields(QSharedPointer<IXMLContent> configuration)
     for (int i = 1; i <= count; ++i)
     {
         QString fieldName = "field" + QString::number(i);
-        QSharedPointer<IFieldDefinition> fDef = createField(confFields->get(fieldName));
+        QSharedPointer<IFieldDefinition> fDef = createField(confFields->get(fieldName), factory);
         m_Fields[fDef->name()] = fDef;
         m_FieldsBasedOnDatabase[fDef.dynamicCast<FieldDefinition>()->fieldNameInDatabase()] = fDef;
     }
 }
 
-QSharedPointer<IFieldDefinition> GenericDatabase::createField(QSharedPointer<IXMLContent> configuration)
+QSharedPointer<IFieldDefinition> GenericDatabase::createField(IXMLContentPtr configuration, IFactory *factory)
 {
     QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition());
-    QMap<QString, QString> empty;
-    field->initialize(configuration, m_Logger, empty, empty, empty, empty, empty);
+    field->initialize(configuration, factory);
     return field;
 }
 

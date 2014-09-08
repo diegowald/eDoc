@@ -40,3 +40,19 @@ QList<QString> ProxyRecord::fieldNames()
 {
     return _values.keys();
 }
+
+void ProxyRecord::prepareToLoad()
+{
+    foreach (IValuePtr value, _values.values())
+    {
+        value->prepareToLoad();
+    }
+}
+
+void ProxyRecord::prepareToSave()
+{
+    foreach (IValuePtr value, _values.values())
+    {
+        value->prepareToSave();
+    }
+}

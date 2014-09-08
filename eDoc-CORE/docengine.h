@@ -20,13 +20,7 @@ public:
     explicit DocEngine(QObject *parent = 0);
     virtual ~DocEngine();
 
-    virtual void initialize(QSharedPointer<IXMLContent> configuration,
-                            QSharedPointer<QObjectLogging> logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBplugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
     virtual QSharedPointer<IDocID> addDocument(const QByteArray& blob);
     virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id);
     virtual bool deleteDocument(QSharedPointer<IDocID> id);

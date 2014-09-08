@@ -3,6 +3,7 @@
 
 #include <QtPlugin>
 #include <QtNetwork/QNetworkConfigurationManager>
+#include "../eDoc-API/IFactory.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDocTCPMessages/streamhelpers.h"
@@ -15,23 +16,15 @@ eDocTcpClientDatabasePlugin::~eDocTcpClientDatabasePlugin()
 {
 }
 
-void eDocTcpClientDatabasePlugin::initialize(QSharedPointer<IXMLContent> configuration,
-                                             QSharedPointer<QObjectLogging> logger,
-                                             const QMap<QString, QString> &docpluginStock,
-                                             const QMap<QString, QString> &DBplugins,
-                                             const QMap<QString, QString> &DBWithHistoryPlugins,
-                                             const QMap<QString, QString> &tagPlugins,
-                                             const QMap<QString, QString> &serverPlugins)
+void eDocTcpClientDatabasePlugin::initialize(IXMLContentPtr configuration, IFactory *factory)
 {
-    this->logger = logger;
-    this->logger->logTrace(__FILE__, __LINE__, "InMemoryTagProcessor", "void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
+    logger = factory->logger();
+    logger->logTrace(__FILE__, __LINE__, "InMemoryTagProcessor", "void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
     ipAddress = configuration.dynamicCast<XMLCollection>()->get("url").dynamicCast<XMLElement>()->value();
     port = configuration.dynamicCast<XMLCollection>()->get("port").dynamicCast<XMLElement>()->value().toInt();
 }
-
-
 
 QList<QSharedPointer<IFieldDefinition>> eDocTcpClientDatabasePlugin::fields()
 {

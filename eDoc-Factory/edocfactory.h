@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "edoc-factory_global.h"
+#include "../eDoc-API/IFactory.h"
 #include "../eDoc-API/IDocEngine.h"
 #include "../eDoc-API/IDatabase.h"
 #include "../eDoc-API/IDatabaseWithHistory.h"
@@ -13,7 +14,7 @@
 #include "../eDoc-Configuration/IXMLContent.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 
-class EDOCFACTORYSHARED_EXPORT EDocFactory
+class EDOCFACTORYSHARED_EXPORT EDocFactory : IFactory
 {
 public:
     EDocFactory();
@@ -27,15 +28,19 @@ public:
     virtual IRecordPtr createEmptyRecord();
     virtual void addDocument(const QString &filename, QSharedPointer<IRecord> record);
 
+
+    virtual IDocEnginePtr createEngine(IXMLContentPtr configuration);
+    virtual IDatabasePtr createDatabase(IXMLContentPtr configuration);
+    virtual IDatabaseWithHistoryPtr createDatabaseWithHistory(IXMLContentPtr configuration);
+    virtual IQueryEnginePtr createQueryEngine(IXMLContentPtr configuration);
+    virtual ITagProcessorPtr createTagProcessor(IXMLContentPtr configuration);
+    virtual IServerPtr createServer(IXMLContentPtr configuration);
+    virtual QObjectLoggingPtr logger();
+
 protected:
     virtual void addDocumentFromBlob(QByteArray &blob, const QString &filename, QSharedPointer<IRecord> record);
     void readAvailablePlugins();
-    IDocEnginePtr createEngine();
-    IDatabaseWithHistoryPtr createDatabase();
     IDatabaseWithHistoryPtr createDatabaseWithoutHistory();
-    QSharedPointer<IQueryEngine> createQueryEngine();
-    ITagProcessorPtr createTagEngine();
-    IServerPtr createServerEngine();
 private:
     QString pluginPath;
     QString xmlFile;

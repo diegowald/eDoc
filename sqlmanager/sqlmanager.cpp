@@ -3,6 +3,7 @@
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QSqlField>
+#include "../eDoc-API/IFactory.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include <QDateTime>
@@ -29,6 +30,19 @@ void SQLManager::initialize(QSharedPointer<IXMLContent> configuration,
     (void)serverPlugins;
 
     m_Logger = logger;
+    m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
+
+    m_database = configuration.dynamicCast<XMLCollection>()->get("database_type").dynamicCast<XMLElement>()->value();
+    m_Server = configuration.dynamicCast<XMLCollection>()->get("server").dynamicCast<XMLElement>()->value();
+    m_User = configuration.dynamicCast<XMLCollection>()->get("user").dynamicCast<XMLElement>()->value();
+    m_Password = configuration.dynamicCast<XMLCollection>()->get("password").dynamicCast<XMLElement>()->value();
+
+    m_DBType = String2DBType();
+}
+
+void SQLManager::initialize(IXMLContentPtr configuration, IFactory *factory)
+{
+    m_Logger = factory->logger();
     m_Logger->logTrace(__FILE__, __LINE__, "GenericDatabasePlugin", "void SQLManager::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
     m_database = configuration.dynamicCast<XMLCollection>()->get("database_type").dynamicCast<XMLElement>()->value();

@@ -14,8 +14,8 @@
    <string>eDoc</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/bedwyr.ico</normaloff>:/bedwyr.ico</iconset>
+   <iconset resource="eDoc-Client.qrc">
+    <normaloff>:/mainIcon</normaloff>:/mainIcon</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -426,7 +426,7 @@
   </widget>
   <action name="actionAdd_Document">
    <property name="icon">
-    <iconset resource="eDoc-Client.qrc">
+    <iconset resource="../eDoc-ClientComponents/clientResources.qrc">
      <normaloff>:/cloud_upload.png</normaloff>:/cloud_upload.png</iconset>
    </property>
    <property name="text">
@@ -472,6 +472,7 @@
   </action>
  </widget>
  <resources>
+  <include location="../eDoc-ClientComponents/clientResources.qrc"/>
   <include location="eDoc-Client.qrc"/>
  </resources>
  <connections/>

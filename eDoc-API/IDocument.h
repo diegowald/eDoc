@@ -1,6 +1,7 @@
 #ifndef IDOCUMENT_H
 #define IDOCUMENT_H
 
+#include "forward.h"
 #include "IDocID.h"
 #include <QByteArray>
 #include <QtPlugin>
@@ -14,7 +15,6 @@ public:
     virtual ~IDocument() {}
 };
 
-typedef QSharedPointer<IDocument> IDocumentPtr;
 
 Q_DECLARE_METATYPE(IDocumentPtr)
 

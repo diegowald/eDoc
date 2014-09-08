@@ -1,5 +1,6 @@
 #include "inmemorytagprocessor.h"
 #include <QStringList>
+#include "../eDoc-API/IFactory.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
@@ -14,21 +15,18 @@ InMemoryTagProcessor::~InMemoryTagProcessor()
 {
 }
 
-void InMemoryTagProcessor::initialize(IXMLContentPtr configuration,
-                                      QObjectLoggingPtr logger,
-                                      const QMap<QString, QString> &docpluginStock,
-                                      const QMap<QString, QString> &DBplugins,
-                                      const QMap<QString, QString> &DBWithHistoryPlugins,
-                                      const QMap<QString, QString> &tagPlugins,
-                                      const QMap<QString, QString> &serverPlugins)
+void InMemoryTagProcessor::initialize(IXMLContentPtr configuration, IFactory* factory)
 {
-    m_Logger = logger;
+    m_Logger = factory->logger();
     m_Logger->logTrace(__FILE__, __LINE__, "InMemoryTagProcessor", "void InMemoryTagProcessor::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
 
     m_keywordsTableName = configuration.dynamicCast<XMLCollection>()->get("keywordtablename").dynamicCast<XMLElement>()->value();
     m_indexTableName = configuration.dynamicCast<XMLCollection>()->get("indextablename").dynamicCast<XMLElement>()->value();
-    m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
+    m_SQLManager.initialize(configuration, factory);
+
+    minStringLength = configuration.dynamicCast<XMLCollection>()->get("minStringLength").dynamicCast<XMLElement>()->value().toInt();
+
     loadIntoMemory();
 }
 
@@ -53,24 +51,33 @@ void InMemoryTagProcessor::processKeywordStringList(IRecordIDPtr recordID, const
     recordsToSave.clear();
     m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processKeywordString(IRecordID *recordID, const QStringList &keywords)");
     bool newKeyword = false;
+    bool atLeastOneProcessed = false;
     foreach (QString tagString, keywords)
     {
-        newKeyword = !m_Tag.contains(tagString);
-        if (newKeyword)
+        QString tag = tagString.toUpper();
+        if (tagString.length() >= minStringLength)
         {
-            maxIdUsed++;
-            m_Tag[tagString].id = maxIdUsed;
-            m_Tag[tagString].saved = false;
+            newKeyword = !m_Tag.contains(tag);
+            if (newKeyword)
+            {
+                maxIdUsed++;
+                m_Tag[tag].id = maxIdUsed;
+                m_Tag[tag].saved = false;
+            }
+            m_Tag[tag].occurrences.insert(recordID->asString());
+            //saveKeyword(recordID, tagString, newKeyword);
+            BULKSAVERECORD bsr;
+            bsr.record = recordID;
+            bsr.tagString = tag;
+            bsr.newElement = newKeyword;
+            recordsToSave.append(bsr);
+            atLeastOneProcessed = true;
         }
-        m_Tag[tagString].occurrences.insert(recordID->asString());
-        //saveKeyword(recordID, tagString, newKeyword);
-        BULKSAVERECORD bsr;
-        bsr.record = recordID;
-        bsr.tagString = tagString;
-        bsr.newElement = newKeyword;
-        recordsToSave.append(bsr);
     }
-    bulkSave();
+    if (atLeastOneProcessed)
+    {
+        bulkSave();
+    }
 }
 
 QSet<QString> InMemoryTagProcessor::findByTags(const QStringList &tags)
@@ -81,7 +88,7 @@ QSet<QString> InMemoryTagProcessor::findByTags(const QStringList &tags)
     foreach (QString tag, tags)
     {
         QSet<QString> partialSet;
-        if (m_Tag.contains(tag))
+        if (m_Tag.contains(tag.toUpper()))
             partialSet = m_Tag[tag].occurrences;
 
         // Si no hay

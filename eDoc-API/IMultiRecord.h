@@ -1,6 +1,7 @@
 #ifndef IMULTIRECORD_H
 #define IMULTIRECORD_H
 
+#include "forward.h"
 #include <QMetaType>
 #include "IRecordID.h"
 #include "IRecord.h"
@@ -21,7 +22,6 @@ public:
     virtual ~IMultiRecord() {}
 };
 
-typedef QSharedPointer<IMultiRecord> IMultiRecordPtr;
 Q_DECLARE_METATYPE(IMultiRecordPtr)
 
 #endif // IMULTIRECORD_H

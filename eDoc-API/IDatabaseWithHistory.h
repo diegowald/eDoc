@@ -1,10 +1,9 @@
 #ifndef IDATABASEWITHHISTORY_H
 #define IDATABASEWITHHISTORY_H
 
+#include "forward.h"
 #include "IDatabase.h"
 
-struct IDatabaseWithHistory;
-typedef QSharedPointer<IDatabaseWithHistory> IDatabaseWithHistoryPtr;
 
 struct IDatabaseWithHistory : public IDatabase
 {

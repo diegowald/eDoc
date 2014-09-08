@@ -23,13 +23,7 @@ public:
     explicit InMemoryTagProcessor(QObject *parent = 0);
     virtual ~InMemoryTagProcessor();
 
-    virtual void initialize(IXMLContentPtr configuration,
-                            QObjectLoggingPtr logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBplugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory *factory);
     virtual void addTagRecord(IRecordIDPtr recordID, ITagPtr tag);
     virtual void processKeywordString(IRecordIDPtr recordID, const QString &keywords);
     virtual void processKeywordStringList(IRecordIDPtr, const QStringList &keywords);
@@ -64,6 +58,9 @@ private:
     QString m_indexTableName;
     SQLManager m_SQLManager;
     int maxIdUsed;
+
+    int minStringLength;
+
 
     struct BULKSAVERECORD
     {

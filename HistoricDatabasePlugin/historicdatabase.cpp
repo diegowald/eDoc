@@ -1,4 +1,5 @@
 #include "historicdatabase.h"
+#include "../eDoc-API/IFactory.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include <QPluginLoader>
 #include <QSet>
@@ -16,15 +17,10 @@ HistoricDatabase::~HistoricDatabase()
 }
 
 // IInitializable
-void HistoricDatabase::initialize(QSharedPointer<IXMLContent> configuration,
-                                  QSharedPointer<QObjectLogging> logger,
-                                  const QMap<QString, QString> &docpluginStock,
-                                  const QMap<QString, QString> &DBplugins,
-                                  const QMap<QString, QString> &DBWithHistoryPlugins,
-                                  const QMap<QString, QString> &tagPlugins,
-                                  const QMap<QString, QString> &serverPlugins)
+
+void HistoricDatabase::initialize(IXMLContentPtr configuration, IFactory* factory)
 {
-    m_Logger = logger;
+    m_Logger = factory->logger();
     m_Logger->logTrace(__FILE__, __LINE__, "HistoricDatabasePlugin", "void HistoricDatabase::initialize(IXMLContent *configuration, QObjectLogging *logger, const QMap<QString, QString> &pluginStock)");
 
     m_Name = configuration.dynamicCast<XMLCollection>()->get("name").dynamicCast<XMLElement>()->value();
@@ -32,10 +28,10 @@ void HistoricDatabase::initialize(QSharedPointer<IXMLContent> configuration,
     m_MasterTableName = configuration.dynamicCast<XMLCollection>()->get("mastertablename").dynamicCast<XMLElement>()->value();
     m_HistoryTableName = configuration.dynamicCast<XMLCollection>()->get("historytablename").dynamicCast<XMLElement>()->value();
 
-    m_SQLManager.initialize(configuration, logger, docpluginStock, DBplugins, tagPlugins, serverPlugins);
+    m_SQLManager.initialize(configuration, factory);
 
     QSharedPointer<XMLCollection> confEngine = configuration.dynamicCast<XMLCollection>()->get("database").dynamicCast<XMLCollection>();
-    databaseEngine = createDatabaseEngine(confEngine, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
+    databaseEngine = factory->createDatabase(confEngine);
 }
 
 // IDatabase
@@ -279,43 +275,6 @@ QMap<QString, QSharedPointer<IRecordID> > HistoricDatabase::searchByDate(QShared
 QDateTime HistoricDatabase::now() const
 {
     return QDateTime::currentDateTimeUtc();
-}
-
-QSharedPointer<IDatabase> HistoricDatabase::createDatabaseEngine(QSharedPointer<XMLCollection> confEngine,
-                                                  const QMap<QString, QString> &docpluginStock,
-                                                  const QMap<QString, QString> &DBplugins, const QMap<QString, QString> &DBWithHistoryPlugins,
-                                                  const QMap<QString, QString> &tagPlugins,
-                                                  const QMap<QString, QString> &serverPlugins)
-{
-    //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocEngine *MemoryDocEngine::createPersistentEngine(XMLCollection *confEngine, const QMap<QString, QString> &pluginStock)");
-
-    if (confEngine->key() == "database")
-    {
-        QSharedPointer<XMLCollection> conf = confEngine.dynamicCast<XMLCollection>();
-        QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
-
-        if (DBplugins.contains(engineClass))
-        {
-            QPluginLoader pluginLoader(DBplugins[engineClass]);
-            QObject *plugin = pluginLoader.instance();
-            if (plugin)
-            {
-                IDatabase *engineCreator = qobject_cast<IDatabase*>(plugin);
-                IDatabasePtr engine = engineCreator->newDatabase();
-                engine->initialize(confEngine, m_Logger, docpluginStock, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return engine;
-            }
-            else
-            {
-                m_Logger->logError("Plugin: " + engineClass + " cannot be created.");
-            }
-        }
-        else
-        {
-            m_Logger->logError("Plugin: " + engineClass + " does not exist.");
-        }
-    }
-    return QSharedPointer<IDatabase>();
 }
 
 QMap<QString, QSharedPointer<IRecordID> > HistoricDatabase::getValidRecords(QSharedPointer<IRecordID> master_id, const QDateTime &date)

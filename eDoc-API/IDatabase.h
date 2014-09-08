@@ -2,6 +2,7 @@
 #define IDATABASE_H
 
 #include <QtPlugin>
+#include "forward.h"
 #include "IInitializable.h"
 #include "IFieldDefinition.h"
 #include "IRecordID.h"
@@ -10,8 +11,6 @@
 #include "IParameter.h"
 #include <QMap>
 
-struct IDatabase;
-typedef QSharedPointer<IDatabase> IDatabasePtr;
 
 struct IDatabase : public IInitializable {
 public:

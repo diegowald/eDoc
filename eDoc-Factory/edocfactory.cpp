@@ -85,11 +85,11 @@ void EDocFactory::initialize(const QString &pluginPath, const QString &xmlFile, 
     ConfigReader reader(this->xmlFile);
     configuration = reader.getConfiguration();
     m_Logger->logDebug(configuration->toDebugString());
-    engine = createEngine();
-    database = createDatabase();
-    query = createQueryEngine();
-    tagger = createTagEngine();
-    server = createServerEngine();
+    engine = createEngine(configuration);
+    database = createDatabaseWithHistory(configuration);
+    query = createQueryEngine(configuration);
+    tagger = createTagProcessor(configuration);
+    server = createServer(configuration);
 }
 
 IDocEnginePtr EDocFactory::docEngine()
@@ -122,156 +122,239 @@ IServerPtr EDocFactory::serverEngine()
     return server;
 }
 
-IDocEnginePtr EDocFactory::createEngine()
+IDocEnginePtr EDocFactory::createEngine(IXMLContentPtr configuration)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDocEngine *EDocFactory::createEngine()");
+
+    XMLCollectionPtr conf;
+
     if ("edoc" == configuration->key())
     {
         QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
-        QSharedPointer<XMLCollection> conf = c->get("engine").dynamicCast<XMLCollection>();
-        if (!conf.isNull())
-        {
-            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
-            QPluginLoader pluginLoader(plugins[engineClass]);
-            QObject *plugin = pluginLoader.instance();
-            if (plugin)
-            {
-                IDocEngine * engineCreator = qobject_cast<IDocEngine*>(plugin);
-
-                IDocEnginePtr engine = engineCreator->newDocEngine();
-
-                engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-
-                return engine;
-            }
-            m_Logger->logError("Cannot create Engine " + engineClass);
-        }
+        conf = c->get("engine").dynamicCast<XMLCollection>();
     }
+    else
+    {
+        conf = configuration.dynamicCast<XMLCollection>();
+    }
+
+    if (!conf.isNull())
+    {
+        QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
+        QPluginLoader pluginLoader(plugins[engineClass]);
+        QObject *plugin = pluginLoader.instance();
+        if (plugin)
+        {
+            IDocEngine * engineCreator = qobject_cast<IDocEngine*>(plugin);
+
+            IDocEnginePtr engine = engineCreator->newDocEngine();
+
+            engine->initialize(conf, this);
+
+            return engine;
+        }
+        m_Logger->logError("Cannot create Engine " + engineClass);
+    }
+
     m_Logger->logError("Cannot create Engine");
     return QSharedPointer<IDocEngine>();
 }
 
-IDatabaseWithHistoryPtr EDocFactory::createDatabase()
+IDatabaseWithHistoryPtr EDocFactory::createDatabaseWithHistory(IXMLContentPtr configuration)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase *EDocFactory::createDatabase()");
+
+    XMLCollectionPtr conf;
+
     if ("edoc" == configuration->key())
     {
         QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
-        QSharedPointer<XMLCollection> conf = c->get("database").dynamicCast<XMLCollection>();
-        if (conf)
+        conf = c->get("database").dynamicCast<XMLCollection>();
+    }
+    else
+    {
+        conf = configuration.dynamicCast<XMLCollection>();
+    }
+
+    if (conf)
+    {
+        QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
+        if (DBWithHistoryPlugins.contains(engineClass))
         {
-            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
-            if (DBWithHistoryPlugins.contains(engineClass))
+            QPluginLoader pluginLoader(DBWithHistoryPlugins[engineClass]);
+            QObject *plugin = pluginLoader.instance();
+            if (plugin)
             {
-                QPluginLoader pluginLoader(DBWithHistoryPlugins[engineClass]);
-                QObject *plugin = pluginLoader.instance();
-                if (plugin)
-                {
-                    IDatabaseWithHistory *engineCreator = qobject_cast<IDatabaseWithHistory*>(plugin);
+                IDatabaseWithHistory *engineCreator = qobject_cast<IDatabaseWithHistory*>(plugin);
 
-                    IDatabaseWithHistoryPtr engine = engineCreator->newDatabaseWithHistory();
+                IDatabaseWithHistoryPtr engine = engineCreator->newDatabaseWithHistory();
 
-                    engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                    return engine;
-                }
+                engine->initialize(conf, this);
+                return engine;
             }
-            else
-            {
-                return createDatabaseWithoutHistory();
-            }
+        }
+        else
+        {
+            return createDatabaseWithoutHistory();
         }
     }
     m_Logger->logError("Cannot create database engine");
     return QSharedPointer<IDatabaseWithHistory>();
+}
+
+IDatabasePtr EDocFactory::createDatabase(IXMLContentPtr configuration)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabase *EDocFactory::createDatabase()");
+
+    XMLCollectionPtr conf;
+    if ("edoc" == configuration->key())
+    {
+        QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
+        conf = c->get("database").dynamicCast<XMLCollection>();
+    }
+    else
+    {
+        conf = configuration.dynamicCast<XMLCollection>();
+    }
+
+    if (conf)
+    {
+        QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
+        if (DBplugins.contains(engineClass))
+        {
+            QPluginLoader pluginLoader(DBplugins[engineClass]);
+            QObject *plugin = pluginLoader.instance();
+            if (plugin)
+            {
+                IDatabase *engineCreator = qobject_cast<IDatabase*>(plugin);
+
+                IDatabasePtr engine = engineCreator->newDatabase();
+
+                engine->initialize(conf, this);
+                return engine;
+            }
+        }
+    }
+    m_Logger->logError("Cannot create database engine");
+    return QSharedPointer<IDatabase>();
 }
 
 IDatabaseWithHistoryPtr EDocFactory::createDatabaseWithoutHistory()
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IDatabaseWithHistory *EDocFactory::createDatabaseWithoutHistory()");
+
+    XMLCollectionPtr conf;
     if ("edoc" == configuration->key())
     {
         QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
-        QSharedPointer<XMLCollection> conf = c->get("database").dynamicCast<XMLCollection>();
-        if (conf)
-        {
-            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
-            QPluginLoader pluginLoader(DBplugins[engineClass]);
-            QObject *plugin = pluginLoader.instance();
-            if (plugin) {
-                IDatabase* engineCreator = qobject_cast<IDatabase*>(plugin);
-                IDatabasePtr engine = engineCreator->newDatabase();
-                engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                IDatabaseWithHistoryPtr db = IDatabaseWithHistoryPtr(new DatabaseWithHistoryWrapper(engine, m_Logger));
-                return db;
-            }
+        conf = c->get("database").dynamicCast<XMLCollection>();
+    }
+    else
+    {
+        conf = configuration.dynamicCast<XMLCollection>();
+    }
+
+    if (conf)
+    {
+        QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
+        QPluginLoader pluginLoader(DBplugins[engineClass]);
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+            IDatabase* engineCreator = qobject_cast<IDatabase*>(plugin);
+            IDatabasePtr engine = engineCreator->newDatabase();
+            engine->initialize(conf, this);
+            IDatabaseWithHistoryPtr db = IDatabaseWithHistoryPtr(new DatabaseWithHistoryWrapper(engine, m_Logger));
+            return db;
         }
     }
     m_Logger->logError("Cannot create database engine");
     return QSharedPointer<IDatabaseWithHistory>();
 }
 
-QSharedPointer<IQueryEngine> EDocFactory::createQueryEngine()
-{
+QSharedPointer<IQueryEngine> EDocFactory::createQueryEngine(IXMLContentPtr configuration)
+{    
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IQueryEngine *EDocFactory::createQueryEngine()");
+    XMLCollectionPtr conf;
     if ("edoc" == configuration->key())
     {
         QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
-        QSharedPointer<XMLCollection> conf = c->get("queries").dynamicCast<XMLCollection>();
-        if (conf)
-        {
-            query = QSharedPointer<QueryEngine>(new QueryEngine());
-            query->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-            return query;
-        }
+        conf = c->get("queries").dynamicCast<XMLCollection>();
     }
+    else
+    {
+        conf = configuration.dynamicCast<XMLCollection>();
+    }
+
+    if (conf)
+    {
+        query = QSharedPointer<QueryEngine>(new QueryEngine());
+        query->initialize(conf, this);
+        return query;
+    }
+
     m_Logger->logError("Cannot create Query engine");
     return QSharedPointer<QueryEngine>();
 }
 
-ITagProcessorPtr EDocFactory::createTagEngine()
+ITagProcessorPtr EDocFactory::createTagProcessor(IXMLContentPtr configuration)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "ITagEngine *EDocFactory::createTagEngine()");
+    XMLCollectionPtr conf;
     if ("edoc" == configuration->key())
     {
         QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
-        QSharedPointer<XMLCollection> conf = c->get("tagengine").dynamicCast<XMLCollection>();
+        conf = c->get("tagengine").dynamicCast<XMLCollection>();
+    }
+    else
+    {
+        conf = configuration.dynamicCast<XMLCollection>();
+    }
 
-        if (conf)
-        {
-            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
+    if (conf)
+    {
+        QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
 
-            QPluginLoader pluginLoader(tagPlugins[engineClass]);
-            QObject *plugin = pluginLoader.instance();
-            if (plugin) {
-                ITagProcessor *engineCreator = qobject_cast<ITagProcessor*>(plugin);
-                ITagProcessorPtr engine = engineCreator->newTagProcessor();
-                engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return engine;
-            }
+        QPluginLoader pluginLoader(tagPlugins[engineClass]);
+        QObject *plugin = pluginLoader.instance();
+        if (plugin) {
+            ITagProcessor *engineCreator = qobject_cast<ITagProcessor*>(plugin);
+            ITagProcessorPtr engine = engineCreator->newTagProcessor();
+            engine->initialize(conf, this);
+            return engine;
         }
     }
     m_Logger->logError("Cannot create database engine");
     return ITagProcessorPtr();
 }
 
-QSharedPointer<IServer> EDocFactory::createServerEngine()
+QSharedPointer<IServer> EDocFactory::createServer(IXMLContentPtr configuration)
 {
     m_Logger->logTrace(__FILE__, __LINE__, "EDocFactory", "IServer *EDocFactory::createServerEngine()");
+    XMLCollectionPtr conf;
     if ("edoc" == configuration->key())
     {
         QSharedPointer<XMLCollection> c = configuration.dynamicCast<XMLCollection>();
-        QSharedPointer<XMLCollection> conf = c->get("server").dynamicCast<XMLCollection>();
-        if (conf)
-        {
-            QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
+        conf = c->get("server").dynamicCast<XMLCollection>();
+    }
+    else
+    {
+        conf = configuration.dynamicCast<XMLCollection>();
+    }
 
+    if (conf)
+    {
+        QString engineClass = conf->get("class").dynamicCast<XMLElement>()->value();
+
+        if (serverPlugins.contains(engineClass))
+        {
             QPluginLoader pluginLoader(serverPlugins[engineClass]);
             QObject *plugin = pluginLoader.instance();
             if (plugin)
             {
-                IServer *engine = qobject_cast<IServer*>(plugin);
-                engine->initialize(conf, m_Logger, plugins, DBplugins, DBWithHistoryPlugins, tagPlugins, serverPlugins);
-                return QSharedPointer<IServer>(qobject_cast<IServer *>(plugin));
+                IServer *engineCreator = qobject_cast<IServer*>(plugin);
+                IServerPtr engine = engineCreator->newServer();
+                engine->initialize(conf, this);
+                return engine;
             }
             else
             {
@@ -279,6 +362,7 @@ QSharedPointer<IServer> EDocFactory::createServerEngine()
             }
         }
     }
+
     m_Logger->logError("Cannot create server engine");
     return QSharedPointer<IServer>();
 }
@@ -299,6 +383,8 @@ void EDocFactory::addDocument(const QString &filename, QSharedPointer<IRecord> r
 
 void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename, QSharedPointer<IRecord> record)
 {
+    /*aca hay que hacer el refactor para que se persista solamente la db
+            y que internamente se envie el doc*/
     QSharedPointer<IDocID> docId = engine->addDocument(blob);
 
     record->value("archivo")->setValue(docId->asString());
@@ -351,4 +437,9 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
         {
         }
     }
+}
+
+QObjectLoggingPtr EDocFactory::logger()
+{
+    return m_Logger;
 }

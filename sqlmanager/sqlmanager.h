@@ -1,6 +1,6 @@
 #ifndef SQLMANAGER_H
 #define SQLMANAGER_H
-
+#include "../eDoc-API/forward.h"
 #include <QSharedPointer>
 #include "sqlmanager_global.h"
 #include <QObject>
@@ -40,6 +40,7 @@ public:
                             const QMap<QString, QString> &DBplugins,
                             const QMap<QString, QString> &tagPlugins,
                             const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
 
     virtual DBRecordSet getRecords(const QString &sql, DBRecordPtr record);
     virtual DBRecordSet getRecords(const QString &sql);

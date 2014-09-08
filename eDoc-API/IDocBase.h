@@ -2,7 +2,7 @@
 #define IDOCBASE_H
 
 #include <QMetaType>
-
+#include "forward.h"
 #include "IDocID.h"
 
 struct IDocBase
@@ -14,7 +14,6 @@ public:
     virtual ~IDocBase() {}
 };
 
-typedef QSharedPointer<IDocBase> IDocBasePtr;
 
 Q_DECLARE_METATYPE(IDocBasePtr)
 

@@ -1,6 +1,7 @@
 #ifndef ITAG_H
 #define ITAG_H
 
+#include "forward.h"
 #include <QMetaType>
 #include <QStringList>
 #include <QSharedPointer>
@@ -18,7 +19,7 @@ struct ITag : public IValue
     virtual ~ITag() {}
 };
 
-typedef QSharedPointer<ITag> ITagPtr;
+
 Q_DECLARE_METATYPE(ITagPtr)
 
 #endif // ITAG_H

@@ -1,6 +1,7 @@
 #ifndef IMETADATA_H
 #define IMETADATA_H
 
+#include "forward.h"
 #include <QSharedPointer>
 #include "IUser.h"
 
@@ -15,6 +16,5 @@ struct IMetadata
     virtual ~IMetadata() {}
 };
 
-typedef QSharedPointer<IMetadata> IMetadataPtr;
 
 #endif // IMETADATA_H

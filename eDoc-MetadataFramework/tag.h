@@ -20,6 +20,9 @@ public:
     virtual QStringList keys();
     virtual QString asString();
 
+    // slots
+    virtual void prepareToSave() {}
+    virtual void prepareToLoad() {}
 signals:
     
 public slots:

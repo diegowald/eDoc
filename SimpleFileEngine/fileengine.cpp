@@ -4,6 +4,7 @@
 #include <../eDoc-Configuration/xmlelement.h>
 #include <../eDoc-Configuration/xmlcollection.h>
 #include "simplefiledocument.h"
+#include "../eDoc-API/IFactory.h"
 
 FileEngine::FileEngine(QObject *parent) : QObject(parent)
 {
@@ -13,21 +14,10 @@ FileEngine::~FileEngine()
 {
 }
 
-void FileEngine::initialize(QSharedPointer<IXMLContent> configuration,
-                            QSharedPointer<QObjectLogging> logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBplugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins)
+void FileEngine::initialize(IXMLContentPtr configuration, IFactory* factory)
 {
-    (void)docpluginStock;
-    (void)DBplugins;
-    (void)DBWithHistoryPlugins;
-    (void)tagPlugins;
-    (void)serverPlugins;
     folder = configuration.dynamicCast<XMLCollection>()->get("folder").dynamicCast<XMLElement>()->value();
-    m_Logger = logger;
+    m_Logger = factory->logger();
     fileManager = QSharedPointer<FileManagement>(new FileManagement(folder));
 }
 

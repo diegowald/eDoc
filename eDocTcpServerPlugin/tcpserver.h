@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QtNetwork/QTcpServer>
 #include <QMap>
+#include "../eDoc-API/forward.h"
 #include "../eDoc-API/IServer.h"
 #include "../eDoc-API/IDatabase.h"
 #include "../eDoc-Configuration/xmlelement.h"
@@ -25,46 +26,11 @@ public:
     explicit TcpServer(QObject *parent = 0);
     virtual ~TcpServer();
 
-    virtual void initialize(IXMLContentPtr configuration,
-                            QObjectLoggingPtr logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBplugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
     virtual void run();
     virtual void stop();
     virtual QString name() const;
     IServerPtr newServer();
-
-private:
-    IDatabasePtr createPersistentEngine(XMLCollectionPtr confEngine,
-                                        const QMap<QString, QString> &docpluginStock,
-                                        const QMap<QString, QString> &DBplugins,
-                                        const QMap<QString, QString> &DBWithHistoryPlugins,
-                                        const QMap<QString, QString> &tagPlugins,
-                                        const QMap<QString, QString> &serverPlugins);
-
-    IDatabaseWithHistoryPtr createHistoryDBPersistentEngine(XMLCollectionPtr confEngine,
-                                                            const QMap<QString, QString> &docpluginStock,
-                                                            const QMap<QString, QString> &DBplugins,
-                                                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                                                            const QMap<QString, QString> &tagPlugins,
-                                                            const QMap<QString, QString> &serverPlugins);
-
-    IDocEnginePtr createDocEnginePersistance(XMLCollectionPtr confEngine,
-                                             const QMap<QString, QString> &docpluginStock,
-                                             const QMap<QString, QString> &DBplugins,
-                                             const QMap<QString, QString> &DBWithHistoryPlugins,
-                                             const QMap<QString, QString> &tagPlugins,
-                                             const QMap<QString, QString> &serverPlugins);
-
-    ITagProcessorPtr createTagProcessor(XMLCollectionPtr confEngine,
-                                        const QMap<QString, QString> &docpluginStock,
-                                        const QMap<QString, QString> &DBplugins,
-                                        const QMap<QString, QString> &DBWithHistoryPlugins,
-                                        const QMap<QString, QString> &tagPlugins,
-                                        const QMap<QString, QString> &serverPlugins);
 
 private slots:
     void onNewConnection();

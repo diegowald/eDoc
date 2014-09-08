@@ -23,13 +23,7 @@ public:
 
     // IInitializable
 public:
-    virtual void initialize(QSharedPointer<IXMLContent> configuration,
-                            QSharedPointer<QObjectLogging> logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBplugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory *factory);
 
     // IDatabase
 public:
@@ -69,12 +63,6 @@ protected:
     // Internal functions
 private:
     QDateTime now() const;
-    QSharedPointer<IDatabase> createDatabaseEngine(QSharedPointer<XMLCollection> confEngine,
-                                    const QMap<QString, QString> &docpluginStock,
-                                    const QMap<QString, QString> &DBplugins,
-                                    const QMap<QString, QString> &DBWithHistoryPlugins,
-                                    const QMap<QString, QString> &tagPlugins,
-                                    const QMap<QString, QString> &serverPlugins);
 
     QMap<QString, QSharedPointer<IRecordID> > getValidRecords(QSharedPointer<IRecordID> master_id, const QDateTime& date);
     QStringList intersectRecords(QStringList &list1, QStringList &list2);

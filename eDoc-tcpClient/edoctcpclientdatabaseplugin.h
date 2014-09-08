@@ -30,13 +30,7 @@ public:
     ~eDocTcpClientDatabasePlugin();
 
     // IDatabase
-    virtual void initialize(QSharedPointer<IXMLContent> configuration,
-                            QSharedPointer<QObjectLogging> logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBplugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
     virtual QList<QSharedPointer<IFieldDefinition>> fields();
     virtual QSharedPointer<IFieldDefinition> field(const QString &fieldName);
     virtual QSharedPointer<IParameter> createEmptyParameter();

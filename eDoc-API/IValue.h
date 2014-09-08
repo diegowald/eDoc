@@ -1,6 +1,7 @@
 #ifndef IVALUE_H
 #define IVALUE_H
 #include <QVariant>
+#include "forward.h"
 
 struct IValue
 {
@@ -10,9 +11,13 @@ public:
     virtual QVariant content() = 0;
     virtual void setNull() = 0;
     virtual bool isNull() = 0;
+
+    // slots
+    virtual void prepareToSave() = 0;
+    virtual void prepareToLoad() = 0;
+
     virtual ~IValue() {}
 };
 
-typedef QSharedPointer<IValue> IValuePtr;
 
 #endif // IVALUE_H

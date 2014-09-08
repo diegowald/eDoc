@@ -3,7 +3,7 @@
 
 #include <QMetaType>
 #include <QString>
-#include <QSharedPointer>
+#include "forward.h"
 
 struct IDocID
 {
@@ -12,7 +12,7 @@ public:
     virtual ~IDocID() {}
 };
 
-typedef QSharedPointer<IDocID> IDocIDPtr;
+
 Q_DECLARE_METATYPE(IDocIDPtr)
 
 #endif // IDOCID_H

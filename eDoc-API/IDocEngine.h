@@ -2,6 +2,7 @@
 #define IDOCENGINE_H
 
 #include <QtPlugin>
+#include "forward.h"
 #include "IInitializable.h"
 #include "IDocID.h"
 #include "IDocBase.h"
@@ -9,9 +10,6 @@
 #include "IValue.h"
 #include <QMap>
 
-struct IDocEngine;
-
-typedef QSharedPointer<IDocEngine> IDocEnginePtr;
 
 struct IDocEngine : public IInitializable
 {

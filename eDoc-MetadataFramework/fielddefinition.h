@@ -4,6 +4,7 @@
 #include <QObject>
 #include "../eDoc-API/IFieldDefinition.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
+#include "../eDoc-API/IDocEngine.h"
 #include "edoc-metadataframework_global.h"
 
 enum DATATYPE {
@@ -29,13 +30,7 @@ class EDOCMETADATAFRAMEWORKSHARED_EXPORT FieldDefinition : public QObject, publi
 public:
     explicit FieldDefinition(QObject *parent = 0);
     virtual ~FieldDefinition();
-    virtual void initialize(QSharedPointer<IXMLContent> configuration,
-                            QSharedPointer<QObjectLogging> logger,
-                            const QMap<QString, QString> &docpluginStock,
-                            const QMap<QString, QString> &DBplugins,
-                            const QMap<QString, QString> &DBWithHistoryPlugins,
-                            const QMap<QString, QString> &tagPlugins,
-                            const QMap<QString, QString> &serverPlugins);
+    virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
     virtual QString name();
     virtual QString type();
     virtual bool isReadOnly() const;
@@ -48,6 +43,7 @@ public:
     DATATYPE dataType();
 private:
     DATATYPE analyzeType();
+
 signals:
     
 public slots:
@@ -63,7 +59,7 @@ private:
     QString m_FieldNameInDatabase;
     QString m_OtherDatabaseName;
     QString m_FieldToShow;
-
+    IDocEnginePtr engine;
 };
 
 #endif // FIELDDEFINITION_H
