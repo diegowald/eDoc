@@ -1,12 +1,20 @@
 #include "document.h"
+#include "../eDoc-API/IDocument.h"
 
-Document::Document(QSharedPointer<DocID> id, QObject *parent) :
-    QObject(parent)
+Document::Document(DocIDPtr id, const QString &sourcePath, QObject *parent) :
+    QObject(parent), iid(id), originalSourcePath(sourcePath)
 {
-    iid = id;
 }
 
-QSharedPointer<IDocID> Document::id()
+Document::Document(DocIDPtr id, QObject *parent) : QObject(parent), iid(id), originalSourcePath("")
+{
+}
+
+Document::~Document()
+{
+}
+
+IDocIDPtr Document::id()
 {
     return iid;
 }

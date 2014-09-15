@@ -5,22 +5,27 @@
 #include <IDocument.h>
 #include "docid.h"
 
+CONSTRUCT(Document)
+
 class Document : public QObject, public IDocument
 {
     Q_OBJECT
 public:
-    explicit Document(QSharedPointer<DocID> id, QObject *parent = 0);
+    explicit Document(DocIDPtr id, const QString &sourcePath, QObject *parent = 0);
+    Document(DocIDPtr id, QObject *parent = 0);
+    virtual ~Document();
 
-    virtual QSharedPointer<IDocID> id();
+    virtual IDocIDPtr id();
     virtual QByteArray blob();
     virtual long size();
 
 signals:
-    
+
 public slots:
-    
+
 private:
-    QSharedPointer<DocID> iid;
+    DocIDPtr iid;
+    QString originalSourcePath;
 };
 
 #endif // DOCUMENT_H

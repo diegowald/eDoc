@@ -21,18 +21,32 @@ QString DocEngine::name()
     return "DocEngine";
 }
 
-QSharedPointer<IDocID> DocEngine::addDocument(const QByteArray& blob)
+IDocBasePtr DocEngine::createDocument(const QString sourcePath, const QByteArray &blob)
+{
+    DocIDPtr id = DocIDPtr(DocID::createNew());
+    DocumentPtr doc = DocumentPtr(new Document(id, sourcePath));
+    collection[*id] = doc;
+    return doc;
+}
+
+IDocBasePtr DocEngine::createDocument(const QByteArray& blob)
 {
     QSharedPointer<DocID> id = QSharedPointer<DocID>(DocID::createNew());
     QSharedPointer<Document> doc = QSharedPointer<Document>(new Document(id));
     collection[*id] = doc;
-    return id;
+    return doc;
 }
 
-QSharedPointer<IDocBase> DocEngine::getDocument(QSharedPointer<IDocID> id)
+IDocBasePtr DocEngine::getDocument(QSharedPointer<IDocID> id)
 {
     QSharedPointer<DocID> iid = id.dynamicCast<DocID>();
     return collection[*iid];
+}
+
+IDocBasePtr DocEngine::getDocument(const QString &id)
+{
+    DocID docId(id);
+    return collection[docId];
 }
 
 bool DocEngine::deleteDocument(QSharedPointer<IDocID> id)

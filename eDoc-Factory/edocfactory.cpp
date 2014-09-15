@@ -9,6 +9,7 @@
 #include "../eDoc-API/IDocument.h"
 #include "databasewithhistorywrapper.h"
 #include <QProcess>
+#include "../eDoc-MetadataFramework/valuedefinitions.h"
 
 EDocFactory::EDocFactory() :
     pluginPath(""), xmlFile(""),
@@ -385,9 +386,13 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
 {
     /*aca hay que hacer el refactor para que se persista solamente la db
             y que internamente se envie el doc*/
-    QSharedPointer<IDocID> docId = engine->addDocument(blob);
+    //IDocBasePtr doc = engine->createDocument(blob);
 
-    record->value("archivo")->setValue(docId->asString());
+    //IDocBasePtr doc = qvariant_cast<IDocBasePtr>(record->value("archivo")->content());
+
+
+    //record->value("archivo").dynamicCast<Value<IDocBasePtr>>()->setValue2(doc);
+
     QFileInfo file(filename);
     if (file.exists())
     {

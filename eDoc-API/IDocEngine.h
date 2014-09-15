@@ -14,8 +14,11 @@
 struct IDocEngine : public IInitializable
 {
 public:
-    virtual IDocIDPtr addDocument(const QByteArray& blob) = 0;
+    //virtual IDocBasePtr newDocument() = 0;
+    virtual IDocBasePtr createDocument(const QString sourcePath, const QByteArray &blob) = 0;
+    virtual IDocBasePtr createDocument(const QByteArray& blob) = 0;
     virtual IDocBasePtr getDocument(IDocIDPtr id) = 0;
+    virtual IDocBasePtr getDocument(const QString &id) = 0;
     virtual bool deleteDocument(IDocIDPtr id) = 0;
     virtual IDocIDPtr IValueToIDocId(IValuePtr value) = 0;
     virtual QString name() = 0;

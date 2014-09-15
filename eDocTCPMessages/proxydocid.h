@@ -1,10 +1,15 @@
 #ifndef PROXYDOCID_H
 #define PROXYDOCID_H
 
+#include "edoctcpmessages_global.h"
 #include <QObject>
+#include "../eDoc-API/forward.h"
 #include "../eDoc-API/IDocID.h"
 
-class ProxyDocID : public QObject, public IDocID
+CONSTRUCT(ProxyDocID)
+
+
+class EDOCTCPMESSAGESSHARED_EXPORT ProxyDocID : public QObject, public IDocID
 {
     Q_OBJECT
 public:

@@ -5,7 +5,8 @@
 
 #define CONSTRUCT(X) \
     struct X; \
-    typedef QSharedPointer<X> X## Ptr;
+    typedef QSharedPointer<X> X## Ptr; \
+
 
 CONSTRUCT(IDatabase)
 CONSTRUCT(IDatabaseWithHistory)

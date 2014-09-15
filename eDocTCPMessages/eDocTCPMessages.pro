@@ -13,7 +13,6 @@ DESTDIR = ../
 DEFINES += EDOCTCPMESSAGES_LIBRARY
 CONFIG += c++11
 
-
 SOURCES += edoctcpmessages.cpp \
            header.cpp \
            proxyfielddefinition.cpp \
@@ -25,7 +24,8 @@ SOURCES += edoctcpmessages.cpp \
     messagecodes.cpp \
     proxydocid.cpp \
     tcpclient.cpp \
-    proxydocumentvalue.cpp
+    proxydocumentvalue.cpp \
+    proxydocument.cpp
 
 HEADERS += edoctcpmessages.h\
            edoctcpmessages_global.h \
@@ -39,7 +39,8 @@ HEADERS += edoctcpmessages.h\
     messagecodes.h \
     proxydocid.h \
     tcpclient.h \
-    proxydocumentvalue.h
+    proxydocumentvalue.h \
+    proxydocument.h
 
 unix {
     target.path = /usr/lib

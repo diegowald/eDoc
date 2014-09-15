@@ -9,6 +9,7 @@ RecordEditor::RecordEditor(QWidget *parent) :
 {
     ui->setupUi(this);
     enabledEdition = true;
+    setUnchanged();
 }
 
 RecordEditor::~RecordEditor()
@@ -19,6 +20,7 @@ RecordEditor::~RecordEditor()
 void RecordEditor::setRecord(IRecordPtr record)
 {
     m_Record = record;
+    setUnchanged();
     ui->lstFields->clear();
     foreach (QString fieldName, record->fieldNames())
     {
@@ -34,12 +36,13 @@ void RecordEditor::setRecord(IRecordPtr record)
                 item->setSizeHint(w->size());
                 collection[fieldName] = w;
             }
+            connect(w, SIGNAL(fieldChanged(IValuePtr)), this, SLOT(on_fieldChanged(IValuePtr)));
         }
     }
     setEnabledStatus();
 }
 
-QFieldWidget *RecordEditor::createWidget(QSharedPointer<IRecord> record, const QString &fieldName, QWidget* parent)
+QFieldWidget *RecordEditor::createWidget(IRecordPtr record, const QString &fieldName, QWidget* parent)
 {
     QFieldWidget *w = NULL;
     QString fieldType = record->fieldDefinition(fieldName)->type();
@@ -68,7 +71,7 @@ QFieldWidget *RecordEditor::createWidget(QSharedPointer<IRecord> record, const Q
         dw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
         w = dw;
         connect(dw, SIGNAL(download(const IValuePtr)), this, SLOT(download(const IValuePtr)));
-        connect(dw, SIGNAL(upload(const IValuePtr)), this, SLOT(upload(const IValuePtr)));
+        connect(dw, SIGNAL(upload(const IValuePtr,QString &)), this, SLOT(upload(const IValuePtr,QString &)));
     }
     return w;
 }
@@ -108,7 +111,45 @@ void RecordEditor::download(const IValuePtr value)
     emit downloadFile(m_Record, value);
 }
 
-void RecordEditor::upload(const IValuePtr value)
+void RecordEditor::upload(const IValuePtr value, QString &fileLocation)
 {
-    emit uploadFile(m_Record, value);
+    emit uploadFile(m_Record, value, fileLocation);
+}
+
+void RecordEditor::on_btnCancel_pressed()
+{
+    emit cancelEdition(m_Record);
+    setUnchanged();
+}
+
+void RecordEditor::on_btnSave_pressed()
+{
+    if (recordChanged)
+    {
+        emit save(m_Record);
+        setUnchanged();
+    }
+}
+
+void RecordEditor::on_fieldChanged(IValuePtr valueChanged)
+{
+    setChanged();
+}
+
+void RecordEditor::setUnchanged()
+{
+    recordChanged = false;
+    setButtonsState();
+}
+
+void RecordEditor::setChanged()
+{
+    recordChanged = true;
+    setButtonsState();
+}
+
+void RecordEditor::setButtonsState()
+{
+    ui->btnSave->setEnabled(recordChanged);
+    ui->btnCancel->setEnabled(!recordChanged);
 }

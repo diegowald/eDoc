@@ -38,10 +38,12 @@ public:
         RSP_getDistinctColumnValues,
         // IDocEngine
         REQ_addDocument,
+        REQ_addDocumentWithOriginalLocation,
         REQ_getDocument,
         REQ_deleteDocument,
         REQ_IValueToIDocId,
         RSP_addDocument,
+        RSP_addDocumentWithOriginalLocation,
         RSP_getDocument,
         RSP_deleteDocument,
         RSP_IValueToIDocId,

@@ -21,19 +21,21 @@ public:
     virtual ~MemoryDocEngine();
 
     virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
-    virtual QSharedPointer<IDocID> addDocument(const QByteArray& blob);
-    virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id);
-    virtual bool deleteDocument(QSharedPointer<IDocID> id);
-    virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
+    virtual IDocBasePtr createDocument(const QString sourcePath, const QByteArray &blob);
+    virtual IDocBasePtr createDocument(const QByteArray& blob);
+    virtual IDocBasePtr getDocument(IDocIDPtr id);
+    virtual IDocBasePtr getDocument(const QString &id);
+    virtual bool deleteDocument(IDocIDPtr id);
+    virtual IDocIDPtr IValueToIDocId(IValuePtr value);
     virtual QString name();
     virtual IDocEnginePtr newDocEngine();
 
 private:
      IDocEnginePtr persistentEngine;
-     QMap<QString, QSharedPointer<IDocBase>> m_Cache;
+     QMap<QString, IDocBasePtr> m_Cache;
      int maxCachedFiles;
 
-     QSharedPointer<QObjectLogging> m_Logger;
+     QObjectLoggingPtr m_Logger;
 };
 
 #endif // MEMORYDOCENGINE_H

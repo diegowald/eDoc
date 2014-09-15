@@ -1,6 +1,5 @@
 #ifndef IDOCBASE_H
 #define IDOCBASE_H
-
 #include <QMetaType>
 #include "forward.h"
 #include "IDocID.h"

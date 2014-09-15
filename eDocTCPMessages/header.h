@@ -27,7 +27,7 @@ private:
     MessageCodes::CodeNumber cmd;
 };
 
-QDataStream& operator<<(QDataStream& os, Header &obj);
-QDataStream& operator>>(QDataStream& is, Header &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, Header &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, Header &obj);
 
 #endif // HEADER_H

@@ -1,6 +1,7 @@
 #ifndef IPARAMETER_H
 #define IPARAMETER_H
 
+#include "edocapi_global.h"
 #include "forward.h"
 #include "APIEnums.h"
 #include "IFieldDefinition.h"

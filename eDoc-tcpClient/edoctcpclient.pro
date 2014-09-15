@@ -42,7 +42,9 @@ else:unix: LIBS += -L$$OUT_PWD/../ -lsqlmanager
 INCLUDEPATH += $$PWD/../sqlmanager
 DEPENDPATH += $$PWD/../sqlmanager
 
-unix|win32: LIBS += -L$$OUT_PWD/../ -leDocTCPMessages
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDocTCPMessages
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDocTCPMessages
+else:unix: LIBS += -L$$OUT_PWD/../ -leDocTCPMessages
 
 INCLUDEPATH += $$PWD/../eDocTCPMessages
 DEPENDPATH += $$PWD/../eDocTCPMessages

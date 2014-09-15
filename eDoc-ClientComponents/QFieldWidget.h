@@ -15,8 +15,23 @@ public:
     explicit QFieldWidget(QWidget *parent = 0) : QWidget(parent) {}
     virtual ~QFieldWidget(){}
 
-    virtual void setField(IFieldDefinition* fieldDefinition, IValue* value) {(void)fieldDefinition; (void)value;}
-    virtual QVariant value() {return QVariant();}
+    virtual void setField(IFieldDefinitionPtr fieldDefinition, IValuePtr value)
+    {
+        m_FieldDefinition = fieldDefinition;
+        m_Value = value;
+    }
+
+    virtual QVariant value()
+    {
+        return m_Value->asVariant();
+    }
+
+signals:
+    void fieldChanged(IValuePtr valueChanged);
+
+protected:
+    IFieldDefinitionPtr m_FieldDefinition;
+    IValuePtr m_Value;
 };
 
 #endif // QFIELDWIDGET_H

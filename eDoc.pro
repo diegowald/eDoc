@@ -21,6 +21,7 @@ SUBDIRS += \
 #     tcpMessages
     eDocTcpServerPlugin/eDocTcpServerPlugin.pro \
     HistoricDatabasePlugin \
-    eDocTcpHistoricClient
+    eDocTcpHistoricClient \
+    eDoc-SimpleFileIndexerEngine
 
 

@@ -1,6 +1,7 @@
 #ifndef RECORDEDITOR_H
 #define RECORDEDITOR_H
 
+
 #include "edoc-clientcomponents_global.h"
 #include <QWidget>
 #include "../eDoc-API/IRecord.h"
@@ -24,21 +25,30 @@ public:
 
 private:
     void setEnabledStatus();
-    QFieldWidget *createWidget(QSharedPointer<IRecord> record, const QString &fieldName, QWidget* parent);
+    QFieldWidget *createWidget(IRecordPtr record, const QString &fieldName, QWidget* parent);
+    void setButtonsState();
 
 signals:
     void downloadFile(IRecordPtr record, const IValuePtr value);
-    void uploadFile(IRecordPtr record, const IValuePtr value);
+    void uploadFile(IRecordPtr record, const IValuePtr value, QString &fileLocation);
+    void save(IRecordPtr record);
+    void cancelEdition(IRecordPtr record);
 
 private slots:
     void download(const IValuePtr value);
-    void upload(const IValuePtr value);
+    void upload(const IValuePtr value, QString &fileLocation);
+    void on_btnCancel_pressed();
+    void on_btnSave_pressed();
+    void on_fieldChanged(IValuePtr valueChanged);
+    void setChanged();
+    void setUnchanged();
 
 private:
     Ui::RecordEditor *ui;
     QMap<QString, QFieldWidget*> collection;
     bool enabledEdition;
     QSharedPointer<IRecord> m_Record;
+    bool recordChanged;
 };
 
 #endif // RECORDEDITOR_H

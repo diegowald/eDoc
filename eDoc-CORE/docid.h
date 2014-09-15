@@ -3,6 +3,9 @@
 
 #include <QObject>
 #include <IDocID.h>
+#include "../eDoc-API/forward.h"
+
+CONSTRUCT(DocID)
 
 class DocID : public IDocID
 {

@@ -1,6 +1,7 @@
 #ifndef IDATABASE_H
 #define IDATABASE_H
 
+#include "edocapi_global.h"
 #include <QtPlugin>
 #include "forward.h"
 #include "IInitializable.h"

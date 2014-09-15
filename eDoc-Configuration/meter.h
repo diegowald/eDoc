@@ -3,8 +3,7 @@
 
 #include <QObject>
 #include "edoc-configuration_global.h"
-#include <sys/time.h>
-
+//#include <sys/time.h>
 class EDOCCONFIGURATIONSHARED_EXPORT meter : public QObject
 {
     Q_OBJECT
@@ -18,7 +17,7 @@ public slots:
 private:
     QString meterClassName;
     QString meterFunctionName;
-    timespec ts;
+//    timespec ts;
 };
 
 #endif // METER_H

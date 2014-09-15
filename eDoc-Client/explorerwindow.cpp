@@ -27,7 +27,7 @@ ExplorerWindow::ExplorerWindow(QWidget *parent) :
     ui->treeStructure->setColumnCount(1);
     ui->searchResult->setRowCount(0);
 
-    openDatabase("./client.conf.xml");
+    openDatabase("./samantha.client.conf.xml");
 }
 
 ExplorerWindow::~ExplorerWindow()
@@ -241,7 +241,7 @@ void ExplorerWindow::on_searchResult_itemSelectionChanged()
     {
         recordEditor = new RecordEditor(this);
         connect(recordEditor, SIGNAL(downloadFile(IRecordPtr,const IValuePtr)), this, SLOT(downloadFile(IRecordPtr,const IValuePtr)));
-        connect(recordEditor, SIGNAL(uploadFile(IRecordPtr,const IRecordPtr)), this, SLOT(uploadFile(IRecordPtr,const IRecordPtr)));
+        connect(recordEditor, SIGNAL(uploadFile(IRecordPtr,const IValuePtr,QString &)), this, SLOT(uploadFile(IRecordPtr,const IValuePtr,QString &)));
         QVBoxLayout* layout = new QVBoxLayout();
         layout->addWidget(recordEditor);
         ui->frameProperties->setLayout(layout);
@@ -281,24 +281,24 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
 void ExplorerWindow::downloadFile(IRecordPtr record, const IValuePtr value)
 {
     QString filename = QFileDialog::getSaveFileName(this, tr("Save file"), ".");
-    IDocEnginePtr e = f.docEngine();
-
-    QSharedPointer<IDocumentIDValue> v = record->value("archivo").dynamicCast<IDocumentIDValue>();
-    IDocIDPtr docId = e->IValueToIDocId(v);
-    IDocBasePtr doc = e->getDocument(docId);
-    if (!doc->isComplex())
+    if (filename.length() > 0)
     {
-        QSharedPointer<IDocument> document = doc.dynamicCast<IDocument>();
-        QFile file(filename);
-        file.open(QIODevice::WriteOnly);
-        file.write(document->blob());
-        file.close();
+        QSharedPointer<IDocumentValue> v = value.dynamicCast<IDocumentValue>();
+        QVariant v2 = v->content();
+        IDocumentPtr doc = qvariant_cast<IDocumentPtr>(v2);
+        if (!doc->isComplex())
+        {
+            QFile file(filename);
+            file.open(QIODevice::WriteOnly);
+            file.write(doc->blob());
+            file.close();
+        }
     }
 }
 
-void ExplorerWindow::uploadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value)
+void ExplorerWindow::uploadFile(IRecordPtr record, const IValuePtr value, QString &fileLocation)
 {
-
+    fileLocation = QFileDialog::getOpenFileName(this, tr("upload file"), ".");
 }
 
 void ExplorerWindow::on_cboTree_currentIndexChanged(const QString &arg1)

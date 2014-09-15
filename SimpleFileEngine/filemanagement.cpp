@@ -21,8 +21,14 @@ QByteArray FileManagement::readFile(QString fileName)
 {
     QString fn(m_Folder + "/" + fileName);
     QFile file(fn);
-    file.open(QIODevice::ReadOnly);
-    return file.readAll();
+    QByteArray ret;
+    if (file.exists())
+    {
+        file.open(QIODevice::ReadOnly);
+        ret = file.readAll();
+        file.close();
+    }
+    return ret;
 }
 
 long FileManagement::size(QString filename)

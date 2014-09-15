@@ -16,25 +16,25 @@
 
 #include "../eDoc-API/IDocID.h"
 #include "proxydocid.h"
+#include "edoctcpmessages_global.h"
 
-QDataStream& operator<<(QDataStream& os, IParameter &obj);
-QDataStream& operator>>(QDataStream& is, ProxyParameter &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IParameter &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyParameter &obj);
 
-QDataStream& operator<<(QDataStream& os, IRecord &obj);
-QDataStream& operator>>(QDataStream& is, ProxyRecord &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IRecord &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyRecord &obj);
 
-QDataStream& operator<<(QDataStream& os, IRecordID &obj);
-QDataStream& operator>>(QDataStream& is, ProxyRecordID &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IRecordID &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyRecordID &obj);
 
-QDataStream& operator<<(QDataStream& os, IValue &obj);
-QDataStream& operator>>(QDataStream& is, ProxyValue &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IValue &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyValue &obj);
 
-QDataStream& operator<<(QDataStream& os, IFieldDefinition &obj);
-QDataStream& operator>>(QDataStream& is, ProxyFieldDefinition &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IFieldDefinition &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyFieldDefinition &obj);
 
-QDataStream& operator<<(QDataStream& os, IDocID &obj);
-QDataStream& operator>>(QDataStream& is, ProxyDocID &obj);
-
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IDocID &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyDocID &obj);
 
 #endif // STREAMHELPERS_H
 

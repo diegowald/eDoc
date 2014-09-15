@@ -1,21 +1,21 @@
-#ifndef FILEENGINE_H
-#define FILEENGINE_H
+#ifndef EDOCSIMPLEFILEINDEXERENGINE_H
+#define EDOCSIMPLEFILEINDEXERENGINE_H
 
-#include <IDocEngine.h>
-#include "filemanagement.h"
+#include "edoc-simplefileindexerengine_global.h"
+#include "../eDoc-API/IDocEngine.h"
+#include "../sqlmanager/sqlmanager.h"
 
-class FileEngine : public QObject, public IDocEngine
+class EDOCSIMPLEFILEINDEXERENGINESHARED_EXPORT EDocSimpleFileIndexerEngine : public QObject, public IDocEngine
 {
     Q_OBJECT
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IDocEngine/0.0" FILE "SimpleFileEngine.json")
+    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IDocEngine/0.0" FILE "SimpleFileIndexerEngine.json")
 #endif // QT_VERSION >= 0x050000
     Q_INTERFACES(IDocEngine)
 
-    
 public:
-    FileEngine(QObject *parent = 0);
-    virtual ~FileEngine();
+    EDocSimpleFileIndexerEngine(QObject *parent = 0);
+    virtual ~EDocSimpleFileIndexerEngine();
 
     virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
     virtual IDocBasePtr createDocument(const QByteArray& blob);
@@ -29,9 +29,8 @@ public:
     virtual IDocEnginePtr newDocEngine();
 
 private:
-    QString folder;
-    QObjectLoggingPtr m_Logger;
-    QSharedPointer<FileManagement> fileManager;
+    QObjectLoggingPtr logger;
+    SQLManager m_SQLManager;
 };
 
-#endif // FILEENGINE_H
+#endif // EDOCSIMPLEFILEINDEXERENGINE_H

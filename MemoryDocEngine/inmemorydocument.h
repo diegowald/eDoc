@@ -3,6 +3,9 @@
 
 #include <QObject>
 #include "../eDoc-API/IDocument.h"
+#include "../eDoc-API/forward.h"
+
+CONSTRUCT(InMemoryDocument)
 
 class InMemoryDocument : public QObject, public IDocument
 {
@@ -22,5 +25,7 @@ private:
     bool cached;
     QSharedPointer<IDocument> m_PersistentDocument;
 };
+
+Q_DECLARE_METATYPE(InMemoryDocumentPtr)
 
 #endif // INMEMORYDOCUMENT_H

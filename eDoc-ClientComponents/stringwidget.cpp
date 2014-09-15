@@ -26,3 +26,8 @@ QVariant StringWidget::value()
 {
     return ui->EditValue->text();
 }
+
+void StringWidget::on_EditValue_textChanged(const QString &arg1)
+{
+    emit fieldChanged(m_Value);
+}

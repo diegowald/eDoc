@@ -123,50 +123,50 @@ QList<VALIDQUERY> FieldDefinition::validQueries()
     return QList<VALIDQUERY>();
 }
 
-QSharedPointer<IValue> FieldDefinition::createEmptyValue()
+IValuePtr FieldDefinition::createEmptyValue()
 {
-    QSharedPointer<IValue> value;
+    IValuePtr value;
     switch (m_DataType)
     {
     case INTEGER_TYPE:
-        value = QSharedPointer<IValue>(new IntegerValue());
+        value = IValuePtr(new IntegerValue());
         break;
     case DOUBLE_TYPE:
-        value = QSharedPointer<IValue>(new DoubleValue());
+        value = IValuePtr(new DoubleValue());
         break;
     case BOOL_TYPE:
-        value = QSharedPointer<IValue>(new BoolValue());
+        value = IValuePtr(new BoolValue());
         break;
     case QSTRING_TYPE:
-        value = QSharedPointer<IValue>(new QStringValue());
+        value = IValuePtr(new QStringValue());
         break;
     case QDATETIME_TYPE:
-        value = QSharedPointer<IValue>(new QDateTimeValue());
+        value = IValuePtr(new QDateTimeValue());
         break;
     case QDATE_TYPE:
-        value = QSharedPointer<IValue>(new QDateValue());
+        value = IValuePtr(new QDateValue());
         break;
     case QTIME_TYPE:
-        value = QSharedPointer<IValue>(new QTimeValue());
+        value = IValuePtr(new QTimeValue());
         break;
     case IDOCBASE_TYPE:
-        value = QSharedPointer<IValue>(new IDocBaseValue(QSharedPointer<IDocBase>()));
+        value = IValuePtr(new IDocBaseValue(IDocBasePtr(), this));
         value->setNull();
         break;
     case IDOCUMENT_TYPE:
-        value = QSharedPointer<IValue>(new IDocumentIDValue(NULL));
+        value = IValuePtr(new IDocumentValue(IDocumentPtr(), this));
         value->setNull();
         break;
     case IMULTIDOCUMENT_TYPE:
-        value = QSharedPointer<IValue>(new IMultiDocumentValue(QSharedPointer<IMultiDocument>()));
+        value = IValuePtr(new IMultiDocumentValue(IMultiDocumentPtr(), this));
         value->setNull();
         break;
     case IRECORD_REFERENCE_TYPE:
-        value = QSharedPointer<IValue>(new IRecordValue(QSharedPointer<IRecord>()));
+        value = IValuePtr(new IRecordValue(IRecordPtr()));
         value->setNull();
         break;
     case IMULTIRECORD_REFERENCE_TYPE:
-        value = QSharedPointer<IValue>(new IMultiRecordValue(QSharedPointer<IMultiRecord>()));
+        value = IValuePtr(new IMultiRecordValue(IMultiRecordPtr()));
         value->setNull();
         break;
     case TAG_TYPE:
@@ -174,11 +174,11 @@ QSharedPointer<IValue> FieldDefinition::createEmptyValue()
         QVariant v;
         v.setValue(new Tag());
         value->setValue(v);*/
-        value = QSharedPointer<IValue>(new Tag());
+        value = IValuePtr(new Tag());
         value->setNull();
         break;
     case INVALID_TYPE:
-        value = QSharedPointer<IValue>();
+        value = IValuePtr();
         break; // ACA HABRIA QUE LANZAR EXCEPTIONS
     }
     return value;
@@ -192,4 +192,9 @@ QString FieldDefinition::fieldNameInDatabase()
 DATATYPE FieldDefinition::dataType()
 {
     return m_DataType;
+}
+
+IDocEnginePtr FieldDefinition::getEngine()
+{
+    return engine;
 }

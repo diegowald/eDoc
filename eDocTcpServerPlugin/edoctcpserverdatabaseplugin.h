@@ -56,7 +56,8 @@ private:
     void processREQUpdateRecord(QDataStream &in);
     void processREQDeleteRecord(QDataStream &in);
     void processREQGetDistinctColumnValues(QDataStream &in);
-    void processREQAddDocument(QDataStream &in);
+    void processREQcreateDocument(QDataStream &in);
+    void processREQcreateDocumentWithName(QDataStream &in);
     void processREQSearchWithHistory(QDataStream &in);
     void processREQGetRecordWithHistory(QDataStream &in);
     void processREQGetRecordsWithHistory(QDataStream &in);

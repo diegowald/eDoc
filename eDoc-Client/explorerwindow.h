@@ -57,7 +57,7 @@ private slots:
     void on_actionAdd_Document_triggered();
 
     void downloadFile(IRecordPtr record, const IValuePtr value);
-    void uploadFile(QSharedPointer<IRecord> record, const QSharedPointer<IValue> value);
+    void uploadFile(IRecordPtr record, const IValuePtr value, QString &fileLocation);
     void on_cboTree_currentIndexChanged(const QString &arg1);
 
     void on_treeStructure_itemSelectionChanged();

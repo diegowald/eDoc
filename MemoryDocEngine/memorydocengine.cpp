@@ -23,13 +23,18 @@ void MemoryDocEngine::initialize(IXMLContentPtr configuration, IFactory *factory
     persistentEngine = factory->createEngine(confEngine);
 }
 
-QSharedPointer<IDocID> MemoryDocEngine::addDocument(const QByteArray& blob)
+IDocBasePtr MemoryDocEngine::createDocument(const QString sourcePath, const QByteArray &blob)
 {
-    //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)");
-    return persistentEngine->addDocument(blob);
+    return persistentEngine->createDocument(sourcePath, blob);
 }
 
-QSharedPointer<IDocBase> MemoryDocEngine::getDocument(QSharedPointer<IDocID> id)
+IDocBasePtr MemoryDocEngine::createDocument(const QByteArray& blob)
+{
+    //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocID* MemoryDocEngine::addDocument(const QByteArray& blob)");
+    return persistentEngine->createDocument(blob);
+}
+
+IDocBasePtr MemoryDocEngine::getDocument(IDocIDPtr id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "IDocument *MemoryDocEngine::getDocument(IDocID *id)");
     if (!m_Cache.contains(id->asString()))
@@ -46,7 +51,24 @@ QSharedPointer<IDocBase> MemoryDocEngine::getDocument(QSharedPointer<IDocID> id)
     return m_Cache[id->asString()];
 }
 
-bool MemoryDocEngine::deleteDocument(QSharedPointer<IDocID> id)
+IDocBasePtr MemoryDocEngine::getDocument(const QString &id)
+{
+    if (!m_Cache.contains(id))
+    {
+        QSharedPointer<IDocBase> persistentDoc = persistentEngine->getDocument(id);
+        QSharedPointer<IDocBase> doc;
+        if (persistentDoc->isComplex())
+            doc = QSharedPointer<IDocBase>(new InMemoryMultiDocument(persistentDoc.dynamicCast<IMultiDocument>(), this));
+        else
+            doc = QSharedPointer<IDocBase>(new InMemoryDocument(persistentDoc.dynamicCast<IDocument>(), this));
+        m_Cache.insert(id, doc);
+    }
+    return m_Cache[id];
+
+}
+
+
+bool MemoryDocEngine::deleteDocument(IDocIDPtr id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "MemoryDocEngine", "bool MemoryDocEngine::deleteDocument(IDocID *id)");
 }
@@ -57,7 +79,7 @@ QString MemoryDocEngine::name()
     return "MemoryDocEngine";
 }
 
-QSharedPointer<IDocID> MemoryDocEngine::IValueToIDocId(QSharedPointer<IValue> value)
+IDocIDPtr MemoryDocEngine::IValueToIDocId(IValuePtr value)
 {
     return persistentEngine->IValueToIDocId(value);
 }

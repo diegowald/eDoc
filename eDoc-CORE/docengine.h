@@ -21,8 +21,10 @@ public:
     virtual ~DocEngine();
 
     virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
-    virtual QSharedPointer<IDocID> addDocument(const QByteArray& blob);
-    virtual QSharedPointer<IDocBase> getDocument(QSharedPointer<IDocID> id);
+    virtual IDocBasePtr createDocument(const QString sourcePath, const QByteArray &blob);
+    virtual IDocBasePtr createDocument(const QByteArray& blob);
+    virtual IDocBasePtr getDocument(QSharedPointer<IDocID> id);
+    virtual IDocBasePtr getDocument(const QString &id);
     virtual bool deleteDocument(QSharedPointer<IDocID> id);
     virtual QSharedPointer<IDocID> IValueToIDocId(QSharedPointer<IValue> value);
     virtual QString name();

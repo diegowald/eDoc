@@ -3,6 +3,7 @@
 
 #include "../eDoc-API/IValue.h"
 #include "edoc-metadataframework_global.h"
+#include "fielddefinition.h"
 
 template<class TYPE> class EDOCMETADATAFRAMEWORKSHARED_EXPORT Value : public IValue
 {
@@ -45,26 +46,13 @@ public:
         m_Null = false;
     }
 
-    /*Value( const Value& other )
-    {
-        m_Value = other.m_Value;
-    }
-
-    Value( Value& other )
-    {
-        m_Value = other.m_Value;
-    }
-
-    Value& operator=(const Value& rhs)
-    {
-        m_Value = rhs.m_Value;
-        return *this;
-    }*/
-
     TYPE get()
     {
         return m_Value;
     }
+
+    void setFieldDefinition(IFieldDefinition* fieldDef) { m_fieldDef = fieldDef; }
+    IFieldDefinition* fieldDefinition() { return m_fieldDef; }
 
     // slots
     virtual void prepareToSave() {}
@@ -73,6 +61,7 @@ public:
 private:
     TYPE m_Value;
     bool m_Null;
+    IFieldDefinition* m_fieldDef;
 };
 
 #endif // VALUE_H

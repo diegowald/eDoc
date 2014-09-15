@@ -1,8 +1,7 @@
 #ifndef PROXYDOCUMENTVALUE_H
 #define PROXYDOCUMENTVALUE_H
 #include "proxyvalue.h"
-
-class ProxyDocumentValue : public ProxyValue
+class EDOCTCPMESSAGESSHARED_EXPORT ProxyDocumentValue : public ProxyValue
 {
     Q_OBJECT
 public:

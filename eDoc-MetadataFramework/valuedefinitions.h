@@ -8,6 +8,7 @@
 #include <QTime>
 #include "edoc-metadataframework_global.h"
 
+#include "../eDoc-API/forward.h"
 #include "../eDoc-API/IDocBase.h"
 #include "../eDoc-API/IDocument.h"
 #include "../eDoc-API/IMultiDocument.h"
@@ -15,6 +16,19 @@
 #include "../eDoc-API/IMultiRecord.h"
 #include "../eDoc-API/ITag.h"
 #include "../eDoc-API/IDocID.h"
+
+CONSTRUCT(IntegerValue)
+CONSTRUCT(DoubleValue)
+CONSTRUCT(BoolValue)
+CONSTRUCT(QStringValue)
+CONSTRUCT(QDateTimeValue)
+CONSTRUCT(QDateValue)
+CONSTRUCT(QTimeValue)
+CONSTRUCT(IDocBaseValue)
+CONSTRUCT(IDocumentIDValue)
+CONSTRUCT(IMultiDocumentValue)
+CONSTRUCT(IRecordValue)
+CONSTRUCT(IMultiRecordValue)
 
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT IntegerValue : public QObject, public Value<int>
@@ -95,15 +109,34 @@ public:
     virtual ~QTimeValue();
 };
 
-class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocBaseValue : public QObject, public Value<QSharedPointer<IDocBase>>
+
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocBaseValue : public QObject, public Value<IDocBasePtr>
 {
     Q_OBJECT
 public:
-    IDocBaseValue(QSharedPointer<IDocBase> value, QObject *parent = 0);
+    IDocBaseValue(IDocBasePtr value, IFieldDefinition* fieldDef, QObject *parent = 0);
     virtual void setValue(const QVariant &newValue);
     virtual QVariant asVariant();
     virtual QVariant content();
     virtual ~IDocBaseValue();
+};
+
+class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocumentValue : public QObject, public Value<IDocumentPtr>
+{
+    Q_OBJECT
+public:
+    IDocumentValue(IDocumentPtr value, IFieldDefinition* fieldDef, QObject *parent = 0);
+    virtual void setValue(const QVariant &newValue);
+    virtual QVariant asVariant();
+    virtual QVariant content();
+
+    // slots
+    virtual void prepareToSave();
+    virtual void prepareToLoad();
+
+    virtual ~IDocumentValue();
+private:
+    QString filePath;
 };
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT IDocumentIDValue : public QObject, public Value<QString>
@@ -154,14 +187,4 @@ public:
     virtual QVariant asVariant();
 };
 
-/*class EDOCMETADATAFRAMEWORKSHARED_EXPORT ITagRecordValue : public QObject, public Value<ITag*>
-{
-    Q_OBJECT
-public:
-    ITagRecordValue(ITag *value, QObject *parent = 0);
-    virtual ~ITagRecordValue();
-    virtual void setValue(const QVariant &newValue);
-    virtual QVariant content();
-    virtual QVariant asVariant();
-};*/
 #endif // VALUEDEFINITIONS_H

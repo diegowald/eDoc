@@ -1,6 +1,7 @@
 #ifndef IINITIALIZABLE_H
 #define IINITIALIZABLE_H
 
+#include "edocapi_global.h"
 #include "forward.h"
 #include "../eDoc-Configuration/IXMLContent.h"
 #include "../eDoc-Configuration/qobjectlgging.h"

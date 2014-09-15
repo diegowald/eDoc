@@ -1,4 +1,6 @@
 #include "valuedefinitions.h"
+#include "fielddefinition.h"
+#include <QFile>
 
 IntegerValue::IntegerValue(int value, QObject *parent) :
     QObject(parent), Value(value)
@@ -47,7 +49,6 @@ QVariant DoubleValue::asVariant()
 {
     return isNull() ? QVariant(QVariant::Double) : get();
 }
-
 
 BoolValue::BoolValue(bool value, QObject *parent) :
     QObject(parent), Value(value)
@@ -172,14 +173,79 @@ QVariant QTimeValue::asVariant()
     return isNull() ? QVariant(QVariant::Time) : get();//.toString("hh:mm:ss");
 }
 
-IDocBaseValue::IDocBaseValue(QSharedPointer<IDocBase> value, QObject *parent) :
+IDocBaseValue::IDocBaseValue(IDocBasePtr value, IFieldDefinition *fieldDef, QObject *parent) :
     QObject(parent), Value(value)
 {
+    setFieldDefinition(fieldDef);
 }
 
 IDocBaseValue::~IDocBaseValue()
 {
 }
+
+IDocumentValue::IDocumentValue(IDocumentPtr value, IFieldDefinition* fieldDef, QObject *parent) :
+    QObject(parent), Value(value)
+{
+    this->setFieldDefinition(fieldDef);
+}
+
+void IDocumentValue::setValue(const QVariant &newValue)
+{
+    IDocBasePtr doc = newValue.value<IDocumentPtr>();
+    if (doc.isNull())
+    {
+        IDocEnginePtr engine = ((FieldDefinition*)fieldDefinition())->getEngine();
+        if (newValue.toString().startsWith("file:"))
+        {
+            filePath = newValue.toString().replace("filw:", "");
+            QFile file(filePath);
+            file.open(QIODevice::ReadOnly);
+            QByteArray blob = file.readAll();
+            doc = engine->createDocument(filePath, blob);
+            file.close();
+        }
+        else
+        {
+            QString documentID = newValue.toString();
+            doc = engine->getDocument(documentID);
+        }
+    }
+    setValue2(doc.dynamicCast<IDocument>());
+}
+
+QVariant IDocumentValue::asVariant()
+{
+}
+
+QVariant IDocumentValue::content()
+{
+    QVariant ret;
+
+    if (isNull() && filePath.length() == 0)
+    {
+        ret.setValue(IDocumentPtr());
+    }
+    else
+    {
+        ret.setValue(get());
+    }
+    return ret;
+}
+
+// slots
+void IDocumentValue::prepareToSave()
+{
+}
+
+void IDocumentValue::prepareToLoad()
+{
+}
+
+
+IDocumentValue::~IDocumentValue()
+{
+}
+
 
 void IDocBaseValue::setValue(const QVariant &newValue)
 {
@@ -190,6 +256,7 @@ void IDocBaseValue::setValue(const QVariant &newValue)
 QVariant IDocBaseValue::asVariant()
 {
     // esto es una exception
+    return QVariant();
 }
 
 QVariant IDocBaseValue::content()

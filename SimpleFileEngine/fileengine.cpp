@@ -21,30 +21,42 @@ void FileEngine::initialize(IXMLContentPtr configuration, IFactory* factory)
     fileManager = QSharedPointer<FileManagement>(new FileManagement(folder));
 }
 
-QSharedPointer<IDocID> FileEngine::addDocument(const QByteArray& blob)
+IDocBasePtr FileEngine::createDocument(const QString sourcePath, const QByteArray &blob)
 {
-    //m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "IDocID* FileEngine::addDocument(const QByteArray& blob)");
+    (void) sourcePath;
+    return createDocument(blob);
+}
+
+IDocBasePtr FileEngine::createDocument(const QByteArray& blob)
+{
+    //m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "IDocID* FileEngine::createDocument(const QByteArray& blob)");
     QSharedPointer<SimpleFileID> id = QSharedPointer<SimpleFileID>(new SimpleFileID());
 
     fileManager->createFile(id->asString(), blob);
 
-    return id;
+    return getDocument(id);
 }
 
-QSharedPointer<IDocBase> FileEngine::getDocument(QSharedPointer<IDocID> id)
+IDocBasePtr FileEngine::getDocument(IDocIDPtr id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "IDocBase* FileEngine::getDocument(IDocID *id) const");
     QSharedPointer<SimpleFileDocument> doc = QSharedPointer<SimpleFileDocument>(new SimpleFileDocument(fileManager, id->asString()));
     return doc;
 }
 
-bool FileEngine::deleteDocument(QSharedPointer<IDocID> id)
+IDocBasePtr FileEngine::getDocument(const QString &id)
+{
+    QSharedPointer<SimpleFileDocument> doc = QSharedPointer<SimpleFileDocument>(new SimpleFileDocument(fileManager, id));
+    return doc;
+}
+
+bool FileEngine::deleteDocument(IDocIDPtr id)
 {
     //m_Logger->logTrace(__FILE__, __LINE__, "FileEngine", "bool FileEngine::deleteDocument(IDocID *id)");
     return false;
 }
 
-QSharedPointer<IDocID> FileEngine::IValueToIDocId(QSharedPointer<IValue> value)
+IDocIDPtr FileEngine::IValueToIDocId(IValuePtr value)
 {
     return QSharedPointer<IDocID>(new SimpleFileID(value->content().toString()));
 }

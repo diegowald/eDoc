@@ -44,7 +44,8 @@ EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLoggingPtr Logge
     functionMap[MessageCodes::CodeNumber::REQ_updateRecord] = &EDocTCPServerDatabasePlugin::processREQUpdateRecord;
     functionMap[MessageCodes::CodeNumber::REQ_deleteRecord] = &EDocTCPServerDatabasePlugin::processREQDeleteRecord;
     functionMap[MessageCodes::CodeNumber::REQ_getDistinctColumnValues] = &EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValues;
-    functionMap[MessageCodes::CodeNumber::REQ_addDocument] = &EDocTCPServerDatabasePlugin::processREQAddDocument;
+    functionMap[MessageCodes::CodeNumber::REQ_addDocument] = &EDocTCPServerDatabasePlugin::processREQcreateDocument;
+    functionMap[MessageCodes::CodeNumber::REQ_addDocumentWithOriginalLocation] = &EDocTCPServerDatabasePlugin::processREQcreateDocumentWithName;
     functionMap[MessageCodes::CodeNumber::REQ_searchWithHistory] = &EDocTCPServerDatabasePlugin::processREQSearchWithHistory;
     functionMap[MessageCodes::CodeNumber::REQ_getRecordWithHistory] = &EDocTCPServerDatabasePlugin::processREQGetRecordWithHistory;
     functionMap[MessageCodes::CodeNumber::REQ_getRecordsWithHistory] = &EDocTCPServerDatabasePlugin::processREQGetRecordsWithHistory;
@@ -291,13 +292,22 @@ void EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValues(QDataStream 
     (*out) << rsp;
 }
 
-void EDocTCPServerDatabasePlugin::processREQAddDocument(QDataStream &in)
+void EDocTCPServerDatabasePlugin::processREQcreateDocument(QDataStream &in)
 {
     QByteArray blob;
     in >> blob;
-    QSharedPointer<IDocID> docId = _docEngine->addDocument(blob);
+    IDocBasePtr doc = _docEngine->createDocument(blob);
     prepareToSend(MessageCodes::CodeNumber::RSP_addDocument);
-    (*out) << *docId;
+    (*out) << *doc->id();
+}
+
+void EDocTCPServerDatabasePlugin::processREQcreateDocumentWithName(QDataStream &in)
+{
+    QString originalLocation;
+    QByteArray blob;
+    IDocBasePtr doc = _docEngine->createDocument(originalLocation, blob);
+    prepareToSend(MessageCodes::CodeNumber::RSP_addDocumentWithOriginalLocation);
+    (*out) << *doc->id();
 }
 
 void EDocTCPServerDatabasePlugin::processREQSearchWithHistory(QDataStream &in)

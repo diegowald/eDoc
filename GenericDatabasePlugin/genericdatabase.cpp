@@ -48,7 +48,7 @@ void GenericDatabase::createFields(QSharedPointer<IXMLContent> configuration, IF
 
 QSharedPointer<IFieldDefinition> GenericDatabase::createField(IXMLContentPtr configuration, IFactory *factory)
 {
-    QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new FieldDefinition());
+    IFieldDefinitionPtr field = IFieldDefinitionPtr(new FieldDefinition());
     field->initialize(configuration, factory);
     return field;
 }

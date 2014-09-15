@@ -19,12 +19,12 @@ public:
     explicit DocumentWidget(QWidget *parent = 0);
     ~DocumentWidget();
 
-    void setField(IFieldDefinitionPtr fieldDefinition, IValuePtr value);
+    virtual void setField(IFieldDefinitionPtr fieldDefinition, IValuePtr value);
     virtual QVariant value();
 
 signals:
     void download(const IValuePtr value);
-    void upload(const IValuePtr value);
+    void upload(const IValuePtr value, QString &fileLocation);
 
 private slots:
     void on_btnDownload_clicked();
@@ -33,8 +33,7 @@ private slots:
 
 private:
     Ui::DocumentWidget *ui;
-    IFieldDefinitionPtr m_FieldDefinition;
-    IValuePtr m_Value;
+    QString _fileLocation;
 };
 
 #endif // DOCUMENTWIDGET_H

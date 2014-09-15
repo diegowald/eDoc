@@ -20,6 +20,9 @@ public:
 
     virtual void setField(QSharedPointer<IFieldDefinition> fieldDefinition, QSharedPointer<IValue> value);
     virtual QVariant value();
+private slots:
+    void on_EditValue_textChanged(const QString &arg1);
+
 private:
     Ui::StringWidget *ui;
 };

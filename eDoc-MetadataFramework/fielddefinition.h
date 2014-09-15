@@ -37,10 +37,11 @@ public:
     virtual bool isVisible() const;
     virtual bool isQueryable() const;
     virtual QList<VALIDQUERY> validQueries();    
-    virtual QSharedPointer<IValue> createEmptyValue();
+    virtual IValuePtr createEmptyValue();
 
     QString fieldNameInDatabase();
     DATATYPE dataType();
+    IDocEnginePtr getEngine();
 private:
     DATATYPE analyzeType();
 
@@ -54,7 +55,7 @@ private:
     bool m_Visible;
     bool m_Queryable;
     QList<VALIDQUERY> m_ValidQeries;
-    QSharedPointer<QObjectLogging> m_Logger;
+    QObjectLoggingPtr m_Logger;
     DATATYPE m_DataType;
     QString m_FieldNameInDatabase;
     QString m_OtherDatabaseName;

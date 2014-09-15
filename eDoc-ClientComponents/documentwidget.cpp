@@ -2,10 +2,10 @@
 #include "ui_documentwidget.h"
 
 DocumentWidget::DocumentWidget(QWidget *parent) :
-    QFieldWidget(parent),
-    ui(new Ui::DocumentWidget)
+    QFieldWidget(parent), ui(new Ui::DocumentWidget)
 {
     ui->setupUi(this);
+    _fileLocation = "";
 }
 
 DocumentWidget::~DocumentWidget()
@@ -13,10 +13,11 @@ DocumentWidget::~DocumentWidget()
     delete ui;
 }
 
-void DocumentWidget::setField(QSharedPointer<IFieldDefinition> fieldDefinition, QSharedPointer<IValue> value)
+void DocumentWidget::setField(IFieldDefinitionPtr fieldDefinition, IValuePtr value)
 {
     m_FieldDefinition = fieldDefinition;
     m_Value = value;
+    _fileLocation = "";
 }
 
 QVariant DocumentWidget::value()
@@ -36,6 +37,13 @@ void DocumentWidget::on_btnupload_clicked()
 {
     if (!m_FieldDefinition->isReadOnly())
     {
-        emit upload(m_Value);
+        QString fileLocation = "";
+        emit upload(m_Value, fileLocation);
+        if (_fileLocation != fileLocation)
+        {
+            _fileLocation = fileLocation;
+            m_Value->setValue("file:" + fileLocation);
+            emit fieldChanged(m_Value);
+        }
     }
 }
