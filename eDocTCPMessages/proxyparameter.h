@@ -9,6 +9,8 @@
 #include "proxyfielddefinition.h"
 #include "proxyvalue.h"
 
+CONSTRUCT(ProxyParameter)
+
 class EDOCTCPMESSAGESSHARED_EXPORT ProxyParameter : public QObject, public IParameter
 {
     Q_OBJECT
@@ -30,7 +32,7 @@ public slots:
 
 private:
     QSharedPointer<IFieldDefinition> _fieldDefinition;
-    QList<QSharedPointer<IValue>> _values;
+    QList<IValuePtr> _values;
     VALIDQUERY _queryType;
 };
 

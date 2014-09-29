@@ -31,6 +31,7 @@ public:
 private:
     QObjectLoggingPtr logger;
     SQLManager m_SQLManager;
+    QString tableName;
 };
 
 #endif // EDOCSIMPLEFILEINDEXERENGINE_H

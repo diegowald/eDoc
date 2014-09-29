@@ -5,6 +5,8 @@
 #include "edoctcpmessages_global.h"
 #include "../eDoc-API/IRecord.h"
 
+CONSTRUCT(ProxyRecord)
+
 class EDOCTCPMESSAGESSHARED_EXPORT ProxyRecord : public QObject, public IRecord
 {
     Q_OBJECT
@@ -19,7 +21,7 @@ public:
     virtual QSharedPointer<IFieldDefinition> fieldDefinition(const QString &fieldName);
     virtual QList<QString> fieldNames();
 
-    friend QDataStream& operator>>(QDataStream& is, ProxyRecord &obj);
+    friend QDataStream& operator>>(QDataStream& is, ProxyRecordPtr obj);
 
 public slots:
     // slots

@@ -91,6 +91,11 @@ void RecordEditor::applyValuesToRecord(IRecordPtr record)
     fields.clear();
 }
 
+void RecordEditor::applyValuesToRecord()
+{
+    applyValuesToRecord(m_Record);
+}
+
 void RecordEditor::setEnabledEdition(bool enabled)
 {
     enabledEdition = enabled;
@@ -113,6 +118,7 @@ void RecordEditor::download(const IValuePtr value)
 
 void RecordEditor::upload(const IValuePtr value, QString &fileLocation)
 {
+
     emit uploadFile(m_Record, value, fileLocation);
 }
 
@@ -126,6 +132,7 @@ void RecordEditor::on_btnSave_pressed()
 {
     if (recordChanged)
     {
+        applyValuesToRecord();
         emit save(m_Record);
         setUnchanged();
     }

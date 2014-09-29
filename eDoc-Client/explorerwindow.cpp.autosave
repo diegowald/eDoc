@@ -495,12 +495,3 @@ void ExplorerWindow::openDatabase(const QString &file)
         setWindowTitle(tr("eDoc - ") + fi.baseName());
     }
 }
-
-void ExplorerWindow::on_save(IRecordPtr record)
-{
-    f.databaseEngine()->updateRecord(record);
-}
-
-void ExplorerWindow::on_cancelEdition(IRecordPtr record)
-{
-}

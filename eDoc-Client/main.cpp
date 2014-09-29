@@ -27,9 +27,6 @@ int main(int argc, char *argv[])
     logger.addDestination(fileDestination);
     QLOG_TRACE() << "Starting application";
 
-/*    MainWindow w;
-    w.show();*/
-
     ExplorerWindow w;
     w.show();
 

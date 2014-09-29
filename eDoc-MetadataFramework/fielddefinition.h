@@ -38,6 +38,7 @@ public:
     virtual bool isQueryable() const;
     virtual QList<VALIDQUERY> validQueries();    
     virtual IValuePtr createEmptyValue();
+    virtual QJsonObject asJson();
 
     QString fieldNameInDatabase();
     DATATYPE dataType();

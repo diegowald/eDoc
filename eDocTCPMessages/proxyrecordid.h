@@ -5,6 +5,8 @@
 #include "edoctcpmessages_global.h"
 #include "../eDoc-API/IRecordID.h"
 
+CONSTRUCT(ProxyRecordID)
+
 class EDOCTCPMESSAGESSHARED_EXPORT ProxyRecordID : public QObject, public IRecordID
 {
     Q_OBJECT
@@ -24,7 +26,5 @@ public slots:
 private:
     QString _id;
 };
-
-typedef QSharedPointer<ProxyRecordID> ProxyRecordIDPtr;
 
 #endif // PROXYRECORDID_H

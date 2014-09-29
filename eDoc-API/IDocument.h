@@ -5,7 +5,7 @@
 #include "IDocID.h"
 #include <QByteArray>
 #include <QtPlugin>
-#include <IDocBase.h>
+#include "IDocBase.h"
 
 struct IDocument : public IDocBase
 {

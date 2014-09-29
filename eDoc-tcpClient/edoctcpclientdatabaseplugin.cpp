@@ -46,7 +46,7 @@ QList<IFieldDefinitionPtr> eDocTcpClientDatabasePlugin::fields()
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<IFieldDefinition> field = QSharedPointer<IFieldDefinition>(new ProxyFieldDefinition(this));
-            in >> *field.dynamicCast<ProxyFieldDefinition>();
+            in >> field.dynamicCast<ProxyFieldDefinition>();
             lst.push_back(field);
         }
     }
@@ -68,7 +68,7 @@ IFieldDefinitionPtr eDocTcpClientDatabasePlugin::field(const QString &fieldName)
     if (header.command() == MessageCodes::CodeNumber::RSP_field)
     {
         field = QSharedPointer<ProxyFieldDefinition>(new ProxyFieldDefinition());
-        in >> *field;
+        in >> field;
     }
     return field;
 }
@@ -86,7 +86,7 @@ IParameterPtr eDocTcpClientDatabasePlugin::createEmptyParameter()
     QSharedPointer<IParameter> parameter = QSharedPointer<IParameter>(new ProxyParameter());
     if (header.command() == MessageCodes::CodeNumber::RSP_createEmptyParameter)
     {
-        in >> *parameter.dynamicCast<ProxyParameter>();
+        in >> parameter.dynamicCast<ProxyParameter>();
     }
     return parameter;
 }
@@ -95,9 +95,9 @@ QList<IRecordIDPtr> eDocTcpClientDatabasePlugin::search(const QList<IParameterPt
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_search);
     (*out) << parameters.count();
-    foreach (QSharedPointer<IParameter> parameter, parameters)
+    foreach (IParameterPtr parameter, parameters)
     {
-        (*out) << *parameter;
+        (*out) << parameter;
     }
     QByteArray response = send();
 
@@ -114,7 +114,7 @@ QList<IRecordIDPtr> eDocTcpClientDatabasePlugin::search(const QList<IParameterPt
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<IRecordID> record = QSharedPointer<IRecordID>(new ProxyRecordID());
-            in >> *record.dynamicCast<ProxyRecordID>();
+            in >> record.dynamicCast<ProxyRecordID>();
             lst.push_back(record);
         }
     }
@@ -125,14 +125,14 @@ QList<IRecordIDPtr> eDocTcpClientDatabasePlugin::searchWithin(const QList<IParam
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_searchWithin);
     (*out) << parameters.count();
-    foreach (QSharedPointer<IParameter> parameter, parameters)
+    foreach (IParameterPtr parameter, parameters)
     {
-        (*out) << *parameter;
+        (*out) << parameter;
     }
     (*out) << records.count();
-    foreach (QSharedPointer<IRecordID> rec, records)
+    foreach (IRecordIDPtr rec, records)
     {
-        (*out) << *rec;
+        (*out) << rec;
     }
     QByteArray response = send();
 
@@ -141,15 +141,15 @@ QList<IRecordIDPtr> eDocTcpClientDatabasePlugin::searchWithin(const QList<IParam
 
     Header header;
     in >> header;
-    QList<QSharedPointer<IRecordID>> lst;
+    QList<IRecordIDPtr> lst;
     if (header.command() == MessageCodes::CodeNumber::RSP_searchWithin)
     {
         int count = 0;
         in >> count;
         for (int i = 0; i < count; ++i)
         {
-            QSharedPointer<IRecordID> record = QSharedPointer<IRecordID>(new ProxyRecordID());
-            in >> *record.dynamicCast<ProxyRecord>();
+            IRecordIDPtr record = IRecordIDPtr(new ProxyRecordID());
+            in >> record.dynamicCast<ProxyRecord>();
             lst.push_back(record);
         }
     }
@@ -170,7 +170,7 @@ IRecordPtr eDocTcpClientDatabasePlugin::createEmptyRecord()
     if (header.command() == MessageCodes::CodeNumber::RSP_createEnptyRecord)
     {
         record = QSharedPointer<ProxyRecord>(new ProxyRecord());
-        in >> *record;
+        in >> record;
     }
     return record;
 }
@@ -178,7 +178,7 @@ IRecordPtr eDocTcpClientDatabasePlugin::createEmptyRecord()
 IRecordIDPtr eDocTcpClientDatabasePlugin::addRecord(IRecordPtr record)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_addRecord);
-    (*out) << *record;
+    (*out) << record;
     QByteArray response = send();
 
     QDataStream in(&response, QIODevice::ReadOnly);
@@ -190,7 +190,7 @@ IRecordIDPtr eDocTcpClientDatabasePlugin::addRecord(IRecordPtr record)
     if (header.command() == MessageCodes::CodeNumber::RSP_addRecord)
     {
         recordId = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
-        in >> *recordId;
+        in >> recordId;
     }
     return recordId;
 }
@@ -198,7 +198,7 @@ IRecordIDPtr eDocTcpClientDatabasePlugin::addRecord(IRecordPtr record)
 IRecordPtr eDocTcpClientDatabasePlugin::getRecord(IRecordIDPtr id)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_getRecord);
-    (*out) << *id;
+    (*out) << id;
     QByteArray response = send();
 
     QDataStream in(&response, QIODevice::ReadOnly);
@@ -210,7 +210,7 @@ IRecordPtr eDocTcpClientDatabasePlugin::getRecord(IRecordIDPtr id)
     if (header.command() == MessageCodes::CodeNumber::RSP_getRecord)
     {
         record = QSharedPointer<ProxyRecord>(new ProxyRecord());
-        in >> *record;
+        in >> record;
     }
     return record;
 }
@@ -230,7 +230,7 @@ IRecordPtr eDocTcpClientDatabasePlugin::getRecord(const QString &id)
     if (header.command() == MessageCodes::CodeNumber::RSP_getRecord)
     {
         record = QSharedPointer<ProxyRecord>(new ProxyRecord());
-        in >> *record;
+        in >> record;
     }
     return record;
 }
@@ -253,7 +253,7 @@ QList<IRecordPtr> eDocTcpClientDatabasePlugin::getRecords(const QStringList &ids
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<ProxyRecord> record = QSharedPointer<ProxyRecord>(new ProxyRecord());
-            in >> *record;
+            in >> record;
             records.append(record);
         }
     }
@@ -263,14 +263,14 @@ QList<IRecordPtr> eDocTcpClientDatabasePlugin::getRecords(const QStringList &ids
 void eDocTcpClientDatabasePlugin::updateRecord(IRecordPtr record)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_updateRecord);
-    (*out) << *record;
+    (*out) << record;
     QByteArray response = send();
 }
 
 void eDocTcpClientDatabasePlugin::deleteRecord(IRecordIDPtr id)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_deleteRecord);
-    (*out) << *id;
+    (*out) << id;
     QByteArray response = send();
 }
 
@@ -340,7 +340,7 @@ IDocBasePtr eDocTcpClientDatabasePlugin::createDocument(const QString sourcePath
     if (header.command() == MessageCodes::CodeNumber::RSP_addDocumentWithOriginalLocation)
     {
         docId = ProxyDocIDPtr(new ProxyDocID());
-        in >> *docId;
+        in >> docId;
     }
     return IDocBasePtr(new ProxyDocument(docId));
 }
@@ -360,7 +360,7 @@ IDocBasePtr eDocTcpClientDatabasePlugin::createDocument(const QByteArray& blob)
     if (header.command() == MessageCodes::CodeNumber::RSP_addDocument)
     {
         docId = ProxyDocIDPtr(new ProxyDocID());
-        in >> *docId;
+        in >> docId;
     }
     return IDocBasePtr(new ProxyDocument(docId));
 }
@@ -424,7 +424,7 @@ void eDocTcpClientDatabasePlugin::removeRecord(IRecordIDPtr recordID, ITagPtr ta
 void eDocTcpClientDatabasePlugin::processKeywordString(IRecordIDPtr recordID, const QString &keywords)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_processKeywordString);
-    (*out) << *recordID;
+    (*out) << recordID;
     (*out) << keywords;
     QByteArray response = send();
 
@@ -443,7 +443,7 @@ void eDocTcpClientDatabasePlugin::processKeywordString(IRecordIDPtr recordID, co
 void eDocTcpClientDatabasePlugin::processKeywordStringList(IRecordIDPtr recordID, const QStringList &keywords)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_processKeywordStringList);
-    (*out) << *recordID;
+    (*out) << recordID;
     (*out) << keywords;
     QByteArray response = send();
 

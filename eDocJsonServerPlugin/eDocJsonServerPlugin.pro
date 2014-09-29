@@ -1,27 +1,32 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2014-09-10T17:33:34
+# Project created by QtCreator 2014-09-23T15:20:45
 #
 #-------------------------------------------------
 
+QT       += network
 QT       -= gui
-QT       += core sql widgets
 
-TARGET = $$qtLibraryTarget(eDoc-SimpleFileIndexerEngine)
+TARGET = eDocJsonServerPlugin
 TEMPLATE = lib
-CONFIG  += plugin
-CONFIG  += c++11
+CONFIG += plugin
+CONFIG += c++11
+
 DESTDIR = ../plugins
-DEFINES += EDOCSIMPLEFILEINDEXERENGINE_LIBRARY
 
-SOURCES += edocsimplefileindexerengine.cpp \
-    document.cpp \
-    ../SimpleFileEngine/simplefileid.cpp
+DEFINES += EDOCJSONSERVERPLUGIN_LIBRARY
 
-HEADERS += edocsimplefileindexerengine.h\
-        edoc-simplefileindexerengine_global.h \
-    document.h \
-    ../SimpleFileEngine/simplefileid.h
+SOURCES += edocjsonserverplugin.cpp \
+    jsonserver.cpp \
+    jsonprocessorthread.cpp
+
+HEADERS += edocjsonserverplugin.h\
+        edocjsonserverplugin_global.h \
+    jsonserver.h \
+    jsonprocessorthread.h
+
+OTHER_FILES += eDocJsonServerPlugin.json \
+    eDocTcpServerPlugin.json
 
 unix {
     target.path = /usr/lib
@@ -35,16 +40,15 @@ else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-API
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
 
-include(../Logging/QsLog.pri)
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -lsqlmanager
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -lsqlmanager
 else:unix: LIBS += -L$$OUT_PWD/../ -lsqlmanager
 
-
 INCLUDEPATH += $$PWD/../sqlmanager
 DEPENDPATH += $$PWD/../sqlmanager
 
-OTHER_FILES += \
-    SimpleFileIndexerEngine.json
+unix|win32: LIBS += -L$$OUT_PWD/../ -leDocTCPMessages
 
+INCLUDEPATH += $$PWD/../eDocTCPMessages
+DEPENDPATH += $$PWD/../eDocTCPMessages

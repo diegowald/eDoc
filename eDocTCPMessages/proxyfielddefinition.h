@@ -5,6 +5,8 @@
 #include "edoctcpmessages_global.h"
 #include "../eDoc-API/IFieldDefinition.h"
 
+CONSTRUCT(ProxyFieldDefinition)
+
 class EDOCTCPMESSAGESSHARED_EXPORT ProxyFieldDefinition : public QObject, public IFieldDefinition
 {
     Q_OBJECT
@@ -28,6 +30,8 @@ public:
     virtual void setIsQueryable(bool value);
     virtual void addValidQuery(VALIDQUERY query);
 
+    virtual QJsonObject asJson();
+
 signals:
 
 public slots:
@@ -39,7 +43,6 @@ private:
     bool _isVisible;
     bool _isQueryable;
     QList<VALIDQUERY> _validQueries;
-
 };
 
 #endif // PROXYFIELDDEFINITION_H

@@ -1,5 +1,6 @@
 #include "proxyfielddefinition.h"
 #include "proxyvalue.h"
+#include <QJsonArray>
 
 ProxyFieldDefinition::ProxyFieldDefinition(QObject *parent) :
     QObject(parent)
@@ -85,4 +86,25 @@ void ProxyFieldDefinition::setIsQueryable(bool value)
 void ProxyFieldDefinition::addValidQuery(VALIDQUERY query)
 {
     _validQueries.push_back(query);
+}
+
+QJsonObject ProxyFieldDefinition::asJson()
+{
+    QJsonObject obj;
+    obj["name"] = name();
+    obj["type"] = type();
+    obj["isReadOnly"] = isReadOnly();
+    obj["isVisible"] = isVisible();
+    obj["isQueryable"] = isQueryable();
+
+    obj["count"] = validQueries().count();
+    QJsonArray arr;
+    foreach (VALIDQUERY query, validQueries())
+    {
+        QJsonObject o;
+        o["query"] = query;
+        arr.append(o);
+    }
+    obj["validQueries"] = arr;
+    return obj;
 }

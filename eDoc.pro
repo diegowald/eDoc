@@ -22,6 +22,7 @@ SUBDIRS += \
     eDocTcpServerPlugin/eDocTcpServerPlugin.pro \
     HistoricDatabasePlugin \
     eDocTcpHistoricClient \
-    eDoc-SimpleFileIndexerEngine
+    eDoc-SimpleFileIndexerEngine \
+    eDocJsonServerPlugin
 
 

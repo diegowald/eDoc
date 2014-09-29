@@ -27,7 +27,7 @@ private:
     void setEnabledStatus();
     QFieldWidget *createWidget(IRecordPtr record, const QString &fieldName, QWidget* parent);
     void setButtonsState();
-
+    void applyValuesToRecord();
 signals:
     void downloadFile(IRecordPtr record, const IValuePtr value);
     void uploadFile(IRecordPtr record, const IValuePtr value, QString &fileLocation);

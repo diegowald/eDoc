@@ -1,14 +1,18 @@
-#include "edoctcpserverdatabaseplugin.h"
+#include "edocjsonserverplugin.h"
 #include <QPluginLoader>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QAbstractSocket>
 #include <QDateTime>
+#include <QJsonDocument>
+#include <QJsonArray>
+
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDocTCPMessages/messagecodes.h"
 #include "../eDocTCPMessages/streamhelpers.h"
 
-EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLoggingPtr Logger,
+
+EDocJsonServerPlugin::EDocJsonServerPlugin(QObjectLoggingPtr Logger,
                                                          QSharedPointer<QTcpSocket> socket,
                                                          IDatabasePtr persistance,
                                                          IDatabaseWithHistoryPtr histPersistance,
@@ -23,50 +27,47 @@ EDocTCPServerDatabasePlugin::EDocTCPServerDatabasePlugin(QObjectLoggingPtr Logge
     _docEngine = docEngine;
     _tagProcessor = tagProcessor;
     blockSize = 0;
-    blob.clear();
-    buildingBlob.clear();
-    out = NULL;
     logger = Logger;
 
     connect(_socket.data(), SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
     connect(_socket.data(), SIGNAL(connected()), this, SLOT(connected()));
     start();
 
-    functionMap[MessageCodes::CodeNumber::REQ_fields] = &EDocTCPServerDatabasePlugin::processREQFields;
-    functionMap[MessageCodes::CodeNumber::REQ_field] = &EDocTCPServerDatabasePlugin::processREQField;
-    functionMap[MessageCodes::CodeNumber::REQ_createEmptyParameter] = &EDocTCPServerDatabasePlugin::processREQcreateEmptyParameter;
-    functionMap[MessageCodes::CodeNumber::REQ_search] = &EDocTCPServerDatabasePlugin::processREQSearch;
-    functionMap[MessageCodes::CodeNumber::REQ_searchWithin] = &EDocTCPServerDatabasePlugin::processREQSearchWithin;
-    functionMap[MessageCodes::CodeNumber::REQ_createEnptyRecord] = &EDocTCPServerDatabasePlugin::processREQCreateEnptyRecord;
-    functionMap[MessageCodes::CodeNumber::REQ_addRecord] = &EDocTCPServerDatabasePlugin::processREQAddRecord;
-    functionMap[MessageCodes::CodeNumber::REQ_getRecord] = &EDocTCPServerDatabasePlugin::processREQGetRecord;
-    functionMap[MessageCodes::CodeNumber::REQ_getRecords] = &EDocTCPServerDatabasePlugin::processREQGetRecords;
-    functionMap[MessageCodes::CodeNumber::REQ_updateRecord] = &EDocTCPServerDatabasePlugin::processREQUpdateRecord;
-    functionMap[MessageCodes::CodeNumber::REQ_deleteRecord] = &EDocTCPServerDatabasePlugin::processREQDeleteRecord;
-    functionMap[MessageCodes::CodeNumber::REQ_getDistinctColumnValues] = &EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValues;
-    functionMap[MessageCodes::CodeNumber::REQ_addDocument] = &EDocTCPServerDatabasePlugin::processREQcreateDocument;
-    functionMap[MessageCodes::CodeNumber::REQ_addDocumentWithOriginalLocation] = &EDocTCPServerDatabasePlugin::processREQcreateDocumentWithName;
-    functionMap[MessageCodes::CodeNumber::REQ_searchWithHistory] = &EDocTCPServerDatabasePlugin::processREQSearchWithHistory;
-    functionMap[MessageCodes::CodeNumber::REQ_getRecordWithHistory] = &EDocTCPServerDatabasePlugin::processREQGetRecordWithHistory;
-    functionMap[MessageCodes::CodeNumber::REQ_getRecordsWithHistory] = &EDocTCPServerDatabasePlugin::processREQGetRecordsWithHistory;
-    functionMap[MessageCodes::CodeNumber::REQ_getDistinctColumnValuesWithHistory] = &EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValuesWithHistory;
-    functionMap[MessageCodes::CodeNumber::REQ_getHistory] = &EDocTCPServerDatabasePlugin::processREQGetHistory;
-    functionMap[MessageCodes::CodeNumber::RSP_getHistoryChanges] = &EDocTCPServerDatabasePlugin::processREQGetHistoryChanges;
-    functionMap[MessageCodes::CodeNumber::REQ_addTagRecord] = &EDocTCPServerDatabasePlugin::processREQAddTagRecord;
-    functionMap[MessageCodes::CodeNumber::REQ_findByTags] = &EDocTCPServerDatabasePlugin::processREQFindByTags;
-    functionMap[MessageCodes::CodeNumber::REQ_removeRecord] = &EDocTCPServerDatabasePlugin::processREQRemoveRecord;
-    functionMap[MessageCodes::CodeNumber::REQ_processKeywordString] = &EDocTCPServerDatabasePlugin::processREQprocessKeywordString;
-    functionMap[MessageCodes::CodeNumber::REQ_processKeywordStringList] = &EDocTCPServerDatabasePlugin::processREQprocessKeywordStringList;
+    functionMap[MessageCodes::CodeNumber::REQ_fields] = &EDocJsonServerPlugin::processREQFields;
+    functionMap[MessageCodes::CodeNumber::REQ_field] = &EDocJsonServerPlugin::processREQField;
+    /*functionMap[MessageCodes::CodeNumber::REQ_createEmptyParameter] = &EDocJsonServerPlugin::processREQcreateEmptyParameter;
+    functionMap[MessageCodes::CodeNumber::REQ_search] = &EDocJsonServerPlugin::processREQSearch;
+    functionMap[MessageCodes::CodeNumber::REQ_searchWithin] = &EDocJsonServerPlugin::processREQSearchWithin;
+    functionMap[MessageCodes::CodeNumber::REQ_createEnptyRecord] = &EDocJsonServerPlugin::processREQCreateEnptyRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_addRecord] = &EDocJsonServerPlugin::processREQAddRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_getRecord] = &EDocJsonServerPlugin::processREQGetRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_getRecords] = &EDocJsonServerPlugin::processREQGetRecords;
+    functionMap[MessageCodes::CodeNumber::REQ_updateRecord] = &EDocJsonServerPlugin::processREQUpdateRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_deleteRecord] = &EDocJsonServerPlugin::processREQDeleteRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_getDistinctColumnValues] = &EDocJsonServerPlugin::processREQGetDistinctColumnValues;
+    functionMap[MessageCodes::CodeNumber::REQ_addDocument] = &EDocJsonServerPlugin::processREQcreateDocument;
+    functionMap[MessageCodes::CodeNumber::REQ_addDocumentWithOriginalLocation] = &EDocJsonServerPlugin::processREQcreateDocumentWithName;
+    functionMap[MessageCodes::CodeNumber::REQ_searchWithHistory] = &EDocJsonServerPlugin::processREQSearchWithHistory;
+    functionMap[MessageCodes::CodeNumber::REQ_getRecordWithHistory] = &EDocJsonServerPlugin::processREQGetRecordWithHistory;
+    functionMap[MessageCodes::CodeNumber::REQ_getRecordsWithHistory] = &EDocJsonServerPlugin::processREQGetRecordsWithHistory;
+    functionMap[MessageCodes::CodeNumber::REQ_getDistinctColumnValuesWithHistory] = &EDocJsonServerPlugin::processREQGetDistinctColumnValuesWithHistory;
+    functionMap[MessageCodes::CodeNumber::REQ_getHistory] = &EDocJsonServerPlugin::processREQGetHistory;
+    functionMap[MessageCodes::CodeNumber::RSP_getHistoryChanges] = &EDocJsonServerPlugin::processREQGetHistoryChanges;
+    functionMap[MessageCodes::CodeNumber::REQ_addTagRecord] = &EDocJsonServerPlugin::processREQAddTagRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_findByTags] = &EDocJsonServerPlugin::processREQFindByTags;
+    functionMap[MessageCodes::CodeNumber::REQ_removeRecord] = &EDocJsonServerPlugin::processREQRemoveRecord;
+    functionMap[MessageCodes::CodeNumber::REQ_processKeywordString] = &EDocJsonServerPlugin::processREQprocessKeywordString;
+    functionMap[MessageCodes::CodeNumber::REQ_processKeywordStringList] = &EDocJsonServerPlugin::processREQprocessKeywordStringList;*/
 }
 
-EDocTCPServerDatabasePlugin::~EDocTCPServerDatabasePlugin()
+EDocJsonServerPlugin::~EDocJsonServerPlugin()
 {
-    logger->logDebug("EDocTCPServerDatabasePlugin::~EDocTCPServerDatabasePlugin()");
+    logger->logDebug("EDocJsonServerPlugin::~EDocJsonServerPlugin()");
 }
 
-void EDocTCPServerDatabasePlugin::run()
+void EDocJsonServerPlugin::run()
 {
-    logger->logDebug("void EDocTCPServerDatabasePlugin::run()");
+    logger->logDebug("void EDocJsonServerPlugin::run()");
     while (_socket->state() == QAbstractSocket::ConnectedState)
     {
         _socket->waitForReadyRead(1500);
@@ -82,9 +83,9 @@ void EDocTCPServerDatabasePlugin::run()
 
 }
 
-void EDocTCPServerDatabasePlugin::onReadyRead()
+void EDocJsonServerPlugin::onReadyRead()
 {
-    logger->logDebug("void EDocTCPServerDatabasePlugin::onReadyRead()");
+    logger->logDebug("void EDocJsonServerPlugin::onReadyRead()");
     QDataStream in(_socket.data());
     in.setVersion(QDataStream::Qt_5_3);
 
@@ -112,54 +113,52 @@ void EDocTCPServerDatabasePlugin::onReadyRead()
     _socket->waitForBytesWritten();
 
     blob.clear();
-
-    buildingBlob.clear();
-    if (out != NULL)
-    {
-        delete out;
-        out = NULL;
-    }
 }
 
-void EDocTCPServerDatabasePlugin::error(QAbstractSocket::SocketError)
+void EDocJsonServerPlugin::error(QAbstractSocket::SocketError)
 {
-    logger->logDebug("void EDocTCPServerDatabasePlugin::error(QAbstractSocket::SocketError)");
+    logger->logDebug("void EDocJsonServerPlugin::error(QAbstractSocket::SocketError)");
     logger->logError(_socket->errorString());
 }
 
-void EDocTCPServerDatabasePlugin::connected()
+void EDocJsonServerPlugin::connected()
 {
-    logger->logDebug("void EDocTCPServerDatabasePlugin::connected()");
+    logger->logDebug("void EDocJsonServerPlugin::connected()");
 }
 
-void EDocTCPServerDatabasePlugin::processREQFields(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQFields(QJsonObject &input)
 {
     prepareToSend(MessageCodes::CodeNumber::RSP_fields);
     QList<QSharedPointer<IFieldDefinition>> rsp = _persistanceHist ? _persistanceHist->fields() : _persistance->fields();
-    (*out) << rsp.count();
+
+    QJsonObject ressponse;
+    ressponse["count"] = rsp.count();
+    QJsonArray fields;
     foreach (QSharedPointer<IFieldDefinition> field, rsp)
     {
-        (*out) << field;
+        fields.append(field->asJson());
     }
+    response["fields"] = fields;
+    return response;
 }
 
-void EDocTCPServerDatabasePlugin::processREQField(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQField(QJsonObject &input)
 {
     prepareToSend(MessageCodes::CodeNumber::RSP_field);
     QString fieldName("");
-    in >> fieldName;
+    fieldName = input["fieldName"].toString();
     QSharedPointer<IFieldDefinition> fieldDef = _persistanceHist ? _persistanceHist->field(fieldName) : _persistance->field(fieldName);
-    (*out) << fieldDef;
+    return fieldDef->asJson();
 }
 
-void EDocTCPServerDatabasePlugin::processREQcreateEmptyParameter(QDataStream &in)
+/*QJsonObject EDocJsonServerPlugin::processREQcreateEmptyParameter(QJsonObject &input)
 {
     prepareToSend(MessageCodes::CodeNumber::RSP_createEmptyParameter);
     QSharedPointer<IParameter> parameter = _persistanceHist ? _persistanceHist->createEmptyParameter() : _persistance->createEmptyParameter();
     (*out) << parameter;
 }
 
-void EDocTCPServerDatabasePlugin::processREQSearch(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQSearch(QJsonObject &input)
 {
     int count = 0;
     in >> count;
@@ -179,7 +178,7 @@ void EDocTCPServerDatabasePlugin::processREQSearch(QDataStream &in)
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQSearchWithin(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQSearchWithin(QJsonObject &input)
 {
     int count = 0;
     in >> count;
@@ -209,7 +208,7 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithin(QDataStream &in)
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQCreateEnptyRecord(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQCreateEnptyRecord(QJsonObject &input)
 {
     (void) in;
     prepareToSend(MessageCodes::CodeNumber::RSP_createEnptyRecord);
@@ -217,7 +216,7 @@ void EDocTCPServerDatabasePlugin::processREQCreateEnptyRecord(QDataStream &in)
     (*out) << record;
 }
 
-void EDocTCPServerDatabasePlugin::processREQAddRecord(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQAddRecord(QJsonObject &input)
 {
     QSharedPointer<ProxyRecord> record = QSharedPointer<ProxyRecord>(new ProxyRecord());
     in >> record;
@@ -226,7 +225,7 @@ void EDocTCPServerDatabasePlugin::processREQAddRecord(QDataStream &in)
     (*out) << recordId;
 }
 
-void EDocTCPServerDatabasePlugin::processREQGetRecord(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQGetRecord(QJsonObject &input)
 {
     QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
     in >> proxyRecordID;
@@ -235,7 +234,7 @@ void EDocTCPServerDatabasePlugin::processREQGetRecord(QDataStream &in)
     (*out) << record;
 }
 
-void EDocTCPServerDatabasePlugin::processREQGetRecords(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQGetRecords(QJsonObject &input)
 {
     QStringList ids;
     in >> ids;
@@ -248,7 +247,7 @@ void EDocTCPServerDatabasePlugin::processREQGetRecords(QDataStream &in)
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQUpdateRecord(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQUpdateRecord(QJsonObject &input)
 {
     Q_ASSERT(false);
 
@@ -265,12 +264,12 @@ void EDocTCPServerDatabasePlugin::processREQUpdateRecord(QDataStream &in)
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQDeleteRecord(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQDeleteRecord(QJsonObject &input)
 {
     Q_ASSERT(false);
 }
 
-void EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValues(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQGetDistinctColumnValues(QJsonObject &input)
 {
     QList<QPair<QString, QString>> filter;
     int count = 0;
@@ -292,7 +291,7 @@ void EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValues(QDataStream 
     (*out) << rsp;
 }
 
-void EDocTCPServerDatabasePlugin::processREQcreateDocument(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQcreateDocument(QJsonObject &input)
 {
     QByteArray blob;
     in >> blob;
@@ -301,7 +300,7 @@ void EDocTCPServerDatabasePlugin::processREQcreateDocument(QDataStream &in)
     (*out) << doc->id();
 }
 
-void EDocTCPServerDatabasePlugin::processREQcreateDocumentWithName(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQcreateDocumentWithName(QJsonObject &input)
 {
     QString originalLocation;
     QByteArray blob;
@@ -310,7 +309,7 @@ void EDocTCPServerDatabasePlugin::processREQcreateDocumentWithName(QDataStream &
     (*out) << doc->id();
 }
 
-void EDocTCPServerDatabasePlugin::processREQSearchWithHistory(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQSearchWithHistory(QJsonObject &input)
 {
     int count = 0;
     in >> count;
@@ -332,7 +331,7 @@ void EDocTCPServerDatabasePlugin::processREQSearchWithHistory(QDataStream &in)
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQGetRecordWithHistory(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQGetRecordWithHistory(QJsonObject &input)
 {
     QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
     in >> proxyRecordID;
@@ -348,7 +347,7 @@ void EDocTCPServerDatabasePlugin::processREQGetRecordWithHistory(QDataStream &in
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQGetRecordsWithHistory(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQGetRecordsWithHistory(QJsonObject &input)
 {
     QStringList ids;
     in >> ids;
@@ -363,7 +362,7 @@ void EDocTCPServerDatabasePlugin::processREQGetRecordsWithHistory(QDataStream &i
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValuesWithHistory(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQGetDistinctColumnValuesWithHistory(QJsonObject &input)
 {
     QList<QPair<QString, QString>> filter;
     int count = 0;
@@ -385,7 +384,7 @@ void EDocTCPServerDatabasePlugin::processREQGetDistinctColumnValuesWithHistory(Q
     (*out) << rsp;
 }
 
-void EDocTCPServerDatabasePlugin::processREQGetHistory(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQGetHistory(QJsonObject &input)
 {
     QSharedPointer<ProxyRecordID> proxyRecordID = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
     in >> proxyRecordID;
@@ -400,7 +399,7 @@ void EDocTCPServerDatabasePlugin::processREQGetHistory(QDataStream &in)
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQGetHistoryChanges(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQGetHistoryChanges(QJsonObject &input)
 {
     QDateTime from;
     QDateTime to;
@@ -414,12 +413,12 @@ void EDocTCPServerDatabasePlugin::processREQGetHistoryChanges(QDataStream &in)
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQAddTagRecord(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQAddTagRecord(QJsonObject &in)
 {
     Q_ASSERT(false);
 }
 
-void EDocTCPServerDatabasePlugin::processREQFindByTags(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQFindByTags(QJsonObject &in)
 {
     int count = 0;
     in >> count;
@@ -442,12 +441,12 @@ void EDocTCPServerDatabasePlugin::processREQFindByTags(QDataStream &in)
     }
 }
 
-void EDocTCPServerDatabasePlugin::processREQRemoveRecord(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQRemoveRecord(QJsonObject &input)
 {
     Q_ASSERT(false);
 }
 
-void EDocTCPServerDatabasePlugin::processREQprocessKeywordString(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQprocessKeywordString(QJsonObject &input)
 {
     ProxyRecordIDPtr proxyRecordID = ProxyRecordIDPtr(new ProxyRecordID());
     in >> proxyRecordID;
@@ -458,7 +457,7 @@ void EDocTCPServerDatabasePlugin::processREQprocessKeywordString(QDataStream &in
     (*out) << true;
 }
 
-void EDocTCPServerDatabasePlugin::processREQprocessKeywordStringList(QDataStream &in)
+QJsonObject EDocJsonServerPlugin::processREQprocessKeywordStringList(QJsonObject &input)
 {
     ProxyRecordIDPtr proxyRecordID = ProxyRecordIDPtr(new ProxyRecordID());
     in >> proxyRecordID;
@@ -467,18 +466,18 @@ void EDocTCPServerDatabasePlugin::processREQprocessKeywordStringList(QDataStream
     _tagProcessor->processKeywordStringList(proxyRecordID, keywords);
     prepareToSend(MessageCodes::CodeNumber::RSP_processKeywordStringList);
     (*out) << true;
-}
+}*/
 
-void EDocTCPServerDatabasePlugin::send()
+void EDocJsonServerPlugin::send()
 {
-    logger->logDebug("void EDocTCPServerDatabasePlugin::send()");
-    blob.clear();
+    logger->logDebug("void EDocJsonServerPlugin::send()");
+
+    QByteArray blob;
     QDataStream out(&blob, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_3);
 
-    QByteArray compressed = qCompress(buildingBlob, 9);
-    out << (compressed.size() + (int)sizeof(int));
-    out << compressed;
+    QJsonDocument doc(response);
+    out << doc.toJson();
 
     _socket->write(blob);
     _socket->flush();
@@ -487,17 +486,22 @@ void EDocTCPServerDatabasePlugin::send()
     blockSize = 0;
 }
 
-void EDocTCPServerDatabasePlugin::process(QDataStream &in)
+void EDocJsonServerPlugin::process(QDataStream &in)
 {
-    logger->logDebug("void EDocTCPServerDatabasePlugin::process(QDataStream &in)");
-    Header header;
-    in >> header;
+    logger->logDebug("void EDocJsonServerPlugin::process(QDataStream &in)");
+    QByteArray input;
+    in >> input;
 
-    MessageCodes::CodeNumber code = header.command();
+    QJsonDocument jsonInput = QJsonDocument::fromJson(input);
+    QJsonObject jsonInputObject = jsonInput.object();
+
+    MessageCodes::CodeNumber code = MessageCodes::fromString(jsonInputObject["command"].toString());
     if (functionMap.contains(code))
     {
+        QJsonObject response;
+        QJsonObject parameters = jsonInputObject["parameters"].toObject();
         Executor functor = functionMap[code];
-        (this->*functor)(in);
+        response = (this->*functor)(parameters);
     }
     else
     {
@@ -507,20 +511,9 @@ void EDocTCPServerDatabasePlugin::process(QDataStream &in)
     send();
 }
 
-void EDocTCPServerDatabasePlugin::prepareToSend(MessageCodes::CodeNumber code)
+void EDocJsonServerPlugin::prepareToSend(MessageCodes::CodeNumber code)
 {
-    logger->logDebug("void EDocTCPServerDatabasePlugin::prepareToSend(MessageCodes::CodeNumber code)");
-    if (out != NULL)
-    {
-        delete out;
-    }
-
-    buildingBlob.clear();
-    out = new QDataStream(&buildingBlob, QIODevice::WriteOnly);
-    out->setVersion(QDataStream::Qt_5_3);
-
-    Header header;
-    header.setCommand(code);
-
-    (*out) << header;
+    logger->logDebug("void EDocJsonServerPlugin::prepareToSend(MessageCodes::CodeNumber code)");
+    response = QJsonObject();
+    response["command"] = MessageCodes::toString(code);
 }

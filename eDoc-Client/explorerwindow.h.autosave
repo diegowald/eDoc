@@ -74,7 +74,7 @@ private slots:
 
     void on_save(IRecordPtr record);
     void on_cancelEdition(IRecordPtr record);
-
+    
 private:
     Ui::ExplorerWindow *ui;
     EDocFactory f;

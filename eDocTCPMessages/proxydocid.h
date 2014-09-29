@@ -17,7 +17,7 @@ public:
     virtual ~ProxyDocID();
     virtual QString asString() const;
 
-    friend QDataStream& operator>>(QDataStream& is, ProxyDocID &obj);
+    friend QDataStream& operator>>(QDataStream& is, ProxyDocIDPtr obj);
 signals:
 
 public slots:

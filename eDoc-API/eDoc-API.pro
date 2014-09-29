@@ -41,7 +41,8 @@ HEADERS += edocapi_global.h \
     IInitializable.h \
     IDatabaseWithHistory.h \
     IFactory.h \
-    forward.h
+    forward.h \
+    iJsonSerializable.h
 
 unix:!symbian {
     maemo5 {

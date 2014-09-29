@@ -42,7 +42,8 @@ DEPENDPATH += $$PWD/../eDoc-Factory
 include(../Logging/QsLog.pri)
 
 OTHER_FILES += \
-    client.conf.xml
+    client.conf.xml \
+    ../../edoc-bin/samantha.client.conf.xml
 
 unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
 

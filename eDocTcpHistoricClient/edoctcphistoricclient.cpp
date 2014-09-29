@@ -46,7 +46,7 @@ QList<QSharedPointer<IFieldDefinition> > EDocTcpHistoricClient::fields()
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<ProxyFieldDefinition> field = QSharedPointer<ProxyFieldDefinition>(new ProxyFieldDefinition());
-            in >> *field;
+            in >> field;
             lst.push_back(field);
         }
     }
@@ -68,7 +68,7 @@ QSharedPointer<IFieldDefinition> EDocTcpHistoricClient::field(const QString &fie
     if (header.command() == MessageCodes::CodeNumber::RSP_field)
     {
         field = QSharedPointer<ProxyFieldDefinition>(new ProxyFieldDefinition());
-        in >> *field;
+        in >> field;
     }
     return field;
 }
@@ -86,7 +86,7 @@ QSharedPointer<IParameter> EDocTcpHistoricClient::createEmptyParameter()
     QSharedPointer<ProxyParameter> parameter = QSharedPointer<ProxyParameter>(new ProxyParameter());
     if (header.command() == MessageCodes::CodeNumber::RSP_createEmptyParameter)
     {
-        in >> *parameter;
+        in >> parameter;
     }
     return parameter;
 }
@@ -97,7 +97,7 @@ QList<QSharedPointer<IRecordID>> EDocTcpHistoricClient::search(const QList<QShar
     (*out) << parameters.count();
     foreach (QSharedPointer<IParameter> parameter, parameters)
     {
-        (*out) << *parameter;
+        (*out) << parameter;
     }
     QByteArray response = send();
 
@@ -114,7 +114,7 @@ QList<QSharedPointer<IRecordID>> EDocTcpHistoricClient::search(const QList<QShar
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<ProxyRecordID> record = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
-            in >> *record;
+            in >> record;
             lst.push_back(record);
         }
     }
@@ -127,12 +127,12 @@ QList<QSharedPointer<IRecordID> > EDocTcpHistoricClient::searchWithin(const QLis
     (*out) << parameters.count();
     foreach (QSharedPointer<IParameter> parameter, parameters)
     {
-        (*out) << *parameter;
+        (*out) << parameter;
     }
     (*out) << records.count();
     foreach (QSharedPointer<IRecordID> rec, records)
     {
-        (*out) << *rec;
+        (*out) << rec;
     }
     QByteArray response = send();
 
@@ -149,7 +149,7 @@ QList<QSharedPointer<IRecordID> > EDocTcpHistoricClient::searchWithin(const QLis
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<ProxyRecordID> record = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
-            in >> *record;
+            in >> record;
             lst.push_back(record);
         }
     }
@@ -170,7 +170,7 @@ QSharedPointer<IRecord> EDocTcpHistoricClient::createEmptyRecord()
     if (header.command() == MessageCodes::CodeNumber::RSP_createEnptyRecord)
     {
         record = QSharedPointer<ProxyRecord>(new ProxyRecord());
-        in >> *record;
+        in >> record;
     }
     return record;
 }
@@ -182,7 +182,7 @@ QSharedPointer<IRecordID> EDocTcpHistoricClient::addRecord(QSharedPointer<IRecor
         record.dynamicCast<ProxyRecord>()->prepareToSave();
     }
     prepareToSend(MessageCodes::CodeNumber::REQ_addRecord);
-    (*out) << *record;
+    (*out) << record;
     QByteArray response = send();
 
     QDataStream in(&response, QIODevice::ReadOnly);
@@ -194,7 +194,7 @@ QSharedPointer<IRecordID> EDocTcpHistoricClient::addRecord(QSharedPointer<IRecor
     if (header.command() == MessageCodes::CodeNumber::RSP_addRecord)
     {
         recordId = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
-        in >> *recordId;
+        in >> recordId;
     }
     return recordId;
 }
@@ -221,14 +221,14 @@ void EDocTcpHistoricClient::updateRecord(QSharedPointer<IRecord> record)
         record.dynamicCast<ProxyRecord>()->prepareToSave();
     }
     prepareToSend(MessageCodes::CodeNumber::REQ_updateRecord);
-    (*out) << *record;
+    (*out) << record;
     QByteArray response = send();
 }
 
 void EDocTcpHistoricClient::deleteRecord(QSharedPointer<IRecordID> id)
 {
     prepareToSend(MessageCodes::CodeNumber::REQ_deleteRecord);
-    (*out) << *id;
+    (*out) << id;
     QByteArray response = send();
 }
 
@@ -287,7 +287,7 @@ QList<QSharedPointer<IRecordID>> EDocTcpHistoricClient::searchByDate(const QList
     (*out) << parameters.count();
     foreach (QSharedPointer<IParameter> parameter, parameters)
     {
-        (*out) << *parameter;
+        (*out) << parameter;
     }
     (*out) << date;
     QByteArray response = send();
@@ -305,7 +305,7 @@ QList<QSharedPointer<IRecordID>> EDocTcpHistoricClient::searchByDate(const QList
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<ProxyRecordID> record = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
-            in >> *record;
+            in >> record;
             lst.push_back(record);
         }
     }
@@ -337,7 +337,7 @@ QSharedPointer<IRecord> EDocTcpHistoricClient::getRecordByDate(const QString &id
         if (!recordNull)
         {
             record = QSharedPointer<ProxyRecord>(new ProxyRecord());
-            in >> *record;
+            in >> record;
         }
     }
     return record;
@@ -362,7 +362,7 @@ QList<QSharedPointer<IRecord>> EDocTcpHistoricClient::getRecordsByDate(const QSt
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<ProxyRecord> record = QSharedPointer<ProxyRecord>(new ProxyRecord());
-            in >> *record;
+            in >> record;
             records.append(record);
         }
     }
@@ -414,7 +414,7 @@ QList<QSharedPointer<IRecord>> EDocTcpHistoricClient::getHistory(QSharedPointer<
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<ProxyRecord> rec = QSharedPointer<ProxyRecord>(new ProxyRecord());
-            in >> *rec;
+            in >> rec;
             lst.append(rec);
         }
     }
@@ -441,7 +441,7 @@ QList<QSharedPointer<IRecordID>> EDocTcpHistoricClient::getChanges(const QDateTi
         for (int i = 0; i < count; ++i)
         {
             QSharedPointer<ProxyRecordID> rec = QSharedPointer<ProxyRecordID>(new ProxyRecordID());
-            in >> *rec;
+            in >> rec;
             lst.append(rec);
         }
     }

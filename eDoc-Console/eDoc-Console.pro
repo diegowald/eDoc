@@ -40,3 +40,6 @@ unix|win32: LIBS += -L$$OUT_PWD/../ -leDoc-Factory
 
 INCLUDEPATH += $$PWD/../eDoc-Factory
 DEPENDPATH += $$PWD/../eDoc-Factory
+
+OTHER_FILES += \
+    ../../edoc-bin/console.conf.xml

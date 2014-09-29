@@ -7,34 +7,42 @@
 #include "../eDoc-API/IRecordID.h"
 #include "../eDoc-API/IValue.h"
 #include "../eDoc-API/IFieldDefinition.h"
+#include "../eDoc-API/IDocBase.h"
 
 #include "proxyparameter.h"
 #include "proxyrecord.h"
 #include "proxyrecordid.h"
+#include "proxydocumentvalue.h"
 #include "proxyvalue.h"
 #include "proxyfielddefinition.h"
+#include "../eDoc-MetadataFramework/valuedefinitions.h"
+#include "proxydocumentvalue.h"
 
 #include "../eDoc-API/IDocID.h"
 #include "proxydocid.h"
 #include "edoctcpmessages_global.h"
 
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IParameter &obj);
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyParameter &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IParameterPtr obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyParameterPtr obj);
 
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IRecord &obj);
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyRecord &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IRecordPtr obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyRecordPtr obj);
 
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IRecordID &obj);
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyRecordID &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IRecordIDPtr obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyRecordIDPtr obj);
 
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IValue &obj);
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyValue &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, QSharedPointer<IDocumentValue> obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& os, ProxyDocumentValuePtr obj);
 
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IFieldDefinition &obj);
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyFieldDefinition &obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IValuePtr obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyValuePtr obj);
 
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IDocID &obj);
-EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyDocID &obj);
+
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IFieldDefinitionPtr obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyFieldDefinitionPtr obj);
+
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator<<(QDataStream& os, IDocIDPtr obj);
+EDOCTCPMESSAGESSHARED_EXPORT QDataStream& operator>>(QDataStream& is, ProxyDocIDPtr obj);
 
 #endif // STREAMHELPERS_H
 

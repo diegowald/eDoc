@@ -197,7 +197,7 @@ void IDocumentValue::setValue(const QVariant &newValue)
         IDocEnginePtr engine = ((FieldDefinition*)fieldDefinition())->getEngine();
         if (newValue.toString().startsWith("file:"))
         {
-            filePath = newValue.toString().replace("filw:", "");
+            filePath = newValue.toString().replace("file:", "");
             QFile file(filePath);
             file.open(QIODevice::ReadOnly);
             QByteArray blob = file.readAll();
