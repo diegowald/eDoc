@@ -10,7 +10,7 @@ Task::Task(const QString &appPath, QObject *parent) :
     m_ApplicationPath = appPath;
     logger = QSharedPointer<QObjectLogging>(new QObjectLogging());
 
-    f.initialize(m_ApplicationPath, "./console.conf.xml", logger);
+    f.initialize(m_ApplicationPath, "./consolejson.conf.xml", logger);
     _server = f.serverEngine();
 
     connect(logger.data(), SIGNAL(LogDebug(QString)), this, SLOT(on_LogDebug(QString)));

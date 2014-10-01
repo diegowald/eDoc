@@ -8,7 +8,6 @@ SUBDIRS += \
     sqlmanager \
     eDoc-CORE \
     eDoc-ClientComponents \
-    eDoc-Client \
     testCORE \
     SimpleFileEngine \
     MemoryDocEngine \
@@ -17,12 +16,10 @@ SUBDIRS += \
     eDoc-InMemoryTagging \
     eDocTCPMessages \
     eDoc-tcpClient/edoctcpclient.pro \
-    eDoc-Console \
-#     tcpMessages
+    eDocJsonServerPlugin \
     eDocTcpServerPlugin/eDocTcpServerPlugin.pro \
     HistoricDatabasePlugin \
     eDocTcpHistoricClient \
     eDoc-SimpleFileIndexerEngine \
-    eDocJsonServerPlugin
-
-
+    eDoc-Console \
+    eDoc-Client \

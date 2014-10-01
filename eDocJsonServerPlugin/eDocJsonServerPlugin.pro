@@ -18,15 +18,17 @@ DEFINES += EDOCJSONSERVERPLUGIN_LIBRARY
 
 SOURCES += edocjsonserverplugin.cpp \
     jsonserver.cpp \
-    jsonprocessorthread.cpp
+    jsonprocessorthread.cpp \
+    jsonhelpers.cpp
 
 HEADERS += edocjsonserverplugin.h\
         edocjsonserverplugin_global.h \
     jsonserver.h \
-    jsonprocessorthread.h
+    jsonprocessorthread.h \
+    jsonhelpers.h
 
 OTHER_FILES += eDocJsonServerPlugin.json \
-    eDocTcpServerPlugin.json
+    eDocJsonServerPlugin.json
 
 unix {
     target.path = /usr/lib

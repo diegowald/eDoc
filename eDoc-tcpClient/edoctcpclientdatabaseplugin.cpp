@@ -10,7 +10,8 @@
 #include "../eDocTCPMessages/proxydocument.h"
 
 
-eDocTcpClientDatabasePlugin::eDocTcpClientDatabasePlugin(QObject *parent) :TcpClient(parent)
+eDocTcpClientDatabasePlugin::eDocTcpClientDatabasePlugin(QObject *parent)
+    : TcpClient(parent)
 {
 }
 

@@ -17,7 +17,7 @@ class JsonServer : public QObject, public IServer
     Q_OBJECT
 
 #if QT_VERSION >= 0x050000
-    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IServer/0.0" FILE "eDocTcpServerPlugin.json")
+    Q_PLUGIN_METADATA(IID "com.mksingenieria.eDoc.IServer/0.0" FILE "eDocJsonServerPlugin.json")
 #endif // QT_VERSION >= 0x050000
 
     Q_INTERFACES(IServer)

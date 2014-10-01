@@ -3,10 +3,10 @@
 # Project created by QtCreator 2014-08-15T14:41:31
 #
 #-------------------------------------------------
-QT       += sql core network
+QT       += sql network
 QT       -= gui
 
-TARGET = $$qtLibraryTarget(eDocTcpClient)
+TARGET = eDocTcpClient
 TEMPLATE = lib
 DESTDIR = ../plugins
 
@@ -31,7 +31,6 @@ unix:!symbian {
 }
 
 OTHER_FILES += \
-    TagProcessorPlugin.json \
     eDocTcpClient.json
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -lsqlmanager

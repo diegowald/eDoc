@@ -30,8 +30,6 @@ public:
     virtual void setIsQueryable(bool value);
     virtual void addValidQuery(VALIDQUERY query);
 
-    virtual QJsonObject asJson();
-
 signals:
 
 public slots:

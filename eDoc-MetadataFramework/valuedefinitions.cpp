@@ -74,7 +74,6 @@ QVariant BoolValue::asVariant()
     return isNull() ? QVariant(QVariant::Bool) : (get() ? true : false);
 }
 
-
 QStringValue::QStringValue(const QString &value, QObject *parent) :
     QObject(parent), Value(value)
 {
@@ -94,7 +93,6 @@ QVariant QStringValue::asVariant()
 {
     return isNull() ? QVariant(QVariant::String) : get();
 }
-
 
 QStringValue::~QStringValue()
 {
@@ -147,7 +145,6 @@ QVariant QDateValue::asVariant()
 {
     return isNull() ? QVariant(QVariant::Date) : get();//.toString("yyyyMMdd");
 }
-
 
 QTimeValue::QTimeValue(const QTimeValue &value, QObject *parent) :
     QObject(parent), Value(value)

@@ -44,8 +44,8 @@ private:
 
     QJsonObject processREQFields(QJsonObject &input);
     QJsonObject processREQField(QJsonObject &input);
-/*    QJsonObject processREQcreateEmptyParameter(QJsonObject &input);
-    QJsonObject processREQSearch(QJsonObject &input);
+    QJsonObject processREQcreateEmptyParameter(QJsonObject &input);
+/*    QJsonObject processREQSearch(QJsonObject &input);
     QJsonObject processREQSearchWithin(QJsonObject &input);
     QJsonObject processREQCreateEnptyRecord(QJsonObject &input);
     QJsonObject processREQAddRecord(QJsonObject &input);

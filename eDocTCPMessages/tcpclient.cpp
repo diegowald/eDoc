@@ -9,6 +9,10 @@ TcpClient::TcpClient(QObject *parent) :
     out = QSharedPointer<QDataStream>();
     timeOut = 15000;
 
+    blockSize = 0;
+    blob.clear();
+    buildingBlob.clear();
+
     connect(tcpSocket.data(), SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(on_error(QAbstractSocket::SocketError)));
 }
 

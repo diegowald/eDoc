@@ -34,6 +34,7 @@ void EDocFactory::readAvailablePlugins()
         m_Logger->logDebug("File: " + f);
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = pluginLoader.instance();
+
         if (plugin == NULL)
         {
             m_Logger->logError(pluginLoader.errorString());

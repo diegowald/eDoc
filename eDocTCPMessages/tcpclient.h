@@ -2,7 +2,7 @@
 #define TCPCLIENT_H
 
 #include <QObject>
-#include <QtNetwork/QTcpSocket>
+#include <QTcpSocket>
 #include <QSharedPointer>
 #include "../eDocTCPMessages/header.h"
 #include "../eDocTCPMessages/messagecodes.h"

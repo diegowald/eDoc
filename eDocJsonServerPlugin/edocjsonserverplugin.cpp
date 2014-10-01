@@ -11,6 +11,7 @@
 #include "../eDocTCPMessages/messagecodes.h"
 #include "../eDocTCPMessages/streamhelpers.h"
 
+#include "jsonhelpers.h"
 
 EDocJsonServerPlugin::EDocJsonServerPlugin(QObjectLoggingPtr Logger,
                                                          QSharedPointer<QTcpSocket> socket,
@@ -35,8 +36,8 @@ EDocJsonServerPlugin::EDocJsonServerPlugin(QObjectLoggingPtr Logger,
 
     functionMap[MessageCodes::CodeNumber::REQ_fields] = &EDocJsonServerPlugin::processREQFields;
     functionMap[MessageCodes::CodeNumber::REQ_field] = &EDocJsonServerPlugin::processREQField;
-    /*functionMap[MessageCodes::CodeNumber::REQ_createEmptyParameter] = &EDocJsonServerPlugin::processREQcreateEmptyParameter;
-    functionMap[MessageCodes::CodeNumber::REQ_search] = &EDocJsonServerPlugin::processREQSearch;
+    functionMap[MessageCodes::CodeNumber::REQ_createEmptyParameter] = &EDocJsonServerPlugin::processREQcreateEmptyParameter;
+    /*functionMap[MessageCodes::CodeNumber::REQ_search] = &EDocJsonServerPlugin::processREQSearch;
     functionMap[MessageCodes::CodeNumber::REQ_searchWithin] = &EDocJsonServerPlugin::processREQSearchWithin;
     functionMap[MessageCodes::CodeNumber::REQ_createEnptyRecord] = &EDocJsonServerPlugin::processREQCreateEnptyRecord;
     functionMap[MessageCodes::CodeNumber::REQ_addRecord] = &EDocJsonServerPlugin::processREQAddRecord;
@@ -136,7 +137,7 @@ QJsonObject EDocJsonServerPlugin::processREQFields(QJsonObject &input)
     QJsonArray fields;
     foreach (QSharedPointer<IFieldDefinition> field, rsp)
     {
-        fields.append(field->asJson());
+        fields.append(JsonHelpers::toJson(field));
     }
     response["fields"] = fields;
     return response;
@@ -148,17 +149,17 @@ QJsonObject EDocJsonServerPlugin::processREQField(QJsonObject &input)
     QString fieldName("");
     fieldName = input["fieldName"].toString();
     QSharedPointer<IFieldDefinition> fieldDef = _persistanceHist ? _persistanceHist->field(fieldName) : _persistance->field(fieldName);
-    return fieldDef->asJson();
+    return JsonHelpers::toJson(fieldDef);
 }
 
-/*QJsonObject EDocJsonServerPlugin::processREQcreateEmptyParameter(QJsonObject &input)
+QJsonObject EDocJsonServerPlugin::processREQcreateEmptyParameter(QJsonObject &input)
 {
     prepareToSend(MessageCodes::CodeNumber::RSP_createEmptyParameter);
     QSharedPointer<IParameter> parameter = _persistanceHist ? _persistanceHist->createEmptyParameter() : _persistance->createEmptyParameter();
-    (*out) << parameter;
+    return JsonHelpers::toJson(parameter);
 }
 
-QJsonObject EDocJsonServerPlugin::processREQSearch(QJsonObject &input)
+/*QJsonObject EDocJsonServerPlugin::processREQSearch(QJsonObject &input)
 {
     int count = 0;
     in >> count;

@@ -45,3 +45,10 @@ else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-API
 
 INCLUDEPATH += $$PWD/../eDoc-API
 DEPENDPATH += $$PWD/../eDoc-API
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+
+INCLUDEPATH += $$PWD/../eDoc-Configuration
+DEPENDPATH += $$PWD/../eDoc-Configuration

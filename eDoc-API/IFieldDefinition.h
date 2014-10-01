@@ -5,11 +5,10 @@
 #include "forward.h"
 #include "APIEnums.h"
 #include "IInitializable.h"
-#include "iJsonSerializable.h"
 #include <QList>
 #include "IValue.h"
 
-struct IFieldDefinition : public IInitializable, public IJsonSerializable
+struct IFieldDefinition : public IInitializable
 {
 public:
     virtual QString name() = 0;

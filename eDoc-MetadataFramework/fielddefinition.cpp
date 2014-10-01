@@ -5,7 +5,6 @@
 #include "../eDoc-Configuration/xmlelement.h"
 #include "valuedefinitions.h"
 #include "tag.h"
-#include <QJsonArray>
 
 FieldDefinition::FieldDefinition(QObject *parent) :
     QObject(parent)
@@ -200,23 +199,3 @@ IDocEnginePtr FieldDefinition::getEngine()
     return engine;
 }
 
-QJsonObject FieldDefinition::asJson()
-{
-    QJsonObject obj;
-    obj["name"] = name();
-    obj["type"] = type();
-    obj["isReadOnly"] = isReadOnly();
-    obj["isVisible"] = isVisible();
-    obj["isQueryable"] = isQueryable();
-
-    obj["count"] = validQueries().count();
-    QJsonArray arr;
-    foreach (VALIDQUERY query, validQueries())
-    {
-        QJsonObject o;
-        o["query"] = query;
-        arr.append(o);
-    }
-    obj["validQueries"] = arr;
-    return obj;
-}

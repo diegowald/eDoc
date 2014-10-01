@@ -14,7 +14,7 @@
 #include "../eDocTCPMessages/messagecodes.h"
 #include "../eDocTCPMessages/tcpclient.h"
 
-class EDOCTCPCLIENTSHARED_EXPORT eDocTcpClientDatabasePlugin : public TcpClient, public IDatabase, public IDocEngine, public ITagProcessor
+class EDOCTCPCLIENTSHARED_EXPORT eDocTcpClientDatabasePlugin : virtual public TcpClient, public IDatabase, public IDocEngine, public ITagProcessor
 {
     Q_OBJECT
 

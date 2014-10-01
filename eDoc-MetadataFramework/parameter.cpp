@@ -37,4 +37,3 @@ VALIDQUERY Parameter::queryType()
 {
     return m_QueryType;
 }
-

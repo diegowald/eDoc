@@ -39,7 +39,6 @@ public:
     IntegerValue(QObject *parent = 0);
     virtual void setValue(const QVariant &newValue);
     virtual QVariant asVariant();
-
     virtual ~IntegerValue();
 };
 

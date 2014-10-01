@@ -106,5 +106,5 @@ IServerPtr JsonServer::newServer()
 }
 
 #if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(eDocTcpServerPlugin, JsonServer)
+Q_EXPORT_PLUGIN2(eDocJsonServerPlugin, JsonServer)
 #endif // QT_VERSION < 0x050000
