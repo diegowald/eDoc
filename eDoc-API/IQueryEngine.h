@@ -5,8 +5,9 @@
 #include <QStringList>
 #include "IInitializable.h"
 
-struct IQueryEngine : public IInitializable
+class IQueryEngine : public IInitializable
 {
+public:
     virtual ~IQueryEngine() {}
 
     virtual QStringList getTreeNames() const = 0;

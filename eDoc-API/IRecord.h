@@ -7,7 +7,7 @@
 #include "IFieldDefinition.h"
 #include "IValue.h"
 
-struct IRecord
+class IRecord
 {
 public:
     virtual void setID(IRecordIDPtr ID) = 0;

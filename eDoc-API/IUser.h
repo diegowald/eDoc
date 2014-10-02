@@ -6,8 +6,9 @@
 #include "IGroup.h"
 #include "IUserID.h"
 
-struct IUser
+class IUser
 {
+public:
     virtual IUserIDPtr userID() = 0;
     virtual QList<IGroupPtr> groups() = 0;
     virtual ~IUser() {}

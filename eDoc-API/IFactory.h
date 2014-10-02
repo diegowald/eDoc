@@ -11,8 +11,9 @@
 
 
 
-struct IFactory
+class IFactory
 {
+public:
     virtual IDocEnginePtr createEngine(IXMLContentPtr configuration) = 0;
     virtual IDatabasePtr createDatabase(IXMLContentPtr configuration) = 0;
     virtual IDatabaseWithHistoryPtr createDatabaseWithHistory(IXMLContentPtr configuration) = 0;

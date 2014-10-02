@@ -11,7 +11,7 @@
 #include <QMap>
 
 
-struct IDocEngine : public IInitializable
+class IDocEngine : public IInitializable
 {
 public:
     //virtual IDocBasePtr newDocument() = 0;

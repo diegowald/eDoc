@@ -7,7 +7,7 @@
 #include "IFieldDefinition.h"
 #include "IValue.h"
 
-struct IParameter
+class IParameter
 {
 public:
     virtual void setField(IFieldDefinitionPtr field) = 0;

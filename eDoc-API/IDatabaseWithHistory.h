@@ -5,7 +5,7 @@
 #include "IDatabase.h"
 
 
-struct IDatabaseWithHistory : public IDatabase
+class IDatabaseWithHistory : public IDatabase
 {
 public:
     virtual QList<IRecordIDPtr> searchByDate(const QList<IParameterPtr> &parameters, const QDateTime &date) = 0;

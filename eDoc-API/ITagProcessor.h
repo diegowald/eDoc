@@ -6,8 +6,9 @@
 #include "IRecordID.h"
 #include "IInitializable.h"
 
-struct ITagProcessor : public IInitializable
+class ITagProcessor : public IInitializable
 {
+public:
     virtual void addTagRecord(IRecordIDPtr recordID, ITagPtr tag) = 0;
     virtual QSet<QString> findByTags(const QStringList &tags) = 0;
     virtual void removeRecord(IRecordIDPtr recordID, ITagPtr tag) = 0;

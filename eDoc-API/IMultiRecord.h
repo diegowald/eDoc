@@ -9,7 +9,7 @@
 #include "IValue.h"
 #include <QList>
 
-struct IMultiRecord
+class IMultiRecord
 {
 public:
     virtual void setID(IRecordIDPtr ID) = 0;

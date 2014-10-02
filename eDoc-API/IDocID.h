@@ -5,7 +5,7 @@
 #include <QString>
 #include "forward.h"
 
-struct IDocID
+class IDocID
 {
 public:
     virtual QString asString() const = 0;

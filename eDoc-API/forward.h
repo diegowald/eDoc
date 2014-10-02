@@ -4,7 +4,7 @@
 #include <QSharedPointer>
 
 #define CONSTRUCT(X) \
-    struct X; \
+    class X; \
     typedef QSharedPointer<X> X## Ptr; \
 
 

@@ -4,7 +4,7 @@
 #include "forward.h"
 #include <QSharedPointer>
 
-struct IGroupID
+class IGroupID
 {
 public:
     virtual QString asString() const = 0;

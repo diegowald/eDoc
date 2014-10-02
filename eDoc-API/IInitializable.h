@@ -6,7 +6,7 @@
 #include "../eDoc-Configuration/IXMLContent.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
 
-struct IInitializable {
+class IInitializable {
 public:
     virtual void initialize(IXMLContentPtr configuration, IFactory* factory) = 0;
 

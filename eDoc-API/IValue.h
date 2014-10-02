@@ -3,7 +3,7 @@
 #include <QVariant>
 #include "forward.h"
 
-struct IValue
+class IValue
 {
 public:
     virtual void setValue(const QVariant &newValue) = 0;

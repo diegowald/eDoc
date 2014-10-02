@@ -13,7 +13,7 @@
 #include <QMap>
 
 
-struct IDatabase : public IInitializable {
+class IDatabase : public IInitializable {
 public:
     virtual QList<IFieldDefinitionPtr> fields() = 0;
     virtual IFieldDefinitionPtr field(const QString &fieldName) = 0;

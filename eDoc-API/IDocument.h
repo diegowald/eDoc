@@ -7,7 +7,7 @@
 #include <QtPlugin>
 #include "IDocBase.h"
 
-struct IDocument : public IDocBase
+class IDocument : public IDocBase
 {
 public:
     virtual QByteArray blob() = 0;

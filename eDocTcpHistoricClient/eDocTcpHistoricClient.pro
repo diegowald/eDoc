@@ -45,3 +45,10 @@ unix|win32: LIBS += -L$$OUT_PWD/../ -leDocTCPMessages
 
 INCLUDEPATH += $$PWD/../eDocTCPMessages
 DEPENDPATH += $$PWD/../eDocTCPMessages
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+else:unix: LIBS += -L$$OUT_PWD/../ -leDoc-Configuration
+
+INCLUDEPATH += $$PWD/../eDoc-Cofniguration
+DEPENDPATH += $$PWD/../eDoc-Configuration

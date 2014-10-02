@@ -4,7 +4,7 @@
 #include "forward.h"
 #include "IDocID.h"
 
-struct IDocBase
+class IDocBase
 {
 public:
     virtual IDocIDPtr id() = 0;

@@ -3,7 +3,7 @@
 
 #include "forward.h"
 
-struct IUserID
+class IUserID
 {
 public:
     virtual QString asString() const = 0;

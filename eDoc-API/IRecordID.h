@@ -6,7 +6,7 @@
 #include <QSharedPointer>
 #include "IMetadata.h"
 
-struct IRecordID
+class IRecordID
 {
 public:
     virtual QString asString() const = 0;

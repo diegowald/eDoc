@@ -7,8 +7,9 @@
 #include <QSharedPointer>
 #include "IValue.h"
 
-struct ITag : public IValue
+class ITag : public IValue
 {
+public:
     virtual void setValue(const QVariant &newValue) = 0;
     virtual QVariant asVariant() = 0;
     virtual QVariant content() = 0;

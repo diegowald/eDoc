@@ -6,7 +6,7 @@
 #include <QtPlugin>
 #include "IDocBase.h"
 
-struct IMultiDocument: public IDocBase
+class IMultiDocument: public IDocBase
 {
 public:
     virtual bool isComplex() const { return true; }

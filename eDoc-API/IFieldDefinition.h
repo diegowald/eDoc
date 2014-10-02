@@ -8,7 +8,7 @@
 #include <QList>
 #include "IValue.h"
 
-struct IFieldDefinition : public IInitializable
+class IFieldDefinition : public IInitializable
 {
 public:
     virtual QString name() = 0;

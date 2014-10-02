@@ -5,7 +5,7 @@
 #include "IGroupID.h"
 #include <QSharedPointer>
 
-struct IGroup
+class IGroup
 {
     virtual IGroupIDPtr groupID() = 0;
     virtual ~IGroup() {}

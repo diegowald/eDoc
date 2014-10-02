@@ -5,8 +5,9 @@
 #include <QSharedPointer>
 #include "IUser.h"
 
-struct IMetadata
+class IMetadata
 {
+public:
     virtual IUserPtr ownerUser() = 0;
     virtual IGroupPtr ownerGroup() = 0;
     virtual bool canReadByUser(IUserPtr user) = 0;
