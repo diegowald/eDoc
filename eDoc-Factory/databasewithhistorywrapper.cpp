@@ -1,4 +1,5 @@
 #include "databasewithhistorywrapper.h"
+#include <QStringList>
 
 DatabaseWithHistoryWrapper::DatabaseWithHistoryWrapper(IDatabasePtr realDatabase, QObjectLoggingPtr Logger, QObject *parent)  :
     QObject(parent)
