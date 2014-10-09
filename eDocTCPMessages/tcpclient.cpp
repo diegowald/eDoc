@@ -1,5 +1,5 @@
 #include "tcpclient.h"
-
+#include <QDataStream>
 TcpClient::TcpClient(QObject *parent) :
     QObject(parent)
 {
