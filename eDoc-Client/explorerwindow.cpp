@@ -27,7 +27,8 @@ ExplorerWindow::ExplorerWindow(QWidget *parent) :
     ui->treeStructure->setColumnCount(1);
     ui->searchResult->setRowCount(0);
 
-    openDatabase("./samantha.client.conf.xml");
+    //openDatabase("./samantha.client.conf.xml");
+    openDatabase("./indexer.conf.xml");
 }
 
 ExplorerWindow::~ExplorerWindow()
@@ -114,24 +115,24 @@ void ExplorerWindow::fillTreeCombo()
 void ExplorerWindow::fillOperatorsCombo()
 {
     ui->cboOperator->clear();
-    ui->cboOperator->addItem("=", EQUALS_TO);
-    ui->cboOperator->addItem("<>", DISTINT_TO);
-    ui->cboOperator->addItem("<", LESS_THAN);
-    ui->cboOperator->addItem("<=", LESS_THAN_OR_EQUALS_TO);
-    ui->cboOperator->addItem(">", GREATER_THAN);
-    ui->cboOperator->addItem(">=", GREATER_THAN_OR_EQUALS_TO);
-    ui->cboOperator->addItem("between", BETWEEN);
-    ui->cboOperator->addItem("contains", CONTAINS);
-    ui->cboOperator->addItem("starts with", STARTS_WITH);
-    ui->cboOperator->addItem("ends with", ENDS_WITH);
-    ui->cboOperator->addItem("is Null", IS_NULL);
-    ui->cboOperator->addItem("is not Null", IS_NOT_NULL);
+    ui->cboOperator->addItem("=", (int) VALIDQUERY::EQUALS_TO);
+    ui->cboOperator->addItem("<>", (int) VALIDQUERY::DISTINT_TO);
+    ui->cboOperator->addItem("<", (int) VALIDQUERY::LESS_THAN);
+    ui->cboOperator->addItem("<=", (int) VALIDQUERY::LESS_THAN_OR_EQUALS_TO);
+    ui->cboOperator->addItem(">", (int) VALIDQUERY::GREATER_THAN);
+    ui->cboOperator->addItem(">=", (int) VALIDQUERY::GREATER_THAN_OR_EQUALS_TO);
+    ui->cboOperator->addItem("between", (int) VALIDQUERY::BETWEEN);
+    ui->cboOperator->addItem("contains", (int) VALIDQUERY::CONTAINS);
+    ui->cboOperator->addItem("starts with", (int) VALIDQUERY::STARTS_WITH);
+    ui->cboOperator->addItem("ends with", (int) VALIDQUERY::ENDS_WITH);
+    ui->cboOperator->addItem("is Null", (int) VALIDQUERY::IS_NULL);
+    ui->cboOperator->addItem("is not Null", (int) VALIDQUERY::IS_NOT_NULL);
 }
 
 void ExplorerWindow::on_cboOperator_currentIndexChanged(int index)
 {
     VALIDQUERY op = (VALIDQUERY)ui->cboOperator->itemData(index).toInt();
-    bool show2ndParameter = (op == BETWEEN);
+    bool show2ndParameter = (op == VALIDQUERY::BETWEEN);
     ui->lblAnd->setVisible(show2ndParameter);
     ui->searchValue2->setVisible(show2ndParameter);
 }
@@ -145,7 +146,7 @@ IParameterPtr ExplorerWindow::createSearchParameter(const QString &fieldName, VA
     v1->setValue(value1);
 
     IValuePtr v2;
-    if (queryType == BETWEEN)
+    if (queryType == VALIDQUERY::BETWEEN)
     {
         v2 = fDef->createEmptyValue();
         v2->setValue(value2);
@@ -154,7 +155,7 @@ IParameterPtr ExplorerWindow::createSearchParameter(const QString &fieldName, VA
     param->setField(fDef);
     param->setQueryType(queryType);
     param->addValue(v1);
-    if (queryType == BETWEEN)
+    if (queryType == VALIDQUERY::BETWEEN)
         param->addValue(v2);
 
     return param;
@@ -171,7 +172,7 @@ void ExplorerWindow::on_btnAddToSearch_released()
     QString display = displayFormat.arg(ui->cboField->currentText())
             .arg(ui->cboOperator->currentText())
             .arg(ui->searchValue1->text())
-            .arg((queryType == BETWEEN ?
+            .arg((queryType == VALIDQUERY::BETWEEN ?
                       (QString(" AND %1").arg(ui->searchValue2->text())) :
                       ""));
     ui->searchFilters->addItem(display);
@@ -250,12 +251,12 @@ void ExplorerWindow::on_searchResult_itemSelectionChanged()
     }
 
     //r->setEnabledEdition(false);
-    recordEditor->setRecord(rec);
+    recordEditor->setRecord(rec, false);
 }
 
 void ExplorerWindow::on_actionAdd_Document_triggered()
 {
-    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Select file"), ".");
+    /*QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Select file"), ".");
 
     if (filenames.count() > 0)
     {
@@ -277,7 +278,27 @@ void ExplorerWindow::on_actionAdd_Document_triggered()
                 f.addDocument(filename, rec);
             }
         }
+    }*/
+
+
+    IDatabaseWithHistoryPtr db = f.databaseEngine();
+
+    IRecordPtr rec = f.createEmptyRecord();
+
+    if (!recordEditor)
+    {
+        recordEditor = new RecordEditor(this);
+        connect(recordEditor, SIGNAL(downloadFile(IRecordPtr,const IValuePtr)), this, SLOT(downloadFile(IRecordPtr,const IValuePtr)));
+        connect(recordEditor, SIGNAL(uploadFile(IRecordPtr,const IValuePtr,QString &)), this, SLOT(uploadFile(IRecordPtr,const IValuePtr,QString &)));
+        connect(recordEditor, SIGNAL(save(IRecordPtr,bool)), this, SLOT(on_save(IRecordPtr,bool)));
+        connect(recordEditor, SIGNAL(cancelEdition(IRecordPtr)), this, SLOT(on_cancelEdition(IRecordPtr)));
+        QVBoxLayout* layout = new QVBoxLayout();
+        layout->addWidget(recordEditor);
+        ui->frameProperties->setLayout(layout);
     }
+
+    //r->setEnabledEdition(false);
+    recordEditor->setRecord(rec, true);
 }
 
 void ExplorerWindow::downloadFile(IRecordPtr record, const IValuePtr value)
@@ -333,13 +354,13 @@ void ExplorerWindow::updateTreeFilter(QTreeWidgetItem *node)
     QPair<QString, QString> filterParam;
     foreach (filterParam, filter)
     {
-        treefilter.append(createSearchParameter(filterParam.first, EQUALS_TO, QVariant(filterParam.second), QVariant("")));
+        treefilter.append(createSearchParameter(filterParam.first, VALIDQUERY::EQUALS_TO, QVariant(filterParam.second), QVariant("")));
     }
     QStringList fieldsForTree = f.queryEngine()->getFieldsForTree(ui->cboTree->currentText());
     if (fieldsForTree.count() > filter.count())
     {
         QString field = f.queryEngine()->getFieldsForTree(ui->cboTree->currentText()).at(filter.count());
-        treefilter.append(createSearchParameter(field, IS_NULL, QVariant(""), QVariant("")));
+        treefilter.append(createSearchParameter(field, VALIDQUERY::IS_NULL, QVariant(""), QVariant("")));
     }
 }
 
@@ -496,9 +517,17 @@ void ExplorerWindow::openDatabase(const QString &file)
     }
 }
 
-void ExplorerWindow::on_save(IRecordPtr record)
+void ExplorerWindow::on_save(IRecordPtr record, bool isNew)
 {
-    f.databaseEngine()->updateRecord(record);
+    if (isNew)
+    {
+        f.databaseEngine()->addRecord(record);
+    }
+    else
+    {
+        f.databaseEngine()->updateRecord(record);
+    }
+    f.tagEngine()->processRecord(record);
 }
 
 void ExplorerWindow::on_cancelEdition(IRecordPtr record)

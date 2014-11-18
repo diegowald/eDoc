@@ -460,6 +460,8 @@ void eDocTcpClientDatabasePlugin::processKeywordStringList(IRecordIDPtr recordID
     }
 }
 
+
+
 IDatabasePtr eDocTcpClientDatabasePlugin::newDatabase()
 {
     return IDatabasePtr(new eDocTcpClientDatabasePlugin());
@@ -472,7 +474,7 @@ IDocEnginePtr eDocTcpClientDatabasePlugin::newDocEngine()
 
 ITagProcessorPtr eDocTcpClientDatabasePlugin::newTagProcessor()
 {
-    return ITagProcessorPtr(new eDocTcpClientDatabasePlugin());
+    return QSharedPointer<eDocTcpClientDatabasePlugin>::create();
 }
 
 #if QT_VERSION < 0x050000

@@ -12,7 +12,7 @@ QDataStream& operator<<(QDataStream& os, IParameterPtr obj)
     {
         os << value;
     }
-    os << obj->queryType();
+    os << (int) obj->queryType();
     return os;
 }
 
@@ -52,7 +52,7 @@ QDataStream& operator<<(QDataStream& os, IRecordPtr obj)
     foreach (QString field, obj->fieldNames())
     {
         os << obj->fieldDefinition(field);
-        if (obj->fieldDefinition(field)->type() == "document")
+        if (obj->fieldDefinition(field)->typeAsString() == "document")
         {
             os << obj->value(field).dynamicCast<IDocumentValue>();
         }
@@ -79,7 +79,7 @@ QDataStream& operator>>(QDataStream& is, ProxyRecordPtr obj)
         is >> fieldDef;
 
         QSharedPointer<ProxyValue> value;
-        if (fieldDef->type() == "document")
+        if (fieldDef->typeAsString() == "document")
         {
             ProxyDocumentValuePtr v = ProxyDocumentValuePtr(new ProxyDocumentValue());
             is >> v;
@@ -167,7 +167,8 @@ QDataStream& operator>>(QDataStream& is, ProxyDocumentValuePtr obj)
 QDataStream& operator<<(QDataStream& os, IFieldDefinitionPtr obj)
 {
     os << obj->name();
-    os << obj->type();
+    os << obj->typeAsString();
+    os << (int) obj->type();
     os << obj->isReadOnly();
     os << obj->isVisible();
     os << obj->isQueryable();
@@ -178,7 +179,7 @@ QDataStream& operator<<(QDataStream& os, IFieldDefinitionPtr obj)
     {
         foreach (VALIDQUERY query, obj->validQueries())
         {
-            os << query;
+            os << (int) query;
         }
     }
     return os;
@@ -190,7 +191,10 @@ QDataStream& operator>>(QDataStream& is, ProxyFieldDefinitionPtr obj)
     is >> s;
     obj->setName(s);
     is >> s;
-    obj->setType(s);
+    obj->setTypeString(s);
+    int vint;
+    is >> vint;
+    obj->setType((DATATYPE)vint);
     bool v;
     is >> v;
     obj->setIsReadOnly(v);

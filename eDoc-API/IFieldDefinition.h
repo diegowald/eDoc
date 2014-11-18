@@ -12,7 +12,8 @@ class IFieldDefinition : public IInitializable
 {
 public:
     virtual QString name() = 0;
-    virtual QString type() = 0;
+    virtual QString typeAsString() = 0;
+    virtual DATATYPE type() = 0;
     virtual bool isReadOnly() const = 0;
     virtual bool isVisible() const = 0;
     virtual bool isQueryable() const = 0;

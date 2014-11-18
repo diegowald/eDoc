@@ -127,51 +127,51 @@ std::pair<QString, DBRecordPtr> GenericDatabase::getWhereClause(QSharedPointer<I
     QString fieldNameInDB = m_Fields[parameter->field()->name()].dynamicCast<FieldDefinition>()->fieldNameInDatabase();
     switch (parameter->queryType())
     {
-    case EQUALS_TO:
+    case VALIDQUERY::EQUALS_TO:
         whereClause = QString("%1 = :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
-    case DISTINT_TO:
+    case VALIDQUERY::DISTINT_TO:
         whereClause = QString("%1 <> :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
-    case LESS_THAN:
+    case VALIDQUERY::LESS_THAN:
         whereClause = QString("%1 < :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
-    case LESS_THAN_OR_EQUALS_TO:
+    case VALIDQUERY::LESS_THAN_OR_EQUALS_TO:
         whereClause = QString("%1 <= :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
-    case GREATER_THAN:
+    case VALIDQUERY::GREATER_THAN:
         whereClause = QString("%1 > :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
-    case GREATER_THAN_OR_EQUALS_TO:
+    case VALIDQUERY::GREATER_THAN_OR_EQUALS_TO:
         whereClause = QString("%1 >= :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         break;
-    case BETWEEN:
+    case VALIDQUERY::BETWEEN:
         whereClause = QString("%1 BETWEEN :%2 AND :%3TO").arg(fieldNameInDB).arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant();
         (*r)[QString("%1TO").arg(fieldNameInDB)] = parameter->values().at(1)->asVariant();
         break;
-    case CONTAINS:
+    case VALIDQUERY::CONTAINS:
         whereClause = QString("%1 LIKE :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = "%" + parameter->values().at(0)->asVariant().toString() + "%";
         break;
-    case STARTS_WITH:
+    case VALIDQUERY::STARTS_WITH:
         whereClause = QString("%1 LIKE :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = parameter->values().at(0)->asVariant().toString() + "%";
         break;
-    case ENDS_WITH:
+    case VALIDQUERY::ENDS_WITH:
         whereClause = QString("%1 LIKE :%2").arg(fieldNameInDB).arg(fieldNameInDB);
         (*r)[QString("%1").arg(fieldNameInDB)] = "%" + parameter->values().at(0)->asVariant().toString();
         break;
-    case IS_NULL:
+    case VALIDQUERY::IS_NULL:
         whereClause = QString("(%1 IS NULL OR %1 = '')").arg(fieldNameInDB);
         break;
-    case IS_NOT_NULL:
+    case VALIDQUERY::IS_NOT_NULL:
         whereClause = QString("(%1 IS NOT NULL AND %1 <> '')").arg(fieldNameInDB);
         break;
     }

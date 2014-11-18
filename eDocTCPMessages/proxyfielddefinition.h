@@ -16,7 +16,8 @@ public:
 
     virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
     virtual QString name();
-    virtual QString type();
+    virtual QString typeAsString();
+    virtual DATATYPE type();
     virtual bool isReadOnly() const;
     virtual bool isVisible() const;
     virtual bool isQueryable() const;
@@ -24,7 +25,8 @@ public:
     virtual QSharedPointer<IValue> createEmptyValue();
 
     virtual void setName(const QString &newName);
-    virtual void setType(const QString &newType);
+    virtual void setTypeString(const QString &newType);
+    virtual void setType(DATATYPE newType);
     virtual void setIsReadOnly(bool value);
     virtual void setIsVisible(bool value);
     virtual void setIsQueryable(bool value);
@@ -36,7 +38,8 @@ public slots:
 
 private:
     QString _name;
-    QString _type;
+    DATATYPE _type;
+    QString _typeString;
     bool _isReadOnly;
     bool _isVisible;
     bool _isQueryable;

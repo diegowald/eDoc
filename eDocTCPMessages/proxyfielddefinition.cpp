@@ -5,7 +5,8 @@ ProxyFieldDefinition::ProxyFieldDefinition(QObject *parent) :
     QObject(parent)
 {
     _name = "";
-    _type = "";
+    _type = DATATYPE::INVALID_TYPE;
+    _typeString = "";
     _isReadOnly = false;
     _isVisible = false;
     _isQueryable = false;
@@ -27,7 +28,12 @@ QString ProxyFieldDefinition::name()
     return _name;
 }
 
-QString ProxyFieldDefinition::type()
+QString ProxyFieldDefinition::typeAsString()
+{
+    return _typeString;
+}
+
+DATATYPE ProxyFieldDefinition::type()
 {
     return _type;
 }
@@ -62,7 +68,12 @@ void ProxyFieldDefinition::setName(const QString &newName)
     _name = newName;
 }
 
-void ProxyFieldDefinition::setType(const QString &newType)
+void ProxyFieldDefinition::setTypeString(const QString &newType)
+{
+    _typeString = newType;
+}
+
+void ProxyFieldDefinition::setType(DATATYPE newType)
 {
     _type = newType;
 }

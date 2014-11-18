@@ -25,12 +25,13 @@ IDocBasePtr EDocSimpleFileIndexerEngine::createDocument(const QByteArray& blob)
 
 IDocBasePtr EDocSimpleFileIndexerEngine::createDocument(const QString sourcePath, const QByteArray &blob)
 {
-    QString SQLInsert = "INSERT INTO %1 (record_id, filename) VALUES (record_id, id_file, filename);";
+    QString SQLInsert = "INSERT INTO %1 (record_id, id_file, filename) VALUES (:record_id, :id_file, :filename);";
     QString sql = SQLInsert.arg(tableName);
 
     DBRecordPtr record = DBRecordPtr(new DBRecord());
 
     IDocIDPtr id(new SimpleFileID());
+    (*record)["record_id"] = id->asString();
     (*record)["id_file"] = id->asString();
     (*record)["filename"] = sourcePath;
 
@@ -49,7 +50,7 @@ IDocBasePtr EDocSimpleFileIndexerEngine::getDocument(const QString &id)
     QString sql = SQLSelect.arg(tableName);
     DBRecordPtr record = DBRecordPtr(new DBRecord());
 
-    (*record)["id_file"] = id;
+    (*record)["record_id"] = id;
 
     DBRecordSet recs = m_SQLManager.getRecords(sql, record);
 

@@ -69,7 +69,7 @@ public:
     virtual void removeRecord(IRecordIDPtr recordID, ITagPtr tag);
     virtual void processKeywordString(IRecordIDPtr recordID, const QString &keywords);
     virtual void processKeywordStringList(IRecordIDPtr recordID, const QStringList &keywords);
-
+    virtual void processRecord(IRecordPtr record);
 private slots:
 
 private:

@@ -27,6 +27,7 @@ CONSTRUCT(QTimeValue)
 CONSTRUCT(IDocBaseValue)
 CONSTRUCT(IDocumentIDValue)
 CONSTRUCT(IMultiDocumentValue)
+CONSTRUCT(IDocumentValue)
 CONSTRUCT(IRecordValue)
 CONSTRUCT(IMultiRecordValue)
 
@@ -134,6 +135,7 @@ public:
     virtual void prepareToLoad();
 
     virtual ~IDocumentValue();
+    QString filename();
 private:
     QString filePath;
 };

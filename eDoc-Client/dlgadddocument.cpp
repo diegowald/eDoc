@@ -20,7 +20,7 @@ void DlgAddDocument::setData(const QString & filename, QSharedPointer<IRecord> r
     m_Record = record;
 
     recEditor = new RecordEditor(this);
-    recEditor->setRecord(record);
+    recEditor->setRecord(record, true);
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(recEditor);
     ui->frame->setLayout(layout);

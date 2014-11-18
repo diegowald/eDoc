@@ -238,6 +238,10 @@ void IDocumentValue::prepareToLoad()
 {
 }
 
+QString IDocumentValue::filename()
+{
+    return filePath;
+}
 
 IDocumentValue::~IDocumentValue()
 {

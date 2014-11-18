@@ -7,22 +7,7 @@
 #include "../eDoc-API/IDocEngine.h"
 #include "edoc-metadataframework_global.h"
 
-enum DATATYPE {
-    INVALID_TYPE, // any value not described below
-    INTEGER_TYPE, // integer
-    DOUBLE_TYPE,  // double
-    BOOL_TYPE,    // boolean
-    QSTRING_TYPE, // string
-    QDATETIME_TYPE, // datetime
-    QDATE_TYPE,     // date
-    QTIME_TYPE,     // time
-    IDOCBASE_TYPE,  // docbase
-    IDOCUMENT_TYPE, // document
-    IMULTIDOCUMENT_TYPE, // multidocument
-    IRECORD_REFERENCE_TYPE, // references to other record in other database
-    IMULTIRECORD_REFERENCE_TYPE, // references to an ordered set of records in other database
-    TAG_TYPE // references to a list of keywords.
-};
+
 
 class EDOCMETADATAFRAMEWORKSHARED_EXPORT FieldDefinition : public QObject, public IFieldDefinition
 {
@@ -32,7 +17,8 @@ public:
     virtual ~FieldDefinition();
     virtual void initialize(IXMLContentPtr configuration, IFactory* factory);
     virtual QString name();
-    virtual QString type();
+    virtual QString typeAsString();
+    virtual DATATYPE type();
     virtual bool isReadOnly() const;
     virtual bool isVisible() const;
     virtual bool isQueryable() const;

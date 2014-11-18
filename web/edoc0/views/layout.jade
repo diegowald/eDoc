@@ -1,0 +1,15 @@
+doctype html
+html (ng-app='edoc1')
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    meta(name='viewport', content='width=device-width, initial-scale=1, user-scalable=no')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css')
+
+  body
+    script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js')
+    script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js')
+    nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+      div.navbar-header
+        a.navbar-brand(href='#/search')=title
+    block content

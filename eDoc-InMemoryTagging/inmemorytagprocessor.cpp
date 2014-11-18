@@ -4,6 +4,10 @@
 #include "../eDoc-Configuration/xmlelement.h"
 #include "../eDoc-Configuration/xmlcollection.h"
 #include "../eDoc-Configuration/qobjectlgging.h"
+#include "../eDoc-API/IDocument.h"
+#include <QFileInfo>
+#include <QProcess>
+#include <QTemporaryFile>
 
 InMemoryTagProcessor::InMemoryTagProcessor(QObject *parent) :
     QObject(parent), m_SQLManager(this)
@@ -77,6 +81,16 @@ void InMemoryTagProcessor::processKeywordStringList(IRecordIDPtr recordID, const
     if (atLeastOneProcessed)
     {
         bulkSave();
+    }
+}
+
+void InMemoryTagProcessor::processRecord(IRecordPtr record)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processRecord(IRecordPtr record)");
+
+    foreach (QString fieldName, record->fieldNames())
+    {
+        processValue(record, fieldName);
     }
 }
 
@@ -201,6 +215,7 @@ void InMemoryTagProcessor::saveKeyword(IRecordIDPtr recordID, const QString &key
 
 void InMemoryTagProcessor::bulkSave()
 {
+    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::bulkSave()");
     QList<DBRecordPtr> keywords;
 
     QString SQL = "INSERT INTO %1 (%2, %3) VALUES (:%2, :%3)";
@@ -251,9 +266,87 @@ void InMemoryTagProcessor::bulkSave()
     recordsToSave.clear();
 }
 
+void InMemoryTagProcessor::processValue(IRecordPtr record, const QString &fieldName)
+{
+    m_Logger->logTrace(__FILE__, __LINE__, "eDoc-InMemoryTagging", "void InMemoryTagProcessor::processValue(IValuePtr value)");
+    IValuePtr value = record->value(fieldName);
+    IFieldDefinitionPtr fDef = record->fieldDefinition(fieldName);
+    switch (fDef->type())
+    {
+    case DATATYPE::QSTRING_TYPE:
+        processKeywordString(record->ID(), value->content().toString());
+        break;
+    case DATATYPE::IDOCUMENT_TYPE:
+    {
+        IDocumentValuePtr docValue = value.dynamicCast<IDocumentValue>();
+        processDocument(record->ID(), docValue);
+        break;
+    }
+    case DATATYPE::INVALID_TYPE:
+        break;
+    case DATATYPE::INTEGER_TYPE:
+        break;
+    case DATATYPE::DOUBLE_TYPE:
+    case DATATYPE::BOOL_TYPE:
+    case DATATYPE::QDATETIME_TYPE:
+    case DATATYPE::QDATE_TYPE:
+    case DATATYPE::QTIME_TYPE:
+    case DATATYPE::IDOCBASE_TYPE:
+    case DATATYPE::IMULTIDOCUMENT_TYPE:
+    case DATATYPE::IRECORD_REFERENCE_TYPE:
+    case DATATYPE::IMULTIRECORD_REFERENCE_TYPE:
+    case DATATYPE::TAG_TYPE:
+    default:
+        break;
+    }
+}
+
+void InMemoryTagProcessor::processDocument(IRecordIDPtr recordID, IDocumentValuePtr &value)
+{
+    if (value.isNull())
+    {
+        return;
+    }
+    QString fname = value->filename().toLower();
+    QFileInfo file(fname);
+    QString suffix = file.completeSuffix();
+    QString cmd;
+
+    QTemporaryFile tmpFile;
+    tmpFile.open();
+    IDocumentPtr doc = value->content().value<IDocumentPtr>();
+    tmpFile.write(doc->blob());
+    tmpFile.close();
+
+    if (suffix == "pdf")
+    {
+        cmd = "pdftotext " + tmpFile.fileName() + " - | grep -o -E '\\w+' | sort -u -f";
+    }
+    if (file.completeSuffix() == "txt")
+    {
+        cmd = "cat " + tmpFile.fileName() + " | grep -o -E '\\w+' | sort -u -f";
+    }
+    if (file.completeSuffix() == "doc")
+    {
+        cmd = "antiword " + tmpFile.fileName() + " | grep -o -E '\\w+' | sort -u -f";
+    }
+
+    if (cmd.length() > 0)
+    {
+        QProcess process;
+        process.start("bash", QStringList() << "-c" << cmd);
+        process.waitForBytesWritten();
+        process.waitForFinished();
+        QString result(process.readAll());
+        QStringList list = result.split('\n');
+        processKeywordStringList(recordID, list);
+    }
+
+}
+
 ITagProcessorPtr InMemoryTagProcessor::newTagProcessor()
 {
-    return ITagProcessorPtr(new InMemoryTagProcessor());
+    return QSharedPointer<InMemoryTagProcessor>::create();
 }
 
 #if QT_VERSION < 0x050000

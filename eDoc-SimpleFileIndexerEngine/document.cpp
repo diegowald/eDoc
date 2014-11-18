@@ -22,7 +22,9 @@ QByteArray Document::blob()
     QFile file(fileLocation);
     if (file.exists())
     {
+        file.open(QIODevice::ReadOnly);
         result = file.readAll();
+        file.close();
     }
     return result;
 }

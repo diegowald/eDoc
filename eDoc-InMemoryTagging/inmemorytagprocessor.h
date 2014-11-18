@@ -10,6 +10,7 @@
 #include "../eDoc-Configuration/qobjectlgging.h"
 #include "../eDoc-API/ITagProcessor.h"
 #include "../sqlmanager/sqlmanager.h"
+#include "../eDoc-MetadataFramework/valuedefinitions.h"
 
 class EDOCINMEMORYTAGGINGSHARED_EXPORT InMemoryTagProcessor : public QObject, public ITagProcessor
 {
@@ -27,6 +28,7 @@ public:
     virtual void addTagRecord(IRecordIDPtr recordID, ITagPtr tag);
     virtual void processKeywordString(IRecordIDPtr recordID, const QString &keywords);
     virtual void processKeywordStringList(IRecordIDPtr, const QStringList &keywords);
+    virtual void processRecord(IRecordPtr record);
     virtual QSet<QString> findByTags(const QStringList &tags);
     virtual void removeRecord(IRecordIDPtr recordID, ITagPtr tag);
     virtual QString name();
@@ -36,7 +38,8 @@ private:
     void loadIntoMemory();
     void saveKeyword(IRecordIDPtr recordID, const QString &keyword, bool newKeyword);
     void bulkSave();
-
+    void processValue(IRecordPtr record, const QString &fieldName);
+    void processDocument(IRecordIDPtr recordID, IDocumentValuePtr &value);
 signals:
     
 public slots:

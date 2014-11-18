@@ -72,7 +72,7 @@ private slots:
 
     void on_actionOpen_database_triggered();
 
-    void on_save(IRecordPtr record);
+    void on_save(IRecordPtr record, bool isNew);
     void on_cancelEdition(IRecordPtr record);
 
 private:

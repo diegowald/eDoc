@@ -417,30 +417,29 @@ void EDocFactory::addDocumentFromBlob(QByteArray &blob, const QString &filename,
     if (tagEngine())
     {
         QString suffix = file.completeSuffix();
+        QString cmd;
         if (suffix == "pdf")
         {
-            QProcess process;
-            QString cmd = "pdftotext " + filename + " - | grep -o -E '\\w+' | sort -u -f";
-            process.start("bash", QStringList() << "-c" << cmd);
-            process.waitForBytesWritten();
-            process.waitForFinished();
-            QString result(process.readAll());
-            QStringList list = result.split('\n');
-            tagEngine()->processKeywordStringList(record_id, list);
+            cmd = "pdftotext " + filename + " - | grep -o -E '\\w+' | sort -u -f";
         }
         if (file.completeSuffix() == "txt")
         {
+            cmd = "cat " + filename + " | grep -o -E '\\w+' | sort -u -f";
+        }
+        if (file.completeSuffix() == "doc")
+        {
+            cmd = "antiword " + filename + " | grep -o -E '\\w+' | sort -u -f";
+        }
+
+        if (cmd.length() > 0)
+        {
             QProcess process;
-            QString cmd = "cat " + filename + " | grep -o -E '\\w+' | sort -u -f";
             process.start("bash", QStringList() << "-c" << cmd);
             process.waitForBytesWritten();
             process.waitForFinished();
             QString result(process.readAll());
             QStringList list = result.split('\n');
             tagEngine()->processKeywordStringList(record_id, list);
-        }
-        if (file.completeSuffix() == "doc")
-        {
         }
     }
 }

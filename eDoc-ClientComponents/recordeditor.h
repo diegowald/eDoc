@@ -19,7 +19,7 @@ public:
     explicit RecordEditor(QWidget *parent = 0);
     virtual ~RecordEditor();
 
-    virtual void setRecord(IRecordPtr record);
+    virtual void setRecord(IRecordPtr record, bool isNew);
     virtual void applyValuesToRecord(IRecordPtr record);
     virtual void setEnabledEdition(bool enabled);
 
@@ -31,7 +31,7 @@ private:
 signals:
     void downloadFile(IRecordPtr record, const IValuePtr value);
     void uploadFile(IRecordPtr record, const IValuePtr value, QString &fileLocation);
-    void save(IRecordPtr record);
+    void save(IRecordPtr record, bool isNew);
     void cancelEdition(IRecordPtr record);
 
 private slots:
@@ -49,6 +49,7 @@ private:
     bool enabledEdition;
     QSharedPointer<IRecord> m_Record;
     bool recordChanged;
+    bool _isNew;
 };
 
 #endif // RECORDEDITOR_H

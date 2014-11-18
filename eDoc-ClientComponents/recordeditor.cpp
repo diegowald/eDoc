@@ -10,6 +10,7 @@ RecordEditor::RecordEditor(QWidget *parent) :
     ui->setupUi(this);
     enabledEdition = true;
     setUnchanged();
+    _isNew = false;
 }
 
 RecordEditor::~RecordEditor()
@@ -17,8 +18,9 @@ RecordEditor::~RecordEditor()
     delete ui;
 }
 
-void RecordEditor::setRecord(IRecordPtr record)
+void RecordEditor::setRecord(IRecordPtr record, bool isNew)
 {
+    _isNew = isNew;
     m_Record = record;
     setUnchanged();
     ui->lstFields->clear();
@@ -45,33 +47,41 @@ void RecordEditor::setRecord(IRecordPtr record)
 QFieldWidget *RecordEditor::createWidget(IRecordPtr record, const QString &fieldName, QWidget* parent)
 {
     QFieldWidget *w = NULL;
-    QString fieldType = record->fieldDefinition(fieldName)->type();
 
-    if (fieldType == "string")
+    switch (record->fieldDefinition(fieldName)->type())
+    {
+    case DATATYPE::QSTRING_TYPE:
     {
         StringWidget *sw = new StringWidget(parent);
         sw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
         w = sw;
+        break;
     }
-    else if (fieldType == "integer")
+    case DATATYPE::INTEGER_TYPE:
     {
         StringWidget *sw = new StringWidget(parent);
         sw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
         w = sw;
+        break;
     }
-    else if (fieldType == "tag")
+    case DATATYPE::TAG_TYPE:
     {
         StringWidget *sw = new StringWidget(parent);
         sw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
         w = sw;
+        break;
     }
-    else if (fieldType == "document")
+    case DATATYPE::IDOCUMENT_TYPE:
     {
         DocumentWidget *dw = new DocumentWidget(parent);
         dw->setField(record->fieldDefinition(fieldName), record->value(fieldName));
         w = dw;
         connect(dw, SIGNAL(download(const IValuePtr)), this, SLOT(download(const IValuePtr)));
         connect(dw, SIGNAL(upload(const IValuePtr,QString &)), this, SLOT(upload(const IValuePtr,QString &)));
+        break;
+    }
+    default:
+        break;
     }
     return w;
 }
@@ -133,7 +143,7 @@ void RecordEditor::on_btnSave_pressed()
     if (recordChanged)
     {
         applyValuesToRecord();
-        emit save(m_Record);
+        emit save(m_Record, _isNew);
         setUnchanged();
     }
 }

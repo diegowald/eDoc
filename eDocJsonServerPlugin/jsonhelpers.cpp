@@ -18,7 +18,7 @@ QJsonObject JsonHelpers::toJson(IParameterPtr obj)
         vals.append(JsonHelpers::toJson(value));
     }
     response["values"] = vals;
-    response["queryType"] = obj->queryType();
+    response["queryType"] = (int) obj->queryType();
     return response;
 }
 
@@ -31,7 +31,7 @@ QJsonObject JsonHelpers::toJson(IRecordPtr obj)
     foreach (QString field, obj->fieldNames())
     {
         response["fieldDefinition"] = JsonHelpers::toJson(obj->fieldDefinition(field));
-        if (obj->fieldDefinition(field)->type() == "document")
+        if (obj->fieldDefinition(field)->typeAsString() == "document")
         {
             response["field"] = JsonHelpers::toJson(obj->value(field).dynamicCast<IDocumentValue>());
         }
@@ -78,7 +78,8 @@ QJsonObject JsonHelpers::toJson(IFieldDefinitionPtr obj)
 {
     QJsonObject response;
     response["name"] = obj->name();
-    response["type"] = obj->type();
+    response["type"] = (int)obj->type();
+    response["typeAsString"] = obj->typeAsString();
     response["isreadOnly"] = obj->isReadOnly();
     response["isVisible"] = obj->isVisible();
     response["isQUeryable"] = obj->isQueryable();
@@ -91,7 +92,7 @@ QJsonObject JsonHelpers::toJson(IFieldDefinitionPtr obj)
         foreach (VALIDQUERY query, obj->validQueries())
         {
             QJsonObject qry;
-            qry["query"] = query;
+            qry["query"] = (int) query;
             queries.append(qry);
         }
     }
